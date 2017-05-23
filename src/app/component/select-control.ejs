@@ -1,0 +1,47 @@
+<yield />
+
+<style>
+	a {
+		@extend segment;
+		
+		& + & {
+			margin-left: 0.3em;
+		}
+	}
+	
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	
+	justify-content: space-between;
+    display: flex;
+    width: 100%;
+</style>
+
+<script>
+    var multiple = args .multiple !== undefined;
+
+    var last = self .root .querySelector ('a[active]');
+    self .root .addEventListener ('click', function (event) {
+        var selects = self .root .querySelectorAll ('a');
+        var index = [] .indexOf .call (selects, event .target);
+        if (index !== -1) {
+            if (! multiple && last)
+                last .removeAttribute ('active');
+            if (multiple && event .target .hasAttribute ('active')) {
+                event .target .removeAttribute ('active');
+            }
+            else {
+                event .target .setAttribute ('active', true);
+                last = event .target;
+            }
+            
+            
+            var values =    [] .filter .call (selects, function (select) {
+                                return select .hasAttribute ('active') 
+                            }) .map (function (select) {
+                                return select .textContent
+                            })
+            if (args .select__to)
+                self .mention (args .select__to, multiple ? values : values [0]);
+        }
+    })
+</script>

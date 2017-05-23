@@ -1,0 +1,81 @@
+<tabs>
+	<tab active={ args .tab === 'all' }>
+		<a href="#match/catalog">
+			所有球賽
+			<component-wavify />
+		</a>
+	</tab>
+	<tab active={ args .tab === 'private' }>
+		<a href="#match/private/catalog">
+			友隊球賽
+			<component-wavify />
+		</a>
+	</tab>
+	<highlight style="left: { my ('highlight-position') () }%;" />
+</tabs>
+
+
+<style>
+    tabs {
+    	width: 100%;
+    	white-space: nowrap;
+    	display: flex;
+    	position: relative;
+    	
+    	> tab {
+	    	display: block;
+	    	border: 10px;
+	    	box-sizing: border-box;
+	    	display: inline-block;
+	    	font-family: Roboto, sans-serif;
+	    	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	    	cursor: pointer;
+	    	text-decoration: none;
+	    	margin: 0px;
+	    	padding: 0px;
+	    	outline: none;
+	    	font-size: 14px;
+	    	font-weight: 500;
+	    	position: relative;
+	    	width: 50%;
+    		background: #075E54;
+	    	
+	    	&[active] {
+	    		> a {
+					color: rgb(255, 255, 255) !important;
+			    }
+		    }
+		    
+		    > a {
+		    	
+		    	display: flex;
+		    	flex-direction: column;
+		    	align-items: center;
+		    	justify-content: center;
+		    	height: 35px;
+	    		color: rgba(255, 255, 255, 0.701961) !important;
+	    		overflow: hidden;
+	    		position: relative;
+		    }
+	    }
+	    
+	    > highlight {
+	    	width: 50%;
+	    	bottom: 0px;
+	    	display: block;
+	    	background-color: #FFF;
+	    	height: 2px; 
+	    	position: absolute;
+	    	transition: all 1s cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+	    }
+    }
+</style>
+
+<script>
+	self
+		.remembers ('tabs', ['all', 'private'])
+		
+		.remembers ('highlight-position', function () {
+			return 100 * my ('tabs') .indexOf (args .tab) / my ('tabs') .length
+		})
+</script>

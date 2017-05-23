@@ -1,0 +1,16 @@
+<input ref="input" type={ args .type } placeholder={ args .placeholder } maxlength={ args .maxlength } >
+
+<script>
+    self .establish ('input', ref)
+    
+    self .impressions ('input') .thru (tap, function (ref) {
+        if (args .change__to)
+            ref .addEventListener ('change', function () {
+                self .mention (args .change__to, ref .value)
+            })
+        if (args .input__to)
+            ref .addEventListener ('input', function () {
+                self .mention (args .input__to, ref .value)
+            })
+    })
+</script>

@@ -1,0 +1,134 @@
+<virtual each={ wrap, i in my ('target-items') }>
+	<component-dynamic-load-item nth={ wrap .nth } item__from={ so (this), my ('loaded-item') (wrap .nth) } style="transform: translateY({ my ('height-up-to') (wrap .nth) }px);" >
+		<yield />
+	</component-dynamic-load-item>
+</virtual>
+<stretcher style="height: { my ('height-up-to') ((my ('loaded-range') || null_range) .to) }px;" />
+
+<style>
+    width: 100%;
+    position: relative;
+    display: block;
+    
+	> component-dynamic-load-item {
+		display: block;
+		position: absolute;
+		width: 100%;
+	}
+	> stretcher {
+		display: block;
+	}
+</style>
+
+<script>
+	var list = closest_parent (self .root, 'main-content');
+	var dynamic_load = self .root;
+	
+	var items_to_load = + args .items_to_load;
+	var loading_interval = + args .interval_for_loading;
+	
+	var item_source = args .items__from;
+	var item_height = args .item_height__from;
+	
+	var nths = {};
+	var wrap_nth =	function (nth) {
+						if (! nths [nth])
+							nths [nth] = { nth: nth };
+						return nths [nth];
+					};
+	
+
+	
+	self
+		.establish ('loaded-items', constant (self .impressions (item_source)))
+		.establish ('loaded-range', dependent (function () {
+			return rangify (my ('loaded-items'));
+		}, self .impressions ('loaded-items')))
+		.remembers ('loaded-item', function (nth) {
+			var item_label = ':item-' + nth;
+			
+			if (! self .personal (item_label))
+				self .establish (item_label, dependent (function () {
+					return my ('loaded-items') [nth];
+				}, self .impressions ('loaded-items')))
+			
+			return item_label;	
+		})
+		.remembers ('height-up-to', function (nth) {
+			return 	arrayify ({
+						from: 0,
+						to: nth - 1
+					}) .map (function (nth) {
+						return my ('loaded-items') [nth]
+					}) .reduce (function (total, item) {
+						return total + my (item_height) (item)
+					}, 0);
+		})
+		
+		
+		
+		
+		.remembers ('scroll-range', function () {
+			return	{
+						from: positive_or_zero (list .scrollTop - dynamic_load .offsetTop),
+						to: positive_or_zero (list .scrollTop - dynamic_load .offsetTop + list .clientHeight)
+					};
+		})
+		.establish ('target-range', dependent (function () {
+			var scroll_range = my ('scroll-range') ();
+			var loaded_range = my ('loaded-range') || null_range;
+			
+			var start =	(function () {
+				var middle = (scroll_range .from + scroll_range .to) / 2;
+				var min;
+				
+				var total = 0;
+				var least_asymmetry = middle;
+				
+				for (var nth = 0; nth <= loaded_range .to; nth ++) {
+					if (total <= scroll_range .from) min = nth;
+					var new_total = total + my (item_height) (my ('loaded-items') [nth]);
+					var new_asymmetry = Math .abs (new_total - middle);
+					if (new_asymmetry < least_asymmetry) {
+						total = new_total;
+						least_asymmetry = new_asymmetry;
+					}
+					else {
+						return Math .min (min, nth);
+					}
+				}
+				return min || 0;
+			}) ();
+			var curr = intersection (my ('target-range'), loaded_range);
+			var next =	intersection ({
+							from: start,
+							to: start + items_to_load - 1
+						}, loaded_range);
+			return curr && included_in (curr, next) ? curr : next
+		}, mergeAll ([
+			/*my (my ('new-page') .args .cycle__from) */from (function (when) { self .on ('mount', function (x) { when (x); }); }),
+			from (function (when) { self .on ('updated', function (x) { when (x); }); }),
+			from (function (when) { list .addEventListener ('scroll', function (x) { when (x); }); }) .thru (afterSilence, 5)
+		]), self .impressions ('loaded-range')))
+		.establish ('target-items', dependent (function () {
+			return arrayify (my ('target-range')) .map (wrap_nth);
+		}, self .impressions ('target-range')))
+		
+		
+	self .impressions ('loaded-items')
+		.thru (dropRepeats) 
+		.thru (map, function () {
+			return 	self .impressions ('target-items')
+						.thru (afterSilence, loading_interval)
+						.thru (dropRepeatsWith, json_equal) 	
+		})
+		.thru (switchLatest)
+		.thru (tap, function () {
+			var date = new Date ();
+			self .render ()
+				.then (function () {
+					log ('dynamic-load ' + (new Date () - date) + 'ms');
+				});
+		})
+</script>
+

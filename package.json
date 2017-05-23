@@ -1,0 +1,52 @@
+{
+    "name": "fofi",
+    "version": "0.0.0",
+    "description": "where's your foot?",
+    "main": "server.js",
+    "dependencies": {
+        "body-parser": "^1.15.0",
+        "cookie-parser": "^1.4.1",
+        "cordova-android": "^6.2.3",
+        "cordova-browser": "^4.1.0",
+        "cordova-ios": "~4.3.1",
+        "cordova-plugin-whitelist": "1",
+        "css": "^2.2.1",
+        "css-semdiff": "^1.1.1",
+        "dev-null": "^0.1.1",
+        "ejs": "^2.4.1",
+        "escape-html": "^1.0.3",
+        "express": "^4.13.4",
+        "fs-extra": "^2.0.0",
+        "morgan": "^1.7.0",
+        "node-sass": "^3.13.0",
+        "octicons": "^5.0.1",
+        "ramda": "^0.23.0",
+        "riot-compiler": "^3.2.1"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node server.js",
+        "serve": "node server.js",
+        "build": "./build/make-app.sh"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/warren922/fofi-android.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/warren922/fofi-android/issues"
+    },
+    "homepage": "https://github.com/warren922/fofi-android#readme",
+    "cordova": {
+        "platforms": [
+            "browser",
+            "ios"
+        ],
+        "plugins": {
+            "cordova-plugin-whitelist": {}
+        }
+    }
+}

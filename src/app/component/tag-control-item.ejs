@@ -1,0 +1,32 @@
+<a ref="ref" >
+	<tag>{ my ('tag') }</tag>
+</a>
+
+<style>
+	/*> a:hover > tag {
+	    background: #777;
+	    color: #EEE;
+	}*/
+</style>
+
+<script>
+    self
+        .establish ('item', constant (
+            self 
+                .impressions (args .item__from) 
+                    .thru (dropRepeatsWith, json_equal))
+        )
+        .establish ('tag', dependent (function () {
+            return my ('item');
+        }, self .impressions ('item')))
+
+        .establish ('ref', ref)
+        .impressions ('ref')
+            .thru (tap, function (_ref) {
+                _ref .addEventListener ('click', function () {
+                        self .mention (args .select__to, my ('tag'))
+                })
+            })
+
+	self .impressions ('tag') .thru (tap, self .render)
+</script>

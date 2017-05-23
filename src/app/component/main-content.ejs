@@ -1,0 +1,21 @@
+<main-content-holder>
+    <main-content>
+        <yield />
+    </main-content>
+</main-content-holder>
+
+<style>
+    > main-content-holder {
+        @extend .match-edge;
+        
+        > main-content {
+            @extend .scroll;
+            
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+    }
+</style>

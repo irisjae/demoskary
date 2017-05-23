@@ -1,0 +1,102 @@
+<a href="#schedule/match/choose/team" ref="todo-button">
+	<match>
+		<match-graphic>
+			<image-holder size="96x96">
+				<highlight-holder>
+					<component-timeslot-highlight timeslot__from=":timeslot" />
+				</highlight-holder>
+			</image-holder>
+		</match-graphic>
+		<match-info>
+			<info-holder>
+				<match-location>
+					<icon-holder><icon class="fa-map-marker" /></icon-holder>
+					{ my ('location') }
+				</match-location>
+				<match-type>{my ('num-of-players') }人{ my ('field-type') }</match-type>
+				
+				<br>
+				
+				<match-opponent>
+					未有球隊報名
+				</match-opponent>
+			</info-holder>
+		</match-info>
+		<match-status>
+			<svg width="20" height="20" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:figma="http://www.figma.com/figma/ns"> <title>home team</title> <desc>Created using Figma</desc> <g id="Canvas" transform="translate(682 -260)" figma:type="canvas"> <g id="home team" style="mix-blend-mode:normal;" figma:type="frame"> <g id="Ellipse" style="mix-blend-mode:normal;" figma:type="ellipse"> <use xlink:href="#2b43512f-3f8c-4c7b-b29b-0a30a16d4252" transform="translate(-682 260)" fill="#FFFFFF" style="mix-blend-mode:normal;"/> <mask id="bac63921-81b9-4f8c-be2f-a417b4a91fa7"> <use xlink:href="#2b43512f-3f8c-4c7b-b29b-0a30a16d4252" fill="white" transform="translate(-682 260)"/> </mask> <g mask="url(#bac63921-81b9-4f8c-be2f-a417b4a91fa7)"> <use xlink:href="#17f11bf0-ea29-45fe-9996-f900c46e65f2" transform="translate(-682 260)" style="mix-blend-mode:normal;"/> </g> </g> <g id="&#228;&#184;&#187;" style="mix-blend-mode:normal;" figma:type="text"> <use xlink:href="#3ae2f01c-9910-42da-80d4-844fef08cc7b" transform="translate(-677 264)" style="mix-blend-mode:normal;"/> </g> </g> </g> <defs> <path id="2b43512f-3f8c-4c7b-b29b-0a30a16d4252" d="M 20 10C 20 15.5228 15.5228 20 10 20C 4.47715 20 0 15.5228 0 10C 0 4.47715 4.47715 0 10 0C 15.5228 0 20 4.47715 20 10Z"/> <path id="17f11bf0-ea29-45fe-9996-f900c46e65f2" d="M 19 10C 19 14.9706 14.9706 19 10 19L 10 21C 16.0751 21 21 16.0751 21 10L 19 10ZM 10 19C 5.02944 19 1 14.9706 1 10L -1 10C -1 16.0751 3.92487 21 10 21L 10 19ZM 1 10C 1 5.02944 5.02944 1 10 1L 10 -1C 3.92487 -1 -1 3.92487 -1 10L 1 10ZM 10 1C 14.9706 1 19 5.02944 19 10L 21 10C 21 3.92487 16.0751 -1 10 -1L 10 1Z"/> <path id="3ae2f01c-9910-42da-80d4-844fef08cc7b" d="M 0.49 8.55L 0.49 9.44L 9.49 9.44L 9.49 8.55L 5.44 8.55L 5.44 6.08L 8.94 6.08L 8.94 5.2L 5.44 5.2L 5.44 3L 9.14 3L 9.14 2.11L 5.26 2.11L 5.57 1.86C 5.17 1.3 4.79 0.85 4.43 0.53L 3.75 1.13C 4.01 1.36 4.3 1.69 4.62 2.11L 0.81 2.11L 0.81 3L 4.56 3L 4.56 5.2L 1.04 5.2L 1.04 6.08L 4.56 6.08L 4.56 8.55L 0.49 8.55Z"/> </defs> </svg>
+		</match-status>
+	</match>
+</a>
+
+<style>
+    a {
+    	background: rgba(253, 254, 254, 0.6);
+    	padding: 0;
+    	
+    	@extend item-holder;
+	    
+	    match-info {
+    		font-size: 1.1em;
+    	    padding-right: 30px;
+		    word-break: break-word;
+		    white-space: pre-wrap;
+	    	
+	    	info-holder {
+		    	match-location {
+			    	font-size: 1.2em;
+	        		font-weight: bolder;
+			    	
+			    	> icon-holder {
+		    		    width: 10px;
+					    transform: translateY(1px);
+					    margin-left: -10px;
+				    }
+			    }
+		    	match-type {
+	    		    word-break: keep-all;
+		    	}
+		    	match-opponent {
+		    		padding-left: 12px;
+		    	}
+		    }
+	    }
+    }
+</style>
+
+<script>
+	self
+		.establish ('location', dependent (function () {
+			return location_from_api (my (args .match__from) .location);
+		}, self .impressions (args .match__from)))
+		
+		.establish ('num-of-players', dependent (function () {
+			return num_of_players_to_num (my (args .match__from) .match_type);
+		}, self .impressions (args .match__from)))
+		
+		.establish ('team-name', dependent (function () {
+			return my (args .match__from) .home_team .long_name;
+		}, self .impressions (args .match__from)))
+		
+		.establish ('field-type', dependent (function () {
+			return field_type_to_chi (my (args .match__from) .pitch .pitch_type);
+		}, self .impressions (args .match__from)))
+		
+		.establish (':timeslot', dependent (function () {
+			return new Date (my (args .match__from) .start_at);
+		}, self .impressions (args .match__from)))
+		
+		.establish ('id', dependent (function () {
+			return my (args .match__from) .id;
+		}, self .impressions (args .match__from)))
+		
+	self .impressions (args .match__from) .thru (tap, self .render)
+		
+	self .establish ('todo-button', ref)
+	self .impressions ('todo-button') .thru (tap, function (ref) {
+		ref .addEventListener ('click', function (e) {
+			e .preventDefault ();
+			window .location .hash = ref .hash + '/#' + stringify (my ('id'))
+		})
+	})
+	
+</script>

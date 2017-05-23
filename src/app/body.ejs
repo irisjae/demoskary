@@ -1,0 +1,186 @@
+<script>
+	self
+		.thru (
+			reframe, api);
+
+
+	
+	var tag_label =	function (page_name) {
+						return 'page-' + replace_all ('/', '-') (trim_trailing_slash (page_name));
+					};
+						var trim_trailing_slash =	function (path) {
+														if (path [path .length - 1] === '/')
+															return path .slice (0, -1);
+														else
+															return path;
+													};
+	var page_name = function (path) {
+						if (path === '' || path === '#')
+							path = home_path
+						return path .slice (path .indexOf ('#') + 1, path .indexOf ('/#') === -1 ? undefined : path .indexOf ('/#'))
+					}
+	var page_params =	function (path) {
+							return (path .indexOf ('/#') !== -1 ? path .slice (path .indexOf ('/#') + 2) .split ('/') : []);
+						};
+	var page_label = 	function (path) {
+							return page_name (path) + '/#' + page_params (path) .join ('/')		
+						}
+	var tag_exists =	function (tag) {
+							return riot .util .tags .selectTags () .split (',') .indexOf (tag) !== -1
+						};
+	var page_exists =	function (page_name) {
+							return tag_exists (tag_label (page_name))
+						};
+						
+						
+	self
+		.establish (':exception', constant (
+			from (function (errors) {
+				riot .util .tmpl .errorHandler = 	function (err) {
+														errors ({
+															source: 'riot-tmpl',
+															data: err
+														});
+													}
+				window .addEventListener ('unhandledrejection', function (e) {
+				    errors ({
+				    	source: 'promise',
+				    	data: e .detail
+				    });
+				});
+				window .onerror = 	function (message, source, lineno, colno, error) {
+										errors ({
+											source: 'window',
+											data: arguments
+										});
+									};
+									
+				//errors .thru (tap, _debugger)
+			})
+		))
+		
+		.remembers ('page-cache', {})
+		.remembers ('page-cycle', function (id) {
+			var cycle_label = ':page-cycle:' + id;
+			if (! self .personal (cycle_label)) {
+				self .remembers (cycle_label);
+			}
+			
+			return cycle_label;
+		})
+		
+		.establish (':page', constant (
+			from (function (nav) {
+				window .addEventListener ('hashchange', function () {
+					nav (window .location .hash)
+				});
+				if (page_exists (page_name (window .location .hash))) {
+					nav (window .location .hash)
+				}
+				else {
+					window .location .hash = home_path;
+				}
+			})
+				.thru (map, function (path) {
+					return {
+						name: page_name (path),
+						params: page_params (path),
+						id: page_label (path)
+					};
+				})
+				.thru (dropRepeatsWith, json_equal)
+				.thru (filter, function (page) {
+					return page_exists (page .name)
+				})
+				.thru (map, function (new_page) {
+					return Promise .resolve (my (':page'))
+						.then (function (prev) {
+							var time = new Date ()
+							
+							if (my ('page-cache') [new_page .id]) {
+								var curr = my ('page-cache') [new_page .id];
+							}
+							else {
+								var _tag_label = tag_label (new_page .name);
+								var root = document .createElement (_tag_label);
+								var curr = 	retaining (new_page) (
+												riot .mount (root, _tag_label, {
+													params: new_page .params,
+													parent: self,
+													cycle__from: my ('page-cycle') (new_page .id)
+												}) [0]);
+								//HACK: riot data-is bug, not firing mount
+								if (self .isMounted)
+									self .update ();
+							}
+							
+							var cycle_label = my ('page-cycle') (curr .id);
+							var new_cycle = stream ();
+							self .mention (cycle_label, new_cycle);
+							if (curr .id === page_label (window .location .hash)) {
+								if (prev !== curr) {
+									var _time = new Date ()
+									
+									self .root .insertBefore (curr .root, self .root .firstElementChild);
+									if (prev) {
+										self .root .removeChild (prev .root);
+									}
+									
+									log ('mounted page time ' + (new Date () - _time) + 'ms', curr);	
+								}
+								var last_loaded = curr;
+							}
+							else {
+								var last_loaded = prev;
+							}
+							if (prev) {
+								var last_cycle_label = my ('page-cycle') (prev .id);
+								self .impression (last_cycle_label) .end (true);
+							}
+
+							log ('process page time ' + (new Date () - time) + 'ms', curr);	
+							return last_loaded;
+						})
+						.catch (
+							R .pipe (
+								self .affiliated (':exception'),
+								noop
+							)
+						)//TODO: make report to exception
+				})
+		));
+		
+
+	self .impressions (':page')
+		.thru (function (pages) {
+			return from (function (loadings) {
+				pages .thru (tap, function (page) {
+					page .then (loadings)
+				})
+			});
+		})
+		.thru (filter, id)
+		.thru (dropRepeats)
+		.thru (tap, function (page) {
+			if (! my ('page-cache') [page .id] && ! page .temp)
+				self .mention ('page-cache',
+					with_ (page .id, page) (my ('page-cache')))
+		})
+	
+		
+	
+	from (function (widths) {
+		widths (window .innerWidth);
+		window .addEventListener ('resize', function () {
+			widths (window .innerWidth);
+		});
+	})
+		.thru (dropRepeats)
+		.thru (map, function (width) {
+			return { width: width, height: window .innerHeight };
+		})
+		.thru (tap, function (size) {
+			self .root .style .setProperty ('width', size .width + 'px', 'important');
+			self .root .style .setProperty ('height', size .height + 'px', 'important');
+		});
+</script>

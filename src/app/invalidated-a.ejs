@@ -1,0 +1,13 @@
+<yield />
+
+<script>
+    self .root .addEventListener ('click', function (e) {
+        if (! e .defaultPrevented) {
+            e .preventDefault ();
+            window .location .href = self .root .href;
+        }
+    })
+    
+    //polyfill
+    self .addEventListener = self .root .addEventListener .bind (self .root);
+</script>

@@ -1,0 +1,381 @@
+<nav>
+	<nav-bar>
+		<nav-buttons>
+			<a href="#schedule/upcoming">
+				<component-back-button />
+			</a>
+		</nav-buttons>
+		<nav-title>
+			<component-page-title>選擇對手</component-page-title>
+		</nav-title>
+	</nav-bar>
+</nav>
+<component-main-content>
+	<choose-match>
+		<info-area info="choose-team" if={ ! my ('opponent-info') }>
+			<info-holder>
+				<info-header>
+					<home>主隊(己隊)</home>
+					<away>客隊</away>
+				</info-header>
+				<away-team>
+					<label>
+						<label>
+							請點擊選擇對手
+						</label>
+						<icon-holder>
+							<icon class="fa fa-chevron-down" />
+						</icon-holder>
+					</label>
+				</away-team>
+				<component-spacing height="5px" />
+				<team-name>
+					<home>{ my ('home-name') }</home>
+					<label>VS</label>
+				</team-name>
+				<component-spacing height="5px" />
+				<component-separator />
+				<component-spacing height="5px" />
+				<team-age-range>
+					<home>{ my ('home-age-range') }</home>
+					<label>年齡</label>
+				</team-age-range>
+				<component-spacing height="5px" />
+				<component-separator />
+				<component-spacing height="5px" />
+				<team-shirt-color>
+					<home>橙</home>
+					<label>球衣</label>
+				</team-shirt-color>
+				<component-spacing height="5px" />
+				<component-separator />
+				<component-spacing height="5px" />
+				<team-division>
+					<home>Division Premier</home>
+					<label>實力</label>
+				</team-division>
+				<component-spacing height="5px" />
+				<component-separator />
+				<component-spacing height="5px" />
+				<team-rating>
+					<home>4.2/5</home>
+					<label>球品</label>
+				</team-rating>
+				<component-spacing height="5px" />
+			</info-holder>
+		</info-area>
+		<info-area info="team" if={ my ('opponent-info') }>
+			<info-holder>
+				<info-header>
+					<home>主隊</home>
+					<away>客隊(己隊)</away>
+				</info-header>
+				<component-spacing height="5px" />
+				<team-name>
+					<home>{ my ('home-team-name') }</home>
+					<label>VS</label>
+					<away>{ my ('away-team-name') }</away>
+				</team-name>
+				<component-spacing height="5px" />
+				<component-separator />
+				<component-spacing height="5px" />
+				<team-age-range>
+					<home>{ my ('home-age-range') }</home>
+					<label>年齡</label>
+					<away>{ my ('away-age-range') }</away>
+				</team-age-range>
+				<component-spacing height="5px" />
+				<component-separator />
+				<component-spacing height="5px" />
+				<team-shirt-color>
+					<home>橙</home>
+					<label>球衣</label>
+					<away><a>綠<svg ref="svg" width="9" height="16" viewBox="0 0 9 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:figma="http://www.figma.com/figma/ns"><title>right-arrow</title><desc>Created using Figma</desc><g id="Canvas" transform="translate(734 258)" figma:type="canvas"><g id="right-arrow" style="mix-blend-mode:normal;" figma:type="frame"><g id="Group" style="mix-blend-mode:normal;" figma:type="frame"><g id="Vector" style="mix-blend-mode:normal;" figma:type="vector"><use xlink:href="#0b39f1b4-0614-4a28-a406-f607ebc22df0" transform="translate(-733.297 -256.973)" fill="#CCD1D1" style="mix-blend-mode:normal;"></use></g><g id="Vector" style="mix-blend-mode:normal;" figma:type="vector"><use xlink:href="#dd187232-741f-4707-87f3-4b5c131211ec" transform="translate(-733.721 -257.397)" fill="#CCD1D1" style="mix-blend-mode:normal;"></use></g></g></g></g><defs><path id="0b39f1b4-0614-4a28-a406-f607ebc22df0" d="M 0.8484 14.0484L -6.63757e-08 13.2L 6.1755 7.0242L -6.63757e-08 0.8484L 0.8484 1.02997e-08L 7.8726 7.0242L 0.8484 14.0484Z"></path><path id="dd187232-741f-4707-87f3-4b5c131211ec" d="M 1.2726 14.8968L 6.63757e-08 13.6242L 6.1755 7.4484L 6.63757e-08 1.2726L 1.2726 0L 8.7213 7.4484L 1.2726 14.8968ZM 0.8484 13.6242L 1.2726 14.0484L 7.8726 7.4484L 1.2726 0.8484L 0.8484 1.2726L 7.0239 7.4484L 0.8484 13.6242Z"></path></defs></svg></a></away>
+				</team-shirt-color>
+				<component-spacing height="5px" />
+				<component-separator />
+				<component-spacing height="5px" />
+				<team-division>
+					<home>Division Premier</home>
+					<label>實力</label>
+					<away>Division 1</away>
+				</team-division>
+				<component-spacing height="5px" />
+				<component-separator />
+				<component-spacing height="5px" />
+				<team-rating>
+					<home>4.2/5</home>
+					<label>球品</label>
+					<away>5/5</away>
+				</team-rating>
+				<component-spacing height="5px" />
+			</info-holder>
+		</info-area>
+		<info-area info="match">
+			<info-holder>
+				<info-header>賽事資料</info-header>
+				<match-details>
+					<date>{ my ('match-date') }</date>
+					<time>{ my ('match-time') }</time>
+				</match-details>
+				<match-location>
+					<label>地點</label>
+					<item>
+						<icon-holder><icon class="fa-map-marker"></icon></icon-holder>
+						{ my ('match-location') }
+					</item>
+				</match-location>
+				<component-spacing height="5px" />
+				<component-separator />
+				<component-spacing height="5px" />
+				<match-pitch>
+					<label>場地</label>
+					<item>{ my ('match-pitch') }</item>
+				</match-pitch>
+				<component-spacing height="5px" />
+				<component-separator />
+				<component-spacing height="5px" />
+				<match-fee>
+					<label>費用</label>
+					<item>{ my ('match-fee') }</item>
+				</match-fee>
+				<component-spacing height="5px" />
+				<component-separator />
+				<component-spacing height="10px" />
+				<match-tags>
+					<tag>聯賽</tag>
+					<tag>競爭性</tag>
+				</match-tags>
+			</info-holder>
+		</info-area>
+		<component-spacing height="20px" />
+		<component-action>
+			<a href="#schedule/upcoming" ref="apply-button">確定</a>
+		</component-action>
+		<component-spacing height="20px" />
+		<info-area info="choices">
+			<info-holder>
+				<info-header>
+					{ my ('apply-number') }隊報名
+				</info-header>
+				<component-schedule-match-applicant-item />
+				<component-schedule-match-applicant-item />
+				<component-schedule-match-applicant-item />
+			</info-holder>
+		</info-area>
+	</choose-match>
+</component-main-content>
+<component-page-tabs tab="schedule" />
+
+<style>
+	@extend [page-layout];
+	
+	choose-match {
+		@extend [padded-layout];
+		> info-area {
+			> info-holder {
+				> info-header {
+					@extend [unpadded-layouting];
+					@extend [bar-like];
+				}
+				> component-separator {
+					@extend [unpadded-layouting];
+				}
+				> team-name, > team-age-range, > team-shirt-color, > team-division, > team-rating, > match-details, > match-location, > match-pitch, > match-fee {
+					@extend [row-layout];
+					
+					color: black;
+				}
+				> component-schedule-match-applicant-item {
+					@extend [unpadded-layouting];
+				}
+				
+				
+				> info-header, > team-name, > team-age-range, > team-shirt-color, > team-division, > team-rating {
+					@extend [side-by-side-layout];
+					> home {
+						@extend [left];
+					}
+					> label {
+						@extend [versus];
+						color: black;
+						font-weight: bold;
+					}
+					> away {
+						@extend [right];
+					}
+				}
+				
+				
+				> team-name {
+				    font-size: 1.2em;
+	    			font-weight: 500;
+	    			
+					> label {
+						font-weight: normal;
+						font-size: 0.7em;
+					}
+				}
+				> team-shirt-color {
+					> home {
+						> a {
+						    color: #50abf1;
+							> svg {
+								position: absolute;
+								right: 0;
+								top: 50%;
+							    transform: translateY(-50%);
+							}	
+						}
+					}
+				}
+				> match-details {
+					height: 80px;
+					padding: 15px 0;
+					flex-direction: column;
+					> date {
+						font-size: 1.4em;
+					}
+					> time {
+						font-size: 1.2em;
+					}
+				}
+				> match-location {
+					> item {
+						> icon-holder {
+						    width: 1em;
+						    transform: translate(0,-1px);
+						    color: #C0392B;
+						    
+							font-size: 1.5em;
+							height: 1.1em;
+							line-height: 1.1em;
+					    }
+					}
+				}
+				> match-tags {
+					display: flex;
+			    }
+			}
+		}
+		
+		> info-area[info="choose-team"] {
+			> info-holder {
+				> component-separator {
+					> hr {
+						background: linear-gradient(to right, #CCD1D1 50%, transparent 60%); 
+					}
+				}
+				> away-team {
+					display: block;
+					position: absolute;
+					right: 0;
+					width: calc(50% - 1em);
+					height: 155px;
+					
+					> label {
+						color: black;
+						display: block;
+						position: absolute; 
+						left: 50%;
+						top: 50%;
+						transform: translateX(-50%)translateY(-50%);
+						
+						text-align: center;
+						color: black;
+						> label {
+							display: block;
+						    font-weight: bold;
+						    white-space: nowrap;
+						}
+						> icon-holder {
+							font-size: 3em;
+							width: 1em; 
+							height: 1em; 
+						}
+					}
+				}
+			}
+		}
+	}
+</style>
+
+<script>
+	self
+		.remembers ('match-info')
+		.remembers ('team-info')
+		.remembers ('choices-info')
+	mergeAll ([
+		self .impressions ('match-info'),
+		self .impressions ('team-info'),
+		self .impressions ('choices-info')
+	])
+		.thru (tap, self .render);
+
+	self
+		.establish ('home-name', dependent (function () {
+			return my ('team-info') .long_name;
+		}, self .impressions ('team-info')))
+		.establish ('home-age-range', dependent (function () {
+			return my ('team-info') .average_age;
+		}, self .impressions ('team-info')))
+		
+		
+		.establish ('match-date', dependent (function () {
+			//2017年1月15日 星期日
+			var date_time = new Date (my ('match-info') .start_at);
+			return date_to_chi (date_time) + ' 星期' + day_of_week_to_chi (date_time);
+		}, self .impressions ('match-info')))
+		.establish ('match-time', dependent (function () {
+			//3:00 pm - 4:30 pm
+			var start_date_time = new Date (my ('match-info') .start_at)
+			var end_date_time = new Date (my ('match-info') .end_at);
+			
+			return times (start_date_time, end_date_time)
+		}, self .impressions ('match-info')))
+		.establish ('match-location', dependent (function () {
+			//北區運動場
+			return location_from_api (my ('match-info') .location)
+		}, self .impressions ('match-info')))
+		.establish ('match-pitch', dependent (function () {
+			//11v11 - 真草
+			return my ('match-info') .match_type + ' - ' + my ('match-info') .pitch .pitch_type;
+		}, self .impressions ('match-info')))
+		.establish ('match-fee', dependent (function () {
+			//HKD $450
+			return fee_to_chi (my ('match-info') .fee_per_team);
+		}, self .impressions ('match-info')))
+	
+		.establish ('apply-number', dependent (function () {
+			//HKD $450
+			return my ('choices-info') .length;
+		}, self .impressions ('choices-info')))
+
+
+	self
+		.impressions (args .cycle__from)
+			.thru (tap, function (cycle) {
+				if (self .affiliated ('::match-to-find-info')) {
+					var match_info = my ('::match-to-find-info') (parse (args [0]));
+					
+					inquire (self .affiliated (match_info))
+						//.thru (takeUntil, my (args .cycle__from) .end)
+						.then (function (match) {
+							self .mention ('match-info', match)
+						});
+					inquire (self .affiliated ('::teams'))
+						.then (function (teams) {
+							self .mention ('team-info', teams [0])
+						})
+						.then (function () {
+							var applications_info = my ('::match-applications') (my ('team-info') .id, parse (args [0]));
+							inquire (self .affiliated (applications_info))
+								.then (function (choices) {
+									self .mention ('choices-info', choices)
+								});
+						})
+				}
+				else
+					window .location .hash = '#login'
+			})
+</script>

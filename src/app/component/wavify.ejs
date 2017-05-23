@@ -1,0 +1,63 @@
+<style>
+    > wave {
+        position: absolute;
+        pointer-events: none;
+        /*top: -133.658px;
+        left: -2.59575px;
+        height: 325.192px;
+        width: 325.192px;*/
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.870588);
+        opacity: 0.1;
+        transform: scale(0);
+        
+        &[move] {
+            opacity: 0;
+            transform: scale(1);
+        }
+        /*&[move][done] {
+            opacity: 0;
+            transform: scale(1);
+        }*/
+    }
+</style>
+
+<script>
+    var time = (args .time / 1000 || 2)
+    var background = args .background;
+
+    var parent = self .root .parentElement;
+    parent .addEventListener ('click', function (e) {
+        //e .stopPropagation ();
+        var rect = parent .getBoundingClientRect ();
+        var x_base = rect .width;
+        var y_base = rect .height;
+        var x = args .center !== undefined ? x_base / 2 : e .clientX - rect .left;
+        var y = args .center !== undefined ? y_base / 2 : e .clientY - rect .top;
+        var x_max = x > 0.5 * x_base ? x : x_base - x;
+        var y_max = y > 0.5 * y_base ? y : y_base - y;
+        var r = Math .sqrt (x_max * x_max + y_max * y_max)
+        var wave = document .createElement ('wave');
+        wave .style .width = 2 * r + 'px';
+        wave .style .height = 2 * r + 'px';
+        wave .style .top = (y - r) + 'px';
+        wave .style .left = (x - r) + 'px';
+        wave .style .transition = 'opacity ' + time + 's cubic-bezier(0.23, 1, 0.32, 1) 0s, transform ' + (time / 2) + 's cubic-bezier(0.23, 1, 0.32, 1) 0s';
+        if (background)
+            wave .style .backgroundColor = background;
+        self .root .insertBefore (wave, null);
+        wait (60) .then
+            (function () {
+                wave .setAttribute ('move', true);
+            })
+        /*wait (120) .then
+            (function () {
+                wave .setAttribute ('done', true)
+            })*/
+        waitdone = wait (time * 1000 + 1000) .then
+            (self .root .removeChild .bind (self .root, wave))
+    
+        if (args .waves__to)
+            self .mention (args .waves__to, from_promise (done))
+    }, true);
+</script>

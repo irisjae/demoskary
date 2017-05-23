@@ -1,0 +1,62 @@
+<component-field-control type="text" placeholder={ my (':jersey') .placeholder } val={ my (':jersey') .value } input__to=":input" change__to=":change" />
+
+<script>
+	self
+        .establish ('item', constant (
+            self
+                .impressions (args .item__from)
+                    .thru (dropRepeatsWith, json_equal))
+        )
+        .establish (':jersey', dependent (function () {
+            return my ('item');
+        }, self .impressions ('item')))
+        
+        .remembers (':modifications')
+        .impressions (':modifications')
+            .thru (tap, function (mod) {
+				self .mention (args .modify__to, mod)
+            })
+
+    self
+		.remembers (':input')
+		.impressions (':input')
+			.thru (map, function (val) {
+				if (val)
+					return 	stream (val)
+								.thru (delay (500))
+								.thru (filter, function () {
+									return ! my (':jersey') .value
+								})
+								.thru (map, function () {
+									return {
+										action: 'assume',
+										nth: my (args .nth__from)
+									}
+								})
+				else
+					return 	stream ({
+								action: 'delete',
+								nth: my (args .nth__from)
+							})
+			})
+			.thru (switchLatest)
+			.thru (tap, function (mod) {
+				self .mention (args .modify__to, mod)
+			})
+			
+	self
+		.remembers (':change')
+		.impressions (':change')
+			.thru (filter, id)
+			.thru (tap, function (value) {
+				self .mention (args .modify__to, {
+					action: 'set',
+					nth: my (args .nth__from),
+					value: value
+				})
+			})
+			
+	self
+		.impressions (args .nth__from)
+			.thru (tap, self .render)
+</script>

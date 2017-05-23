@@ -1,0 +1,88 @@
+<nav>
+	<nav-bar>
+		<nav-title>
+			<component-page-title>球隊日程</component-page-title>
+		</nav-title>
+	</nav-bar>
+	<component-schedule-tabs tab="history" />
+</nav>
+<component-main-content>
+	<check-todos>
+		<component-loading-item if={ my ('status') === 'loading' } />
+		<component-item if={ my ('status') === 'no-items' } >你未有賽事</component-item>
+		<component-dynamic-load
+		    items_to_load=8
+		    interval_for_loading=50
+		    item_height__from=":item-height"
+		    items__from=":history-info"
+		>
+			<component-schedule-potential-match-wrap item__from=":item" />
+		</component-dynamic-load>
+	</check-todos>
+</component-main-content>
+<component-page-tabs tab="schedule" />
+
+<style>
+	@extend [page-layout];
+</style>
+
+<script>
+	self
+		.establish (':history-info', function (requests) { 
+			return 	self .impressions (args .cycle__from)
+						.thru (filter, function () {
+							if (self .affiliated ('::teams'))
+								return true;
+							else
+								window .location .hash = '#login'
+						})
+						.thru (function (load) {
+							return 	from (function (list) {
+								inquire (self .affiliated ('::teams'))
+										.then (function (teams) {
+											var team_id = teams [0] .id;
+											
+											var self_hosted_matches__from = my ('::matches') (team_id);
+											var applied_matches__from = my ('::matches-applied') (team_id);
+											
+											return 	Promise .all
+														([
+															inquire (self .affiliated (self_hosted_matches__from)),
+															inquire (self .affiliated (applied_matches__from))
+														]);
+										})
+										.then (function (mine_and_applied) {
+											return mine_and_applied [0] .concat (mine_and_applied [1]);
+										})
+										.then (function (upcomings) {
+											list (upcomings)
+										})
+							}) 
+						})
+						.thru (map, function (match_list) {
+							
+							var now = new Date ();
+							
+							return 	match_list
+										.filter (function (match) {
+											return now > new Date (match .start_at)
+										})
+										.sort (function (a, b) {
+											return new Date (a .start_at) < new Date (b .start_at)
+										});
+						});
+		})	
+		.remembers (':item-height', function (item) {
+			return 96;
+		});
+		
+	self
+		.establish ('status', constant
+			(self .impressions (':history-info') .thru (map, function (items) {
+				if (items .length)
+					return 'loaded';
+				else
+					return 'no-items'
+			}) ('loading')))
+		.impressions ('status') .thru (tap, self .render)
+</script>

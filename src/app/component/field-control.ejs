@@ -1,0 +1,122 @@
+<placeholder empty={ my ('empty') }>{ args .placeholder }</placeholder>
+<input ref="input" type={ args .type } maxlength={ args .maxlength }>
+<hr>
+<hr focused={ my ('focused') }>
+
+<style>
+    font-size: 16px;
+    line-height: 24px;
+    width: 100%;
+    height: 48px;
+    display: inline-block;
+    position: relative;
+    background-color: transparent;
+    font-family: Roboto, sans-serif;
+    transition: height 200ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+    cursor: auto;
+    
+    > placeholder {
+        position: absolute;
+        opacity: 0;
+        color: rgba(0, 0, 0, 0.298039);
+        transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+        bottom: 12px;
+        
+        &[empty] {
+            opacity: 1;
+        }
+    }
+    > input {
+        padding: 0px;
+        position: relative;
+        width: 100%;
+        border: none; 
+        outline: none; 
+        background-color: rgba(0, 0, 0, 0);
+        color: rgba(0, 0, 0, 0.870588); 
+        cursor: inherit; 
+        font-style: inherit; 
+        font-variant: inherit;
+        font-weight: inherit; 
+        font-stretch: inherit; 
+        font-size: inherit; 
+        line-height: inherit; 
+        font-family: inherit;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0); 
+        height: 100%;
+    }
+    > hr:first-of-type {
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        border-bottom: 1px solid rgba(0,0,0,.5);
+        bottom: 8px;
+        margin: 0px; 
+        position: absolute;
+        width: 100%;
+    }
+    > hr:last-of-type {
+        border-top: none rgb(0, 188, 212);
+        border-left: none rgb(0, 188, 212);
+        border-right: none rgb(0, 188, 212);
+        border-bottom: 2px solid rgb(0, 188, 212);
+        bottom: 8px; 
+        margin: 0px;
+        position: absolute; 
+        width: 100%; 
+        transform: scaleX(0); 
+        transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+        
+        &[focused] {
+            transform: scaleX(1); 
+        }
+    }
+</style>
+
+<script>
+    self
+        .establish ('input', ref)
+        .remembers ('focused')
+        .remembers ('empty')
+    
+    var vals = stream (args .val);
+    self .on ('updated', function () {
+        vals (args .val);
+    })
+    
+    self .impressions ('input') .thru (tap, function (ref) {
+        
+        vals .thru (dropRepeats) .thru (tap, function (val) {
+            if (val) {
+                ref .value = val;
+                self .mention ('empty', false)
+            }
+            else {
+                ref .value = '';
+                self .mention ('empty', true)
+            }
+        })
+        
+        if (args .change__to)
+            ref .addEventListener ('change', function () {
+                self .mention (args .change__to, ref .value)
+            })
+        if (args .input__to)
+            ref .addEventListener ('input', function () {
+                self .mention (args .input__to, ref .value)
+            })
+            
+        ref .addEventListener ('input', function () {
+            self .mention ('empty', ! ref .value)
+        })
+        ref .addEventListener ('focus', function () {
+            self .mention ('focused', true)
+        })
+        ref .addEventListener ('blur', function () {
+            self .mention ('focused', false)
+        })
+    })
+    
+    self .impressions ('focused') .thru (tap, self .render)
+    self .impressions ('empty') .thru (dropRepeats) .thru (tap, self .render)
+</script>

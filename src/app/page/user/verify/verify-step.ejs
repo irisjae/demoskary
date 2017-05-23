@@ -1,0 +1,182 @@
+<nav>
+	<nav-bar>
+		<nav-buttons>
+			<a href="#user/verify/phone-step">
+				<component-back-button />
+			</a>
+		</nav-buttons>
+		<nav-title>
+			<component-page-title>電話認證</component-page-title>
+		</nav-title>
+	</nav-bar>
+</nav>
+<component-main-content>
+	<phone-verification>
+		<label>
+			請輸入手機驗證碼
+		</label>
+		<component-field-control type="text" placeholder="689" maxlength=5 input__to=":verification" />
+		<component-spacing height="35px" />
+		<component-action>
+			<a href="#team/profile" ref="verify-button" disabled={ my ('verify-ok') !== 'ok' } maybe={ my ('verify-ok') === 'maybe' }>確認</a>
+		</component-action>
+		<component-spacing height="15px" />
+		<resend>
+			<a>重發驗證碼</a>
+		</resend>
+		<disclaimer>
+			在輸入手機驗證碼及點擊確定後，用戶也同時同意接受我們的<a>服務條例</a>及<a>私隱條例</a>。
+		</disclaimer>
+	</phone-verification>
+</component-main-content>
+<unload-shield ref="unload-shield">
+	<smoke ref="smoke" />
+</unload-shield>
+
+<style>
+	@extend [page-layout];
+	
+	phone-verification {
+		@extend [padded-layout];
+		
+		> label {
+			color: black;
+			font-weight: bold;
+			font-size: 1.4em;
+		}
+		
+		> component-input-control {
+			padding: 10px;
+		    width: 100%;
+		    display: block;
+		    font-size: 1.5em;
+		    
+		    input {
+				@extend .input;
+			}
+		}
+		
+		> component-action {
+			display: block;
+			
+			> a {
+				&[maybe] {
+			        &:after {
+		        	    border: 2px solid #dbdbdb;
+					    border-radius: 290486px;
+					    border-right-color: transparent;
+					    border-top-color: transparent;
+					    content: "";
+					    display: block;
+					    position: relative;
+					    left: 50%;
+					    top: 50%;
+					    position: absolute !important;
+			            width: 32px;
+			            height: 32px;
+			            margin-left: -16px;
+			            margin-top: -16px;
+			            animation: spinAround 600ms infinite linear;
+			            border: 5px solid #dbdbdb;
+			            border-color: transparent transparent rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.5) !important;
+			        }
+				}
+			}
+		}
+		
+		> resend {
+			> a {
+				color: #50abf1;
+			    display: block;
+			    text-align: center;
+			}
+		}
+		
+		> disclaimer {
+			color: rgba(0, 0, 0, 0.298039);
+			> a {
+				color: rgba(80,171,241,0.7);
+			}
+		}
+	}
+	
+	unload-shield {
+		@extend fullscreen-holder;
+		
+		&[active] {
+			transition: opacity 0.2s ease-out;
+		}
+		&:not([active]) {
+			transition: z-index 0.2s step-end, opacity 2s ease-out;
+			pointer-events: none;
+		}
+		
+		smoke {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			background: rgba(0,0,0,0.15);
+		}
+	}
+	
+</style>
+
+
+<script>
+	self
+		.remembers (':verification')
+		.impressions (':verification')
+			.thru (tap, function () {
+				self .mention ('verify-ok', 'maybe')
+			})
+			.thru (map, function (verify_num) {
+				if ((verify_num + '') .length === 5) {
+					return	stream (verify_num === 'D7689'
+								? { data: 'verified' }
+								: { error: 'incorrect verification' })
+								.thru (delay, 400)
+				}
+				else {
+					return stream ({ error: 'invalid code' });
+				}
+			})
+			.thru (switchLatest)
+			.thru (tap, function (res) {
+				if (res .error)
+					self .mention ('verify-ok', 'not-ok')
+				else
+					self .mention ('verify-ok', 'ok')
+			}) 
+
+	self
+		.remembers ('verify-ok', 'not-ok')
+		.impressions ('verify-ok') .thru (tap, self .render);
+	
+	self
+		.establish ('unload-shield', ref)
+		.establish ('verify-button', ref)
+		.impressions ('verify-button') .thru (tap, function (ref) {
+			ref .addEventListener ('click', function (e) {
+				e .preventDefault ();
+				my ('unload-shield') .setAttribute ('active', true);
+				inquire (self .affiliated ('::teams'))
+					.then (function (teams) {
+						//if (teams [0])
+						//	window .location .hash = home_path;
+						//else
+							window .location .hash = '#team/connect';
+					})
+			})
+		})
+		
+	self
+		.impressions (args .cycle__from)
+			/*.thru (map, function (cycle) {
+				return cycle .end;
+			})*/
+			.thru (tap, function () {
+				my ('unload-shield') .removeAttribute ('active');
+			})
+</script>

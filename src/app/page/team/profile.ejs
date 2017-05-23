@@ -1,0 +1,217 @@
+<nav>
+	<nav-bar>
+		<nav-title>
+			<component-page-title>球隊資料</component-page-title>
+		</nav-title>
+	</nav-bar>
+</nav>
+<component-main-content>
+	<team-profile>
+		<component-spacing height="10px" />
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<info-graphic>
+			<team-picture>
+				 <img src="http://placehold.it/128x128">
+				 <label style=" display: block; font-size: 1.5em; font-weight: bold; text-align: center; color: black; ">{ my ('name') }</label>
+			</team-picture> 
+		</info-graphic>
+		
+		<component-spacing height="10px" />
+		
+		<info-area info="links" style=" display: flex; position: relative; font-size: 0.9em; ">
+			<league style="flex-basis: 50%;flex-shrink: 1;padding: 5px;color: black;display: flex;justify-content: space-around;align-items: center;background: hsla(0,0%,95%,0.6);border-radius: 6px;box-shadow: rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px;">
+				<division style="font-weight: bold;font-size: 1.1em;width: min-content;text-align: center;">Division 10</division>
+				<component-separator-inline />
+				<rank style=" width: min-content; ">Rank:10</rank>
+			</league>
+			<component-spacing-inline width="5px" />
+			<friends style="flex-basis: 50%;flex-shrink: 1;display: flex;justify-content: center;align-items: center;/* color: black; */font-weight: bold;background: hsla(0,0%,95%,0.6);border-radius: 3px;box-shadow: rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px;">Add some friends!</friends>
+		</info-area>
+		
+		<component-spacing height="15px" />
+		
+		
+		<info-area info="general">
+			<info-holder>
+				<team-active-region>
+					<label>地區</label>
+					<item>香港//九龍//新界</item>
+				</team-active-region>
+				<component-spacing height="5px" />
+				<component-separator />
+				<component-spacing height="5px" />
+				<team-age-range>
+					<label>年齡</label>
+					<item>{ my ('age-lower') }-{ my ('age-higher') }</item>
+				</team-age-range>
+				<component-spacing height="5px" />
+				<component-separator />
+				<component-spacing height="5px" />
+				<team-shirt-color>
+					<label>球衣</label>
+					<item>黑黑</item>
+				</team-shirt-color>
+				<component-spacing height="5px" />
+				<component-separator />
+				<component-spacing height="5px" />
+				<team-is-league-active>
+					<label>聯賽</label>
+					<item>{ my ('is-league?') }</item>
+				</team-is-league-active>
+				<component-spacing height="5px" />
+			</info-holder>
+		</info-area>
+		<info-area info="preferences">
+			<info-holder>
+				<info-header>偏好</info-header>
+				<component-spacing height="5px" />
+				<preferred-match-type>
+					<label>人數</label>
+					<item>{ my ('preferred-match-type') }</item>
+				</preferred-match-type>
+				<component-spacing height="5px" />
+				<component-separator />
+				<component-spacing height="5px" />
+				<preferred-pitch-type>
+					<label>球場</label>
+					<item>真草//仿真草//人造草//石地</item>
+				</preferred-pitch-type>
+				<component-spacing height="5px" />
+				<component-separator />
+				<component-spacing height="5px" />
+				<preferred-day-of-week>
+					<label>日期</label>
+					<item>星期六//星期日</item>
+				</preferred-day-of-week>
+			</info-holder>
+		</info-area>
+	</team-profile>
+</component-main-content>
+<component-page-tabs tab="team" />
+
+<style>
+	@extend [page-layout];
+	
+	team-profile {
+		@extend [padded-layout];
+	
+		> info-graphic {
+			> team-picture {
+		    	margin: 0 auto;	
+			}
+		}
+	
+		> info-area {
+			
+			> info-holder {
+				
+				> info-header {
+					@extend [unpadded-layouting];
+					@extend [row-layout];
+					@extend [bar-like];
+				}
+				> component-separator {
+					@extend [row-layout];
+				}
+				> team-name, > team-active-region, > team-age-range, > team-shirt-color, > team-is-league-active, > team-shirt-color, > preferred-match-type, > preferred-pitch-type, > preferred-day-of-week {
+					@extend [row-layout];
+					
+					> item {
+						color: black;
+						justify-content: flex-end;
+					}
+				}
+				
+				> team-name {
+					> item {
+						font-size: 1.5em
+					}
+				}
+				
+				
+			}
+		}
+	}
+</style>
+
+<script>
+	self
+		.impressions (args .cycle__from)
+			.thru (filter, function () {
+				if (self .affiliated ('::teams'))
+					return true;
+				else
+					window .location .hash = '#login';
+			})
+			.thru (tap, function () {
+				inquire (self .affiliated ('::teams'))
+					.then (function (team) {
+						self .mention ('team-info', team)
+					});
+			})
+	
+	self
+		.remembers ('team-info')
+		.establish ('team', constant (
+			(function () {
+				var teams =	self .impressions ('team-info')
+								.thru (filter, function (res) {
+									return res [0]
+								})
+				 				.thru (map, function (res) {
+									return res [0]
+								})
+				 				.thru (map, function (team) {
+									return 	{
+												win_rate: 			win_rate (team .team_statistic .won, team .team_statistic .played_match) + '%',
+												approve_number:			team .team_statistic .num_of_opponent_acceptance,
+												opponent_number:		team .team_statistic .num_of_played_against_team,
+												name: 					team .long_name,
+												age_lower: 				team .age_group_lower,
+												age_higher: 			team .age_group_upper,
+												is_league: 			is_league (team .is_frequent_league_player),
+												preferred_match_type: 	team .team_preference .match_type_list .join ('//')
+											}
+								});
+				
+				return teams;
+			}) ()
+		))
+	
+	self
+		.establish ('win-rate', dependent (function () {
+			return my ('team') .win_rate
+		}, self .impressions ('team')))
+		.establish ('approve-number', dependent (function () {
+			return my ('team') .approve_number
+		}, self .impressions ('team')))
+		.establish ('opponent-number', dependent (function () {
+			return my ('team') .opponent_number
+		}, self .impressions ('team')))
+		.establish ('name', dependent (function () {
+			return my ('team') .name
+		}, self .impressions ('team')))
+		.establish ('age-lower', dependent (function () {
+			return my ('team') .age_lower
+		}, self .impressions ('team')))
+		.establish ('age-higher', dependent (function () {
+			return my ('team') .age_higher
+		}, self .impressions ('team')))
+		.establish ('is-league?', dependent (function () {
+			return my ('team') .is_league
+		}, self .impressions ('team')))
+		.establish ('preferred-match-type', dependent (function () {
+			return my ('team') .preferred_match_type
+		}, self .impressions ('team')))
+	
+	self .impressions ('team') .thru (tap, self .render)
+</script>

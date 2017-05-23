@@ -1,0 +1,32 @@
+<span>{ my ('year') }{ my ('month') }</span>
+
+<style>
+    font-size: 13px;
+    background: rgba(196,196,196,0.8);
+    color: #333;
+    margin: 0;
+    padding: 4px 10px 4px 10px;
+    display: block;
+    text-align: center;
+    
+    span {
+        font-weight: bold;
+    }
+</style>
+
+<script>
+    self
+        .establish ('year', dependent (function () {
+            if (my (args .date__from)) {
+                var date = fecha .parse (my (args .date__from), 'YYYYMM');
+                if (fecha .format (new Date (), 'YYYY') !== fecha .format (date, 'YYYY'))
+                    return fecha .format (date, 'YYYY年');
+            }
+        }, self .impressions (args .date__from)))
+        .establish ('month', dependent (function () {
+            if (my (args .date__from)) {
+                var date = fecha .parse (my (args .date__from), 'YYYYMM');
+                return fecha .format (date, 'M月');   
+            }
+        }, self .impressions (args .date__from)))
+</script>

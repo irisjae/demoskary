@@ -1,0 +1,37 @@
+<div>
+	<spinner />
+</div>
+
+<style>
+    display: block;
+    box-shadow: none;
+    background: transparent;
+    
+    @extend .box;
+    
+     > div {
+        justify-content: center;
+        
+        @extend .media;
+        
+         > spinner {
+            border: none;
+            box-shadow: none;
+            background: transparent;
+            
+            @extend .button;
+            @extend .is-large;
+            @extend .is-loading;
+        }
+        > spinner:after {
+            width: 32px;
+            height: 32px;
+            margin-left: -16px;
+            margin-top: -16px;
+            animation: spinAround 600ms infinite linear;
+            border: 5px solid #dbdbdb;
+            border-color: transparent transparent rgba(0, 0, 0, 0.7) rgba(0, 0, 0, 0.7) !important;
+        }
+    }
+</style>
+

@@ -1,0 +1,49 @@
+<input ref="input">
+
+<style>
+	position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.5);
+
+	> input[ref="input"] {
+		opacity: 0;
+		position: absolute;
+	}
+	> .flatpickr-calendar {
+		top: 50%;
+	    left: 50%;
+	    position: absolute !important;
+	    transform: translateX(-50%) translateY(-50%);
+	    
+	    &::before, &::after {
+			content: initial;
+		}
+	}
+</style>
+
+<script>
+	self
+		.on ('mount', function () {
+			var picker =	new Flatpickr (my ('input'), {
+								inline: true,
+								minDate: (function () {
+									var today = new Date();
+									today .setDate (today .getDate () + 1);
+									return today;
+								}) (),
+								dateFormat: 'Y年n月j日'
+							})
+			picker .currentYearElement .setAttribute ('readonly', true);
+		})
+		
+		.establish ('input', ref)
+		
+	self .impressions ('input') .thru (tap, function (input) {
+		input .addEventListener ('change', function () {
+			self .mention (args .date__to, input .value);
+		});
+	})
+</script>

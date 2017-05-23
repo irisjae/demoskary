@@ -1,0 +1,17 @@
+<!--<component-todos-check-item--confirmed todo__from={ args .todo__from } if={ my (args .todo__from) .status === 'STARTED' } />-->
+<component-schedule-pending-match-item--applying match__from=":match" if={ my (':match') && my (':match') .status === 'PENDING_APPROVAL' && ! my (':match') .away_team } />
+<component-schedule-pending-match-item--considering match__from=":match" if={ my (':match') && my (':match') .status === 'PENDING_APPROVAL' && my (':match') .away_team } />
+<component-schedule-pending-match-item--waiting match__from=":match" if={ my (':match') && my (':match') .status === 'VERIFIED' } />
+<!--<component-check-todos-item--drawn />
+<component-check-todos-item--won />-->
+
+<script>
+    self
+        .establish ('item', constant (self .impressions (args .item__from) .thru (dropRepeatsWith, json_equal)))
+        
+        .establish (':match', dependent (function () {
+            return my ('item');
+        }, self .impressions ('item')))
+        
+    self .impressions ('item') .thru (tap, self .render)
+</script>

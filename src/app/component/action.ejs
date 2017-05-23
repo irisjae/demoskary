@@ -1,0 +1,23 @@
+<yield />
+
+<style>
+	display: flex;
+
+    > a { 
+		@extend .button;
+		@extend .is-medium;
+		@extend .is-fullwidth;
+		
+		background: rgba(80,171,241,1);
+    	color: white;
+    	font-weight: bold;
+	    vertical-align: text-bottom;
+	    
+	    font-size: 1.1em;
+  		border-radius: 5px;
+	    
+		&[disabled] {
+			background: hsla(206,25%,73%,1);
+		}
+	}
+</style>

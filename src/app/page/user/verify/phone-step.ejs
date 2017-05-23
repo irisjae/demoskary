@@ -1,0 +1,121 @@
+<nav>
+	<nav-bar>
+		<nav-title>
+			<component-page-title>電話認證</component-page-title>
+		</nav-title>
+	</nav-bar>
+</nav>
+<component-main-content>
+	<phone-verification>
+		<label>
+			請輸入手機號碼
+		</label>
+		<component-field-control type="number" placeholder="999" input__to=":phone" />
+		<component-spacing height="35px" />
+		<component-action>
+			<a href="#user/verify/verify-step" ref="phone-button" disabled={ my ('phone-ok') !== 'ok' } maybe={ my ('phone-ok') === 'maybe' }>確定</a>
+		</component-action>
+		<disclaimer>
+			請輸入電話號碼及點擊繼續，FOFI將會透過SMS發送手機驗證碼給您。
+		</disclaimer>
+	</phone-verification>
+</component-main-content>
+
+<style>
+	@extend [page-layout];
+	
+	phone-verification {
+		@extend [padded-layout];
+		
+		> label {
+			color: black;
+			font-weight: bold;
+			font-size: 1.4em;
+		}
+		
+		> component-input-control {
+			padding: 10px;
+		    width: 100%;
+		    display: block;
+		    font-size: 1.5em;
+		    
+		    input {
+				@extend .input;
+			}
+		}
+		
+		> component-action {
+			> a {
+				&[maybe] {
+			        &:after {
+		        	    border: 2px solid #dbdbdb;
+					    border-radius: 290486px;
+					    border-right-color: transparent;
+					    border-top-color: transparent;
+					    content: "";
+					    display: block;
+					    position: relative;
+					    left: 50%;
+					    top: 50%;
+					    position: absolute !important;
+			            width: 32px;
+			            height: 32px;
+			            margin-left: -16px;
+			            margin-top: -16px;
+			            animation: spinAround 600ms infinite linear;
+			            border: 5px solid #dbdbdb;
+			            border-color: transparent transparent rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.5) !important;
+			        }
+				}
+			}
+		}
+		
+		> disclaimer {
+			color: rgba(0, 0, 0, 0.298039);
+		}
+	}
+	
+</style>
+
+
+<script>
+	self
+		.remembers (':phone')
+		.impressions (':phone')
+			.thru (tap, function () {
+				self .mention ('phone-ok', 'maybe')
+			})
+			.thru (map, function (phone_num) {
+				if ((phone_num + '') .length === 8) {
+					return 	logged_with ('asdf')(from_promise (
+								inquire (self .affiliated ('::contact'), {			
+	        						country: 'HKG',
+									phone_number: '+852' + phone_num 
+								}) .then (tap_ (logged_with (1)))
+									.then (R .curryN (2) (wait) (400)) .then (tap_ (logged_with (2)))
+							))
+				}
+				else
+					return stream ({ error: 'invalid input' });
+			})
+			.thru (switchLatest).thru(tap, log)
+			.thru (tap, function (res) {
+				if (res .error)
+					self .mention ('phone-ok', 'not-ok')
+				else
+					self .mention ('phone-ok', 'ok')
+			}) 
+			
+	self 
+		.remembers ('phone-ok', 'not-ok')
+		.impressions ('phone-ok') .thru (tap, self .render);
+		
+	self
+		.establish ('phone-button', ref)
+		.impressions ('phone-button') .thru (tap, function (ref) {
+			ref .addEventListener ('click', function (e) {
+				e .preventDefault ();
+				window .location .hash = ref .hash  + '/#' + ([ '+852' + my (':phone') ] .map (stringify)) .join ('/')
+			})
+		})
+</script>

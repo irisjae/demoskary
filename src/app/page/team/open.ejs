@@ -1,0 +1,88 @@
+<nav>
+	<nav-bar>
+		<nav-buttons>
+			<a href="#team/connect">
+				<component-back-button />
+			</a>
+		</nav-buttons>
+		<nav-title>
+			<component-page-title>建立球隊</component-page-title>
+		</nav-title>
+	</nav-bar>
+</nav>
+<component-main-content>
+	<open-team>
+		<label>基本資料</label>
+		<component-spacing height="15px" />
+		<image-holder size="128x128">
+			<img src="https://placeholdit.imgix.net/~text?txtsize=33&amp;txt=upload%20here&amp;w=128&amp;h=128">
+		</image-holder>
+		<component-spacing height="5px" />
+		<component-field-control type="text" placeholder="請輸入球隊名稱" change__to=":name" />
+		<component-spacing height="5px" />
+		<component-field-control type="number" placeholder="請輸入球隊平均年齡" change__to=":average-age" />
+		<component-spacing height="5px" />
+		<component-field-control type="text" placeholder="球隊簡介(可選擇不填)" />
+		<component-spacing height="35px" />
+		<component-action>
+			<a href="#team/open/preferences-step" disabled={ ! my ('can-next') } ref="next-button">下一步</a>
+		</component-action>
+	</open-team>
+</component-main-content>
+
+<style>
+	@extend [page-layout];
+	
+	open-team {
+		@extend [padded-layout];
+	
+		> label {
+		    color: black;
+		    font-weight: bold;
+		    text-align: center;
+		    display: block;	
+		}
+		> image-holder {
+		    margin-left: auto;
+		    margin-right: auto;
+		}
+		> component-field-control {
+    		display: block;
+		}
+		> component-action {
+			padding: 0 25px;
+		}
+	}
+</style>
+
+<script>
+	self
+		.remembers (':name')
+		.remembers (':average-age')
+		
+	self
+		.establish ('can-next', constant (mechanism (function () {
+			if (! my (':name'))
+				return false;
+			if (! my (':average-age'))
+				return false;
+				
+			return true;
+		}, [
+			mergeAll ([
+				self .impressions (':name'), self .impressions (':average-age')
+			])
+		])))
+		.impressions ('can-next')
+			.thru (dropRepeats)
+			.thru (tap, self .render)
+		
+	self
+		.establish ('next-button', ref)
+		.impressions ('next-button') .thru (tap, function (ref) {
+			ref .addEventListener ('click', function (e) {
+				e .preventDefault ();
+				window .location .hash = ref .hash  + '/#' + [my (':name'), my (':average-age')] .map (stringify) .join ('/')
+			})
+		})
+</script>

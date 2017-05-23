@@ -1,0 +1,85 @@
+<modal>
+    <jersey ref="first" if={ my ('jersey') [0] }>
+        <label>{ my ('jersey') [0] }</label>
+    </jersey>
+    <jersey ref="second" if={ my ('jersey') [1] }>
+        <label>{ my ('jersey') [1] }</label>
+    </jersey>
+    <jersey ref="free">
+        <component-field-control placeholder="其他球衣" input__to=":free-jersey" />
+    </jersey>
+</modal>
+
+
+<style>
+	> modal {
+	    > jersey {
+	        @extend [strip-layout];
+
+            > label {
+                &:hover {
+                    @extend [active];  
+                }
+        	}	        
+            > component-field-control {
+	            @extend [patch-layout];
+                
+                height: unset;
+                
+                > placeholder {
+                    left: 50%;
+                    transform: translateX(-50%);
+                }
+                > input {
+                    text-align: center;
+                }
+                
+                &:hover {
+                    @extend [active];  
+                }
+            }
+    	}
+	}
+</style>
+
+<script>
+    self
+        .remembers ('jersey', [ '曼聯衫', '球衣二' ])
+        .remembers (':free-jersey')
+        
+    self .impressions ('jersey')
+        .thru (dropRepeatsWith, json_equal)
+        .thru (tap, self .render)
+        
+    self
+        .establish ('first', ref)
+        .establish ('second', ref)
+        .establish ('free', ref)
+        
+    self .impressions ('first')
+        .thru (tap, function (_ref) {
+            _ref .addEventListener ('click', function () {
+                if (args .jersey__to)
+                    self .mention (args .jersey__to, my ('jersey') [0])
+            })
+        })
+    self .impressions ('second')
+        .thru (tap, function (_ref) {
+            _ref .addEventListener ('click', function () {
+                if (args .jersey__to)
+                    self .mention (args .jersey__to, my ('jersey') [1])
+            })
+        })
+    self .impressions ('free')
+        .thru (tap, function (_ref) {
+            _ref .addEventListener ('click', function () {
+                if (args .jersey__to)
+                    self .mention (args .jersey__to, my (':free-jersey'))
+            })
+        })
+    self .impressions (':free-jersey')
+        .thru (tap, function () {
+            if (args .jersey__to)
+                self .mention (args .jersey__to, my (':free-jersey'))
+        })
+</script>

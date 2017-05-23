@@ -1,0 +1,48 @@
+<virtual each={ wrap, i in my ('target-items') }>
+	<component-dynamic-load-item nth={ wrap .nth } item__from={ so (this), my ('loaded-item') (wrap .nth) } >
+		<yield />
+	</component-dynamic-load-item>
+</virtual>
+
+<script>
+	var item_source = args .items__from;
+	
+	
+	var nths = {};
+	var wrap_nth =	function (nth) {
+						if (! nths [nth])
+							nths [nth] = { nth: nth };
+						return nths [nth];
+					};
+
+	
+	self
+		.establish ('loaded-items', constant (self .impressions (item_source)))
+		.establish ('loaded-range', (dependent (function () {
+			return rangify (my ('loaded-items'));
+		}, self .impressions ('loaded-items'))))
+		.remembers ('loaded-item', function (nth) {
+			var item_label = ':item-' + nth;
+			
+			if (! self .personal (item_label))
+				self .establish (item_label, dependent (function () {
+					return my ('loaded-items') [nth];
+				}, self .impressions ('loaded-items')))
+			
+			return item_label;	
+		})
+		.establish ('target-items', dependent (function () {
+			return arrayify (my ('loaded-range')) .map (wrap_nth);
+		}, self .impressions ('loaded-range')))
+		
+		
+	self .impressions ('loaded-items')
+		.thru (tap, function () {
+			var date = new Date ();
+			self .render ()
+				.then (function () {
+					log ('dynamic-load-all ' + (new Date () - date) + 'ms');
+				});
+		})
+</script>
+

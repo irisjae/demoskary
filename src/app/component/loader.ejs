@@ -1,0 +1,29 @@
+<component-modal-holder>
+    <component-loading-item />
+    <yield />
+</component-modal-holder>
+
+
+<style>
+    @extend fullscreen-holder;
+
+    
+	&:not([active]) {
+		opacity: 0;
+		pointer-events: unset;
+		z-index: 99999;
+	}
+
+    > component-modal-holder {
+        > item {
+            color: rgba(255, 255, 255, 0.85);
+            text-align: center;
+            
+            > component-loading-item {
+                > div > spinner:after {
+                    border-color: transparent transparent rgba(255, 255, 255, 0.85) rgba(255, 255, 255, 0.7) !important;
+                }
+            }
+        }
+    }
+</style>

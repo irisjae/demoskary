@@ -1,0 +1,66 @@
+<table>
+	<tr>
+		<th>一</th>
+		<th>二</th>
+		<th>三</th>
+		<th>四</th>
+		<th>五</th>
+		<th>六</th>
+		<th>日</th>
+	</tr>
+	<tr>
+		<td><component-checkbox check__to=":mon" /></td>
+		<td><component-checkbox check__to=":tue" /></td>
+		<td><component-checkbox check__to=":wed" /></td>
+		<td><component-checkbox check__to=":thu" /></td>
+		<td><component-checkbox check__to=":fri" /></td>
+		<td><component-checkbox check__to=":sat" /></td>
+		<td><component-checkbox check__to=":sun" /></td>
+	</tr>
+</table>
+
+<style>
+	table {
+		margin-bottom: 0;
+		background: transparent !important;
+		
+		@extend .table;
+		
+		tr {
+			background: transparent !important;
+		}
+		th, td {
+			padding: 0 !important;
+			text-align: center !important;
+			text-align-last: center !important;
+		}
+	}
+</style>
+
+<script>
+	self
+		.remembers (':mon')
+		.remembers (':tue')
+		.remembers (':wed')
+		.remembers (':thu')
+		.remembers (':fri')
+		.remembers (':sat')
+		.remembers (':sun')
+		
+		.establish ('days', dependent (function () {
+			return 	(my (':mon') ? ['mon'] : []) .concat
+					(my (':tue') ? ['tue'] : []) .concat
+					(my (':wed') ? ['wed'] : []) .concat
+					(my (':thu') ? ['thu'] : []) .concat
+					(my (':fri') ? ['fri'] : []) .concat
+					(my (':sat') ? ['sat'] : []) .concat
+					(my (':sun') ? ['sun'] : [])
+		}, mergeAll
+			([self .impressions (':mon'), self .impressions (':tue'), self .impressions (':wed'), self .impressions (':thu'), self .impressions (':fri'), self .impressions (':sat'), self .impressions (':sun')])
+		))
+		.impressions ('days')
+			.thru (tap, function (days) {
+				if (args .days__to)
+					self .mention (args .days__to, days);
+			})
+</script>

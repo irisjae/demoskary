@@ -1,0 +1,55 @@
+<nav>
+	<nav-bar>
+		<nav-title>
+			<component-page-title>建立球隊</component-page-title>
+		</nav-title>
+	</nav-bar>
+</nav>
+<component-main-content>
+	<connect-team>
+		<label>
+			您好領隊! 
+			<br>
+			請先選擇建立新球隊或加入現有球隊以參與約戰
+		</label>
+		<component-spacing height="35px" />
+		<component-action>
+			<a href="#team/open">建立球隊</a>
+		</component-action>
+		<component-spacing height="10px" />
+		<component-action>
+			<a disabled>現有球隊</a>
+			<label>
+				加入現有球隊需要該隊領隊認證
+			</label>
+		</component-action>
+	</connect-team>
+</component-main-content>
+
+<style>
+	@extend [page-layout];
+	
+	connect-team {
+		@extend [padded-layout];
+	
+		> label {
+			text-align: center;
+			color: black;
+			display: block;
+			font-weight: bold;
+			padding-left: 40px;
+			padding-right: 40px;
+			
+			&:first-line {
+				font-size: 1.4em;
+			}
+		}
+		> component-action {
+			display: block;
+			padding: 0 15px;
+			> label {
+				color: rgba(0, 0, 0, 0.298039);
+			}
+		}
+	}
+</style>

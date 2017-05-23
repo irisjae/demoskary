@@ -1,0 +1,79 @@
+<selected-location>
+    <input type="text" placeholder="請選擇球場" value={ my ('location') } disabled readonly
+    ><a disabled={ ! my ('location') } ref="done"
+        ><icon class="fa-check"
+    /></a>    
+</selected-location>
+<football-field-map ref="map" />
+
+
+
+
+
+<style>
+	position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #FFF;
+    
+    display: flex;
+    flex-direction: column;
+
+    > selected-location {
+        @extend .control;
+        @extend .has-addons;
+        
+        margin-bottom: 0 !important;
+        
+        input {
+        	@extend .input;
+        	@extend .is-expanded;
+        }
+        a {
+        	@extend .button;
+            icon {
+                line-height: 24px !important;
+                
+                @extend .fa;
+            }
+            
+            &[__disabled] {
+                @extend [disabled];
+            }
+        }
+    }
+    > football-field-map {
+        flex: 1;
+    }
+</style>
+
+<script>
+    self
+        .remembers ('location')   
+        .impressions ('location')
+            .thru (tap, self .render)
+    
+    self
+        .establish ('done', ref)
+        .impressions ('done')
+            .thru (tap, [function (ref) {
+                ref .addEventListener ('click', function () {
+                    if (my ('location')) {
+                        self .mention (args .location__to, my ('location'));
+                    } 
+                });
+            }])
+    
+    self
+        .establish ('map', ref)
+        .impressions ('map')
+            .thru (tap, [function (ref) {
+            }])
+            
+    wait (500)
+        .then (function () {
+            self .mention ('location', 'pitch here');
+        })
+</script>

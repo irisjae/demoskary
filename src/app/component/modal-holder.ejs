@@ -1,0 +1,31 @@
+<item>
+    <yield />
+</item>
+
+<style>
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.5);
+    
+    > item {
+		top: 50%;
+	    left: 50%;
+	    position: absolute;
+	    transform: translateX(-50%) translateY(-50%);
+    }
+</style>
+
+<script>
+    if (args .action__by)
+        self
+            .establish (args .action__by, ref)
+            .impressions (args .action__by)
+                .thru (tap, function (ref) {
+                    ref .addEventListener ('click', function () {
+                        self .mention (args .action__to, my (args .value__by))
+                    })
+                })
+</script>

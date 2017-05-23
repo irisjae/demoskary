@@ -1,0 +1,199 @@
+<modal>
+    <start>
+        <hour>
+            <input value={ ('0' + my ('start-hour')) .slice (-2) } pattern="d*" step="1" min="1" max="12" readonly="true">
+            <label up ref="start-hour-up" />
+            <label down ref="start-hour-down" />
+        </hour>
+        <separator>:</separator>
+        <minutes>
+            <input value={ ('0' + my ('start-minute')) .slice (-2) } pattern="d*" step="1" min="1" max="12" readonly="true">
+            <label up ref="start-minute-up" />
+            <label down ref="start-minute-down" />
+        </minutes>
+        <label ref="start-ampm-toggle">{ my ('start-ampm') }</label>
+    </start>
+    <end>
+        <hour>
+            <input value={ ('0' + my ('end-hour')) .slice (-2) } pattern="d*" step="1" min="1" max="12" readonly="true">
+            <label up ref="end-hour-up" />
+            <label down ref="end-hour-down" />
+        </hour>
+        <separator>:</separator>
+        <minutes>
+            <input value={ ('0' + my ('end-minute')) .slice (-2) } pattern="d*" step="1" min="1" max="12" readonly="true">
+            <label up ref="end-minute-up" />
+            <label down ref="end-minute-down" />
+        </minutes>
+        <label ref="end-ampm-toggle">{ my ('end-ampm') }</label>
+    </end>
+</modal>
+
+<style>
+	> modal {
+		> start, > end {
+			@extend [strip-layout];
+			
+			> hour, > minutes {
+				@extend [patch-layout];
+    				            
+                > input {
+                    background: transparent;
+                    box-shadow: none;
+                    border: 0;
+                    border-radius: 0;
+                    text-align: center;
+                    margin: 0;
+                    padding: 0;
+                    color: #393939;
+                    font-size: 14px;
+                    position: relative;
+                    width: 100%;
+                    display: inline-block;
+            	}
+            	> label[up], label[down] {
+                    position: absolute;
+                    right: 0;
+                    width: 14px;
+                    padding: 0 4px 0 2px;
+                    height: 50%;
+                    line-height: 50%;
+                    opacity: 0;
+                    border: 1px solid rgba(57, 57, 57, 0.05);
+                    display: inline-block;
+
+                    &:hover {
+                        background: rgba(0, 0, 0, 0.1);
+                    }
+                    &:after {
+                        border-bottom-color: #393939;
+                        border-left: 4px solid transparent;
+                        border-right: 4px solid transparent;
+                        border-bottom: 4px solid rgba(57, 57, 57, 0.6);
+                        display: block;
+                        content: "";
+                        position: absolute;
+                        top: 33%;
+                	}
+            	}
+            	> label[up] {
+                    top: 0;
+                    border-bottom: 0;
+            	}
+            	> label[down] {
+                    top: 50%;
+            	}
+            	
+            	&:hover {
+            	    @extend [active];
+            	    
+                    > label[up], > label[down] {
+                	    opacity: 1;
+                	}
+            	}
+			}
+			> separator {
+                color: #393939;
+                font-weight: bold;
+                width: 2%;
+			}
+			> label {
+                flex-grow: 0;
+                flex-basis: 18%;
+                
+                &:hover {
+    			    @extend [active];
+    			}
+			}
+		}
+	}
+</style>
+
+<script>
+    self
+        .remembers ('start-hour', 7)
+        .remembers ('start-minute', 30)
+        .remembers ('start-ampm', 'PM')
+        .remembers ('end-hour', 9)
+        .remembers ('end-minute', 0)
+        .remembers ('end-ampm', 'PM')
+        
+        .establish ('start-hour-up', ref)
+        .establish ('start-hour-down', ref)
+        .establish ('start-minute-up', ref)
+        .establish ('start-minute-down', ref)
+        .establish ('start-ampm-toggle', ref)
+        .establish ('end-hour-up', ref)
+        .establish ('end-hour-down', ref)
+        .establish ('end-minute-up', ref)
+        .establish ('end-minute-down', ref)
+        .establish ('end-ampm-toggle', ref)
+        
+    mergeAll ([
+        self .impressions ('start-hour'),
+        self .impressions ('start-minute'),
+        self .impressions ('start-ampm'),
+        self .impressions ('end-hour'),
+        self .impressions ('end-minute'),
+        self .impressions ('end-ampm')
+    ])
+        .thru (tap, self .render)
+        .thru (tap, function () {
+            if (args .timeslot__to)
+                self .mention (args .timeslot__to, {
+                    start: ('0' + my ('start-hour')) .slice (-2) + ':' + ('0' + my ('start-minute')) .slice (-2) + ' ' + my ('start-ampm'),
+                    end: ('0' + my ('end-hour')) .slice (-2) + ':' + ('0' + my ('end-minute')) .slice (-2) + ' ' + my ('end-ampm')
+                })
+        })
+        
+    self .impressions ('start-hour-up') .thru (tap, function (ref) {
+        ref .addEventListener ('click', function () {
+            self .mention ('start-hour', (my ('start-hour') % 12) + 1)
+        })
+    })
+    self .impressions ('start-hour-down') .thru (tap, function (ref) {
+        ref .addEventListener ('click', function () {
+            self .mention ('start-hour', (my ('start-hour') - 1) || 12)
+        })
+    })
+    self .impressions ('start-minute-up') .thru (tap, function (ref) {
+        ref .addEventListener ('click', function () {
+            self .mention ('start-minute', (my ('start-minute') + 30) % 60)
+        })
+    })
+    self .impressions ('start-minute-down') .thru (tap, function (ref) {
+        ref .addEventListener ('click', function () {
+            self .mention ('start-minute', (my ('start-minute') + 30) % 60)
+        })
+    })
+    self .impressions ('start-ampm-toggle') .thru (tap, function (ref) {
+        ref .addEventListener ('click', function () {
+            self .mention ('start-ampm', my ('start-ampm') === 'AM' ? 'PM' : 'AM')
+        })
+    })
+    self .impressions ('end-hour-up') .thru (tap, function (ref) {
+        ref .addEventListener ('click', function () {
+            self .mention ('end-hour', (my ('end-hour') % 12) + 1)
+        })
+    })
+    self .impressions ('end-hour-down') .thru (tap, function (ref) {
+        ref .addEventListener ('click', function () {
+            self .mention ('end-hour', (my ('end-hour') - 1) || 12)
+        })
+    })
+    self .impressions ('end-minute-up') .thru (tap, function (ref) {
+        ref .addEventListener ('click', function () {
+            self .mention ('end-minute', (my ('end-minute') + 30) % 60)
+        })
+    })
+    self .impressions ('end-minute-down') .thru (tap, function (ref) {
+        ref .addEventListener ('click', function () {
+            self .mention ('end-minute', (my ('end-minute') + 30) % 60)
+        })
+    })
+    self .impressions ('end-ampm-toggle') .thru (tap, function (ref) {
+        ref .addEventListener ('click', function () {
+            self .mention ('end-ampm', my ('end-ampm') === 'AM' ? 'PM' : 'AM')
+        })
+    })
+</script>
