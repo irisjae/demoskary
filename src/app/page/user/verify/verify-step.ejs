@@ -133,7 +133,7 @@
 			})
 			.thru (map, function (verify_num) {
 				if ((verify_num + '') .length === 5) {
-					return	stream (verify_num === 'D7689'
+					return	stream (true//verify_num === 'D7689'
 								? { data: 'verified' }
 								: { error: 'incorrect verification' })
 								.thru (delay, 400)

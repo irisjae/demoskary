@@ -285,7 +285,7 @@ var paper_mock_loggined_in =	paper (function (self, args, my) {
 													"team_list": [{
 												        "id": "1",
 												        "short_name": null,
-												        "long_name": "kikashi",
+												        "long_name": "my team",
 												        "description": null,
 												        "status": "VERIFIED",
 												        "image_url": null,

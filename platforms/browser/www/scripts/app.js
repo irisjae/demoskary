@@ -2388,7 +2388,7 @@ riot.tag2('page-user-verify-verify-step', '<nav> <nav-bar> <nav-buttons> <a href
 				})
 				.thru (map, function (verify_num) {
 					if ((verify_num + '') .length === 5) {
-						return	stream (verify_num === 'D7689'
+						return	stream (true
 									? { data: 'verified' }
 									: { error: 'incorrect verification' })
 									.thru (delay, 400)
