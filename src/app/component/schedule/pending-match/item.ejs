@@ -13,5 +13,5 @@
             return my ('item');
         }, self .impressions ('item')))
         
-    self .impressions ('item') .thru (tap, self .render)
+    self .impressions ('item') .thru (map, noop) .thru (tap, self .render)
 </script>

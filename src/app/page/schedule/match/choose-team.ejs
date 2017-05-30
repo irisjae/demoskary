@@ -310,7 +310,7 @@
 		self .impressions ('team-info'),
 		self .impressions ('choices-info')
 	])
-		.thru (tap, self .render);
+		.thru (map, noop) .thru (tap, self .render);
 
 	self
 		.establish ('home-name', dependent (function () {

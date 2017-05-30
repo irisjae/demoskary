@@ -197,7 +197,7 @@
 		))
 		.impressions ('can-open')
 			.thru (trans, R .dropRepeats)
-			.thru (tap, self .render)
+			.thru (map, noop) .thru (tap, self .render)
 		
 	self .establish ('open-button', ref)
 		.impressions ('open-button') .thru (tap, function (ref) {

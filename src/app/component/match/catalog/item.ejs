@@ -111,5 +111,5 @@
 			return my ('match') .id;
 		}, self .impressions ('match')))
 		
-    self .impressions ('item') .thru (tap, self .render)
+    self .impressions ('item') .thru (map, noop) .thru (tap, self .render)
 </script>

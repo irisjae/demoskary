@@ -137,7 +137,7 @@
         self .impressions ('end-minute'),
         self .impressions ('end-ampm')
     ])
-        .thru (tap, self .render)
+        .thru (map, noop) .thru (tap, self .render)
         .thru (tap, function () {
             if (args .timeslot__to)
                 self .mention (args .timeslot__to, {

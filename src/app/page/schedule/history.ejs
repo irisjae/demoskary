@@ -84,5 +84,5 @@
 				else
 					return 'no-items'
 			}) ('loading')))
-		.impressions ('status') .thru (tap, self .render)
+		.impressions ('status') .thru (map, noop) .thru (tap, self .render)
 </script>

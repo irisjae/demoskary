@@ -82,7 +82,7 @@
 										})
 						});
 		})
-		.impressions ('upcoming-info') .thru (tap, self .render)
+		.impressions ('upcoming-info') .thru (map, noop) .thru (tap, self .render)
 		
 	self
 		.establish (':confirmed-matches', constant (mechanism (function () {

@@ -213,5 +213,5 @@
 			return my ('team') .preferred_match_type
 		}, self .impressions ('team')))
 	
-	self .impressions ('team') .thru (tap, self .render)
+	self .impressions ('team') .thru (map, noop) .thru (tap, self .render)
 </script>

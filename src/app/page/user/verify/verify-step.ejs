@@ -152,7 +152,7 @@
 
 	self
 		.remembers ('verify-ok', 'not-ok')
-		.impressions ('verify-ok') .thru (tap, self .render);
+		.impressions ('verify-ok') .thru (map, noop) .thru (tap, self .render);
 	
 	self
 		.establish ('unload-shield', ref)

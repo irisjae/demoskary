@@ -2041,7 +2041,7 @@ riot.tag2('page-match-catalog', '<nav> <nav-bar> <nav-buttons> <a> <component-fi
 							return status;
 						}))
 				)
-				.impressions ('status') .thru (map, noop) .thru (tap, self .render)
+				.impressions ('status') .thru (tap, self .render)
 
 			self .impressions (args .cycle__from)
 				.thru (tap, function (cycle) {

@@ -203,7 +203,7 @@
 		self .impressions ('match-item'),
 		self .impressions ('team-item')
 	])
-		.thru (tap, self .render);
+		.thru (map, noop) .thru (map, noop) .thru (tap, self .render);
 	
 	self
 		.establish ('home-name', dependent (function () {
@@ -269,7 +269,7 @@
 		}) 
 	self
 		.remembers ('applying')
-		.impressions ('applying') .thru (tap, self .render)
+		.impressions ('applying') .thru (map, noop) .thru (map, noop) .thru (tap, self .render)
 
 
 	self

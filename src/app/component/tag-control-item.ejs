@@ -28,5 +28,5 @@
                 })
             })
 
-	self .impressions ('tag') .thru (tap, self .render)
+	self .impressions ('tag') .thru (map, noop) .thru (tap, self .render)
 </script>

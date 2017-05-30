@@ -86,5 +86,5 @@
 			return my (args .match__from) .id;
 		}, self .impressions (args .match__from)))
 		
-	self .impressions (args .match__from) .thru (tap, self .render)
+	self .impressions (args .match__from) .thru (map, noop) .thru (tap, self .render)
 </script>

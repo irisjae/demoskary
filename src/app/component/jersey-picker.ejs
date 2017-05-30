@@ -49,7 +49,7 @@
         
     self .impressions ('jersey')
         .thru (dropRepeatsWith, json_equal)
-        .thru (tap, self .render)
+        .thru (map, noop) .thru (tap, self .render)
         
     self
         .establish ('first', ref)

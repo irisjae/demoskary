@@ -52,7 +52,7 @@
 
 	self
 		.remembers ('opening')
-		.impressions ('opening') .thru (tap, self .render)
+		.impressions ('opening') .thru (map, noop) .thru (tap, self .render)
 		
 	self
 		.establish ('open-button', ref)

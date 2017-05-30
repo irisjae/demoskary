@@ -78,7 +78,7 @@
 				return 'no-items'
 		}, [self .impressions (':matches')]) ('loading')))
 		.impressions ('status')
-			.thru (tap, self .render)
+			.thru (map, noop) .thru (tap, self .render)
 
 
 	self .impressions (args .cycle__from)

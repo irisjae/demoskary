@@ -142,7 +142,7 @@
 	self
         .establish ('tree', constant (self .impressions (args .item__from) .thru (dropRepeatsWith, json_equal)))
     	.impressions ('tree')
-    		.thru (tap, self .render)
+    		.thru (map, noop) .thru (tap, self .render)
     		
     		
     self

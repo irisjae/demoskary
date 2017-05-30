@@ -58,5 +58,5 @@
 			
 	self
 		.impressions (args .nth__from)
-			.thru (tap, self .render)
+			.thru (map, noop) .thru (tap, self .render)
 </script>

@@ -19,7 +19,7 @@
 
 
 	self .remembers ('picking')	
-	self .impressions ('picking') .thru (tap, self .render);
+	self .impressions ('picking') .thru (map, noop) .thru (tap, self .render);
 	self .root .addEventListener ('click', function (e) {
 		if (e .target === my ('span') || e .target === my ('svg'))
 			self .mention ('picking', true);

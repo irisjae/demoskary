@@ -53,7 +53,7 @@
     self
         .remembers ('location')   
         .impressions ('location')
-            .thru (tap, self .render)
+            .thru (map, noop) .thru (tap, self .render)
     
     self
         .establish ('done', ref)

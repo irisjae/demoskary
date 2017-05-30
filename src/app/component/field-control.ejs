@@ -117,6 +117,6 @@
         })
     })
     
-    self .impressions ('focused') .thru (tap, self .render)
-    self .impressions ('empty') .thru (dropRepeats) .thru (tap, self .render)
+    self .impressions ('focused') .thru (map, noop) .thru (map, noop) .thru (tap, self .render)
+    self .impressions ('empty') .thru (dropRepeats) .thru (map, noop) .thru (map, noop) .thru (tap, self .render)
 </script>

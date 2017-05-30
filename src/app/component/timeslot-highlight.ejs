@@ -91,5 +91,5 @@
 			return my ('how-soon') < 3;
         })
         
-    self .impressions (args .timeslot__from) .thru (tap, self .render)
+    self .impressions (args .timeslot__from) .thru (map, noop) .thru (tap, self .render)
 </script>

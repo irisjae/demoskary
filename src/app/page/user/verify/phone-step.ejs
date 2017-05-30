@@ -108,7 +108,7 @@
 			
 	self 
 		.remembers ('phone-ok', 'not-ok')
-		.impressions ('phone-ok') .thru (tap, self .render);
+		.impressions ('phone-ok') .thru (map, noop) .thru (tap, self .render);
 		
 	self
 		.establish ('phone-button', ref)
