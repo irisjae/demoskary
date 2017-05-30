@@ -1,10 +1,13 @@
 <virtual each={ wrap, i in my ('target-items') }>
-	<component-dynamic-load-item nth={ wrap .nth } item__from={ so (this), my ('loaded-item') (wrap .nth) } >
+	<component-dynamic-load-item nth={ _item .wrap .nth } item__from={ my ('loaded-item') (_item .wrap .nth) } >
 		<yield />
 	</component-dynamic-load-item>
 </virtual>
 
 <script>
+	self .update_strategy = 'pull';
+	
+	
 	var item_source = args .items__from;
 	
 	

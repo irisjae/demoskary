@@ -303,16 +303,36 @@ var render =	function (tag_name, tag_src, parent_name) {
 	
 					var subcomponents = [];
 					var expressions = [];
+					var eaches
+					var loop_expressions = [];
 					var scripts = [];
+					var yield_tag = /<yield \/>/ .test (tag_src);
 	
 					return	R. pipe (
-								/* Extract subcomponents */
+								/* Extract subcomponents 
 								function (def) {
 									return def .replace (/^(?:(?:(?!<\/component>)[^])*)<component(?:| [^>]*)>([^]*)<\/component>(?:(?:(?!<\/component>)[^])*)$/g, function (match, subcomponent_src) {
 										subcomponents .push (render (tag_name + '-sub-' + (subcomponents .length + 1), subcomponent_src, tag_name));
 										return '';
 									})
-								},
+								},//*/
+								/* Extract eaches 
+								function (def) {
+									
+									var matcher_each = /<\s*[^/>\s]+ [^>]*each=[^>]+>/g;
+									var matcher_next_tag = /(<\s*[^/>\s]+\s*(?:\ (?!\/)[^>\s]+|\ (?:(?!\/)[^>\s]+\s+)+(?!\/)[^>\s]+)?\s*>)|(<\s*\/\s*[^/>\s]+\s*(?:\ (?!\/)[^>\s]+|\ (?:(?!\/)[^>\s]+\s+)+(?!\/)[^>\s]+)?\s*>)/g;
+									var result;
+									while (result = matcher_each .exec (def)) {
+										var each_start_index = matcher_each .lastIndex;
+										var depth;
+										
+										matcher_next_tag .lastIndex = each_start_index;
+									}
+									return def .replace (/^(?:(?:(?!<\/component>)[^])*)<component(?:| [^>]*)>([^]*)<\/component>(?:(?:(?!<\/component>)[^])*)$/g, function (match, subcomponent_src) {
+										subcomponents .push (render (tag_name + '-sub-' + (subcomponents .length + 1), subcomponent_src, tag_name));
+										return '';
+									})
+								},//*/
 								/* Extract styles */
 								function (def) {
 									return def .replace (/<style>((?:(?!<\/)[^])*)<\/style>/g, function (match, metastyles) {
@@ -324,13 +344,44 @@ var render =	function (tag_name, tag_src, parent_name) {
 								function (def) {
 									return def .replace (/<script>((?:(?!<\/)[^])*)<\/script>/g, function (match, metascript) {
 										scripts .push (metascript);
-										return '<script-stub n=' + scripts .length + ' />';
+										return '';
 									})
 								},
+								/* Extract expressions  */
+								function (def) {
+									return def .replace (/{((?=(?:(?:(?!\ in)[^({])*\()+(?:(?!\ in)[^({])*\ in[^{]+})(?:[^{]+)|(?:(?!\ in)[^{])+)}/g, function (match, expression) {
+										expressions .push (expression);
+										return '{ expression:' + tag_name + ':' + expressions .length + ' }';
+									})
+								},
+								/* Extract looper expressions  */
+								function (def) {
+									return def .replace (/{((?:(?!\ in)[^{])*)\ in([^{]+)}/g, function (match, loop_syntax, expression) {
+										expressions .push (expression);
+										return '{' + loop_syntax + ' in expression:' + tag_name + ':' + expressions .length + ' }';
+									})
+								},/**/
 								/* Inject sciprts  */
 								function (def) {
-									return def .replace (/<script-stub n=(\d+) \/>/g, function (match, n) {
-										return '<script>\n(function (self, args, my) {\n' + scripts [n - 1] + '\n}) (this, this .args, this .my);\n</script>';
+									return def .replace (/\n<\/[^]+>$/g, function (match) {
+										return ((scripts .length || expressions .length || yield_tag) ?
+											indent ('<script>\n(function (self, args, my) {\n'
+												+ scripts .join (';\n')
+												+ (expressions .length ?
+													('\nwindow .tag_scopes = (window .tag_scopes || {});'
+														+ '\nself .on ("before-mount", function () {window .tag_scopes ["' + tag_name + '"] = self;})'
+														+ '\nself .on ("update", function () {window .tag_scopes ["' + tag_name + '"] = self;})'
+														+ '\nself .on ("update", function () {args = self .opts});\n'
+														+ '\nself .expressions = {};\n'
+														+ expressions .map (function (expression, i) {
+															return 'self .expressions [' + i + '] = function (_item) { return ' + expression + ' };';
+														}) .join ('\n'))
+													: '')
+												+ (yield_tag ?
+													'\nif (! self .update_strategy || self .update_strategy === "push") self .shouldUpdate = R .T;'
+													: '')
+												+ '\n}) (this, this .args, this .my);\n</script>')
+											: '') + match;
 									})
 								},
 								/* Inject subcomponents  */

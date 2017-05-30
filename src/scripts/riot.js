@@ -589,8 +589,10 @@ var brackets = (function (UNDEF) {
  * tmpl.loopKeys - Get the keys for an 'each' loop (used by `_each`)
  */
 
+    /*
     window.called = 0;
     window .eval_ms = 0;
+    //*/
 
 /* istanbul ignore next */
 var tmpl = (function () {
@@ -599,6 +601,12 @@ var tmpl = (function () {
 
   function _tmpl (str, data) {
     if (!str) { return str }
+    
+    if (str .indexOf ('{expression:') != -1) {
+      data ._tmpl_cache = data ._tmpl_cache || {};
+      return (data ._tmpl_cache[str] || (data ._tmpl_cache[str] = create_native(str)))(data)
+    }/*
+    data ._item = data;//*/
 
     return (_cache[str] || (_cache[str] = _create(str))).call(data, _logErr)
   }
@@ -631,15 +639,68 @@ var tmpl = (function () {
     }
   }
 
+  var x = function (str) {
+            //console.log('path a');
+            var expression = /expression:([^:]+):(\d+)/.exec(str);
+            var tag_name = expression[1];
+            var n = expression[2];
+            
+            var scope = window .tag_scopes [tag_name];
+            return scope.expressions[n-1]/*/
+            return function(_item){
+              try {return scope.expressions[n-1](_item);} catch (e) {console.error(e)}
+            }//*/
+          }
+  var q = function (x){return function (){return x;}};
+  var create_native = function (str) {
+    //console.log('path', str);
+      var
+        expr,
+        parts = brackets.split(str.replace(RE_DQUOTE, '"'));
+  
+      if (parts.length > 2 || parts[0]) {
+        var i, j, list = [];
+  
+        for (i = j = 0; i < parts.length; ++i) {
+  
+          expr = parts[i];
+  
+          if (expr && (expr = i & 1
+  
+              ? x(expr)
+  
+              : q(expr)
+  
+            )) { list[j++] = expr; }
+  
+        }
+  
+        expr = j < 2 ? list[0]
+             : function (_item) { return list.map(function(x){return x(_item);}).join('')};
+  
+      } else {
+        expr = x(parts[1]);
+      }
+      return expr;/*
+      return function (_item) {
+        window.called++;var start = window.performance.now();
+        var res =  expr(_item);
+        window .eval_ms += window.performance.now() - start; return res; 
+      }//*/
+  }
   function _create (str) {
     var expr = _getTmpl(str);
 
     if (expr.slice(0, 11) !== 'try{return ') { expr = 'return ' + expr; }
 
-var intp = new Function('E', expr + ';');
+    var intp = new Function('E', expr + ';');// eslint-disable-line no-new-func
 
-
-    return function () { window.called++;var start = window.performance.now(); var res =  intp .apply (this, arguments); window .eval_ms += window.performance.now() - start; return res; }    // eslint-disable-line no-new-func
+    return intp;/*
+    return function () {
+      window.called++;var start = window.performance.now();
+      var res =  intp .apply (this, arguments);
+      window .eval_ms += window.performance.now() - start; return res;
+    }//*/
   }
 
   var
@@ -763,6 +824,8 @@ var intp = new Function('E', expr + ';');
     JS_NOPROPS = /^(?=(\.[$\w]+))\1(?:[^.[(]|$)/;
 
   function _wrapExpr (expr, asText, key) {
+    if (expr.startsWith ('expression:'))
+    
     var tb;
 
     expr = expr.replace(JS_VARNAME, function (match, p, mvar, pos, s) {

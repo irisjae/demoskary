@@ -5,11 +5,13 @@
 	self .remembers (':nth', nth);
 	self .remembers (':item', my (args .item__from));
 	    
-	self .on ('updated', function () {
-		var nth = (+ args .nth);
-		if (nth < my ('loaded-items') .length) {
-			self .mention (':nth', nth);  
-			self .mention (':item', my (args .item__from));
-		}
-	})
+	self .one ('updated', function () {
+		self .on ('updated', function () {
+			var nth = (+ args .nth);
+			if (nth < my ('loaded-items') .length) {
+				self .mention (':nth', nth);  
+				self .mention (':item', my (args .item__from));
+			}
+		})
+	});//self.impressions(':nth').thru (tap, _debugger)
 </script>

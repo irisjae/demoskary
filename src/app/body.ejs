@@ -110,8 +110,11 @@
 													cycle__from: my ('page-cycle') (new_page .id)
 												}) [0]);
 								//HACK: riot data-is bug, not firing mount
-								if (self .isMounted)
+								if (self .isMounted) {
+									self .renders .push ('now');
 									self .update ();
+									self .renders .pop ();
+								}
 							}
 							
 							var cycle_label = my ('page-cycle') (curr .id);

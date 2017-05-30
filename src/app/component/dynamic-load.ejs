@@ -1,9 +1,9 @@
 <virtual each={ wrap, i in my ('target-items') }>
-	<component-dynamic-load-item nth={ wrap .nth } item__from={ so (this), my ('loaded-item') (wrap .nth) } style="transform: translateY({ my ('height-up-to') (wrap .nth) }px);" >
+	<component-dynamic-load-item nth={ _item .wrap .nth } item__from={ my ('loaded-item') (_item .wrap .nth) } style="transform: translateY({ my ('height-up-to') (_item .wrap .nth) }px);" >
 		<yield />
 	</component-dynamic-load-item>
 </virtual>
-<stretcher style="height: { my ('height-up-to') ((my ('loaded-range') || null_range) .to) }px;" />
+<stretcher style="height: { my ('height-up-to') ((my ('loaded-range') || null_range) .to + 1) }px;" />
 
 <style>
     width: 100%;
@@ -18,9 +18,40 @@
 	> stretcher {
 		display: block;
 	}
+
+	@at-root {
+		@keyframes dynamic-load-rendered {  
+		    from {  
+		        outline-color: #fff; 
+		    }
+		    to {  
+		        outline-color: #000;
+		    } 
+		}
+		@-webkit-keyframes dynamic-load-rendered {  
+		    from {  
+		        outline-color: #fff; 
+		    }
+		    to {  
+		        outline-color: #000;
+		    }  
+		}
+	}
+	
+    animation-duration: 0.01s;
+    -o-animation-duration: 0.01s;
+    -ms-animation-duration: 0.01s;
+    -moz-animation-duration: 0.01s;
+    -webkit-animation-duration: 0.01s;
+    animation-name: dynamic-load-rendered;
+    -ms-animation-name: dynamic-load-rendered;        
+    -moz-animation-name: dynamic-load-rendered;
+    -webkit-animation-name: dynamic-load-rendered;
 </style>
 
 <script>
+	self .update_strategy = 'pull';
+
 	var list = closest_parent (self .root, 'main-content');
 	var dynamic_load = self .root;
 	
@@ -106,8 +137,17 @@
 						}, loaded_range);
 			return curr && included_in (curr, next) ? curr : next
 		}, mergeAll ([
-			/*my (my ('new-page') .args .cycle__from) */from (function (when) { self .on ('mount', function (x) { when (x); }); }),
-			from (function (when) { self .on ('updated', function (x) { when (x); }); }),
+			(window .dynamic_load_rendering || (window .dynamic_load_rendering = from (function (self) {
+				document .addEventListener ('animationstart', self, false);
+			})))
+				.thru (map, function (event) {
+					return event .target
+				})
+				.thru (filter, function (root) {
+					return root === self .root
+				})
+				.thru (tap, logged_with ('attached'))
+			/*from (function (when) { self .on ('mount', function (x) { when (x); }); }),//*/,
 			from (function (when) { list .addEventListener ('scroll', function (x) { when (x); }); }) .thru (afterSilence, 5)
 		]), self .impressions ('loaded-range')))
 		.establish ('target-items', dependent (function () {
@@ -119,15 +159,15 @@
 		.thru (dropRepeats) 
 		.thru (map, function () {
 			return 	self .impressions ('target-items')
-						.thru (afterSilence, loading_interval)
 						.thru (dropRepeatsWith, json_equal) 	
 		})
 		.thru (switchLatest)
+		.thru (afterSilence, loading_interval)
 		.thru (tap, function () {
 			var date = new Date ();
 			self .render ()
 				.then (function () {
-					log ('dynamic-load ' + (new Date () - date) + 'ms');
+					log ('dynamic-load ' + (new Date () - date) + 'ms', self);
 				});
 		})
 </script>

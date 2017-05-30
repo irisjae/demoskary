@@ -25,14 +25,40 @@ var __so =	function (self) {
 									};
 									
 									
-									
-					self .render =	function () {
+					var first = true;
+					self .renders = [];
+					self .render_promises = [];
+					self .shouldUpdate =	function () {
+												if (first) {
+													first = false;
+													//return logged_with ('first run free', self)(true);/*
+													return true;//*/
+												}
+												//return logged_with ('render', self)(self .renders .length);/*
+												return self .renders .length//*/
+													|| (self .__ .isLoop && self .__ .parent .renders .length)
+													|| ((self .__ .parent .__ .tagName === 'virtual')  && self .__ .parent .shouldUpdate ());//*/
+											}
+					self .render =	function () {//var stack = new Error ().stack;
+										if (! self .isMounted) return new Promise (function (resolve) { self .one ('mount', resolve); });
 										var args = arguments;
-										return	next_tick () .then (function () {
+										if (self .renders .length && self .renders [0] .length === 0) {
+											self .renders [0] = args;
+											return self .render_promises [0];
+										}
+										else {
+											self .renders .unshift (args);
+											self .render_promises .unshift (
+												next_tick () .then (function () {//var q = stack;
 													if (self .isMounted) {
-														self .update .apply (self, args);
+														self .update .apply (self, self .renders [self .renders .length - 1]);
+														self .renders .pop ();
+														self .render_promises .pop ();
 													}
 												})
+											)	
+											return self .render_promises [0];												
+										}
 									};
 				}
 			};
@@ -42,83 +68,3 @@ riot .mixin ({
 				__so (this);			
 			}
 });
-	
-var so =	function (self) {
-				if (! self .self) {
-					__so (self);
-					self .affiliated =	function (topic) {
-											if (topic in self .__dialogues)
-												return self .__dialogues [topic];
-											else {
-												var next = self .__parent || self ._parent || self .parent;
-												while (next) {
-													if (next .affiliated)
-														return next .affiliated (topic);
-													else
-														next = next .__parent || next ._parent || next .parent;
-												}
-											}
-										};	
-				}
-			};
-	
-								
-								
-/*
-var so =	function (self) {
-				if (! self .self) {
-					Object .defineProperty
-						(self, 'args', { get: function () { return retaining (self .opts) (self .opts .params || []) } });
-									
-					self .self = self;
-					self .my =	function (label) {
-									if (label in self)
-										return self [label];
-									else {
-										var next = self .__parent || self ._parent || self .parent;
-										while (next) {
-											if (next .my)
-												return next .my (label);
-											else
-												next = next .__parent || next ._parent || next .parent;
-										}
-									}	
-								};
-												
-					self .thru =	function (func, args) {
-										return	func .apply (
-													self, [] .concat .call (args || [], [self])
-												);
-									};
-									
-					
-					self .__registered = {};
-					self .register =	function () {
-											Object .keys (self)
-												.forEach (function (key) {
-													if (flyd .isStream (self [key]) && ! self .__registered [key]) {
-														self .__registered =	self [key]
-																					.thru (tap, function (x) {
-																						//if (key && key [0] === ':')
-																			            	log (self .tag || self .root .localName, key, x);
-																					})
-													}
-												})
-										}									
-					self .render =	function () {
-										var args = arguments;
-										return	next_tick () .then (function () {
-													if (self .isMounted) {
-														self .update .apply (self, args);
-													}
-												})
-									};
-				}
-			};
-
-riot .mixin ({
-	init:	function () {
-				so (this);			
-			}
-});
-*/

@@ -82,7 +82,7 @@
 					return status;
 				}))
 		)
-		.impressions ('status') .thru (tap, self .render)
+		.impressions ('status') .thru (map, noop) .thru (tap, self .render)
 
 
 	self .impressions (args .cycle__from)

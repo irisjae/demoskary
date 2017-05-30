@@ -14278,6 +14278,15 @@ component-dynamic-load {
   width: 100%;
   position: relative;
   display: block;
+  animation-duration: 0.01s;
+  -o-animation-duration: 0.01s;
+  -ms-animation-duration: 0.01s;
+  -moz-animation-duration: 0.01s;
+  -webkit-animation-duration: 0.01s;
+  animation-name: dynamic-load-rendered;
+  -ms-animation-name: dynamic-load-rendered;
+  -moz-animation-name: dynamic-load-rendered;
+  -webkit-animation-name: dynamic-load-rendered;
 }
 
 component-dynamic-load > component-dynamic-load-item {
@@ -14288,6 +14297,26 @@ component-dynamic-load > component-dynamic-load-item {
 
 component-dynamic-load > stretcher {
   display: block;
+}
+
+@keyframes dynamic-load-rendered {
+  from {
+    outline-color: #fff;
+  }
+
+  to {
+    outline-color: #000;
+  }
+}
+
+@-webkit-keyframes dynamic-load-rendered {
+  from {
+    outline-color: #fff;
+  }
+
+  to {
+    outline-color: #000;
+  }
 }
 
 component-field-control {

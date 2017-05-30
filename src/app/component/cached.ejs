@@ -35,17 +35,7 @@
 
 <script>
 	var key = args .key;
-	(window .cache_access || (window .cache_access = from (function (self) {
-		document .addEventListener ('animationend', self, false);
-	})))
-		.thru (map, function (event) {
-			return event .target
-		})
-		.thru (filter, function (root) {
-			return root === self .root
-		})
-		.thru (tap, logged_with ('detached ' + key))
-		
+
 	(window .cache_access || (window .cache_access = from (function (self) {
 		document .addEventListener ('animationstart', self, false);
 	})))
