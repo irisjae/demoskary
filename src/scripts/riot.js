@@ -824,7 +824,6 @@ var tmpl = (function () {
     JS_NOPROPS = /^(?=(\.[$\w]+))\1(?:[^.[(]|$)/;
 
   function _wrapExpr (expr, asText, key) {
-    if (expr.startsWith ('expression:'))
     
     var tb;
 
