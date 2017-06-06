@@ -2,13 +2,13 @@
     "name": "fofi",
     "version": "0.0.0",
     "description": "where's your foot?",
-    "main": "server.js",
+    "main": "error.js",
     "dependencies": {
         "body-parser": "^1.15.0",
         "cookie-parser": "^1.4.1",
         "cordova-android": "^6.2.3",
         "cordova-browser": "^4.1.0",
-        "cordova-ios": "~4.3.1",
+        "cordova-ios": "^4.4.0",
         "cordova-plugin-whitelist": "1",
         "css": "^2.2.1",
         "css-semdiff": "^1.1.1",
@@ -25,23 +25,24 @@
     },
     "devDependencies": {},
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "node server.js",
-        "serve": "node server.js",
-        "build": "./build/make-app.sh"
+        "install": "./package/install.sh",
+        "build": "./package/build.sh",
+        "serve": "./package/serve.sh",
+        "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/warren922/fofi-android.git"
+        "url": "git+https://github.com/irisjay/demoskary.git"
     },
     "author": "",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/warren922/fofi-android/issues"
+        "url": "https://github.com/irisjay/demoskary/issues"
     },
-    "homepage": "https://github.com/warren922/fofi-android#readme",
+    "homepage": "https://github.com/irisjay/demoskary#readme",
     "cordova": {
         "platforms": [
+            "android",
             "browser",
             "ios"
         ],

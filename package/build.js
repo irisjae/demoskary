@@ -306,6 +306,7 @@ var render =	function (tag_name, tag_src, parent_name) {
 					var eaches
 					var loop_expressions = [];
 					var scripts = [];
+					var refs = /<[^>]+ refs=[^>]+>/ .test (tag_src);
 					var yield_tag = /<yield \/>/ .test (tag_src);
 	
 					return	R. pipe (
@@ -364,8 +365,9 @@ var render =	function (tag_name, tag_src, parent_name) {
 								/* Inject sciprts  */
 								function (def) {
 									return def .replace (/\n<\/[^]+>$/g, function (match) {
-										return ((scripts .length || expressions .length || yield_tag) ?
+										return ((scripts .length || expressions .length || yield_tag || refs) ?
 											indent ('<script>\n(function (self, args, my) {\n'
+												+ '\n var refs = stream ();'
 												+ scripts .join (';\n')
 												+ (expressions .length ?
 													('\nwindow .tag_scopes = (window .tag_scopes || {});'

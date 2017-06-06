@@ -1,5 +1,5 @@
-var serve_dir = __dirname + '/static';
-var faux_serve_dirs = [__dirname + '/platforms/browser/www'];
+var serve_dir = __dirname + '/platforms/browser/www';
+var faux_serve_dirs = [];
 
 
 

@@ -3,6 +3,6 @@ cd "$DIR"
 
 nvm use 7.1.0
 node --version
-node build/make-app.js
+node package/build.js
 
 cordova build browser
