@@ -146,7 +146,7 @@
 						})
 						.catch (
 							R .pipe (
-								self .affiliated (':exception'),
+								self .affiliated (':exception') .mention,
 								noop
 							)
 						)//TODO: make report to exception
