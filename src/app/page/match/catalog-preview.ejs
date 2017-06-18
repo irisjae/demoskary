@@ -20,17 +20,17 @@
 				</info-header>
 				<component-spacing height="5px" />
 				<team-name>
-					<home>{ my ('home-name') }</home>
+					<home>{ home_name () }</home>
 					<label>VS</label>
-					<away>{ my ('away-name') }</away>
+					<away>{ away_name () }</away>
 				</team-name>
 				<component-spacing height="5px" />
 				<component-separator />
 				<component-spacing height="5px" />
 				<team-age-range>
-					<home>{ my ('home-age-range') }</home>
+					<home>{ home_age_range () }</home>
 					<label>年齡</label>
-					<away>{ my ('away-age-range') }</away>
+					<away>{ away_age_range () }</away>
 				</team-age-range>
 				<component-spacing height="5px" />
 				<component-separator />
@@ -63,14 +63,14 @@
 			<info-holder>
 				<info-header>賽事資料</info-header>
 				<match-details>
-					<date>{ my ('match-date') }</date>
-					<time>{ my ('match-times') }</time>
+					<date>{ match_date () }</date>
+					<time>{ match_times () }</time>
 				</match-details>
 				<match-location>
 					<label>地點</label>
 					<item>
 						<icon-holder><icon class="fa-map-marker"></icon></icon-holder>
-						{ my ('match-location') }
+						{ match_location () }
 					</item>
 				</match-location>
 				<component-spacing height="5px" />
@@ -78,14 +78,14 @@
 				<component-spacing height="5px" />
 				<match-pitch>
 					<label>場地</label>
-					<item>{ my ('match-pitch') }</item>
+					<item>{ match_pitch () }</item>
 				</match-pitch>
 				<component-spacing height="5px" />
 				<component-separator />
 				<component-spacing height="5px" />
 				<match-fee>
 					<label>費用</label>
-					<item>{ my ('match-fee') }</item>
+					<item>{ match_fee () }</item>
 				</match-fee>
 				<component-spacing height="5px" />
 				<component-separator />
@@ -196,97 +196,90 @@
 </style>
 
 <script>
-	self
-		.remembers ('match-item')
-		.remembers ('team-item')
+	var match_item = stream ();
+	var team_item = stream ();
+
 	mergeAll ([
-		self .impressions ('match-item'),
-		self .impressions ('team-item')
+		match_item,
+		team_item
 	])
-		.thru (map, noop) .thru (map, noop) .thru (tap, self .render);
+	.thru (map, noop) .thru (map, noop) .thru (tap, self .render);
 	
-	self
-		.establish ('home-name', dependent (function () {
-			return my ('match-item') .home_team .long_name;
-		}, self .impressions ('match-item')))
-		.establish ('home-shirt-color', dependent (function () {
-			return my ('match-item') .home_team_jersey_color;
-		}, self .impressions ('match-item')))
-		.establish ('home-age-range', dependent (function () {
-			return my ('match-item') .home_team_average_age;
-		}, self .impressions ('match-item')))
+	var home_name = mechanism (function () {
+		return match_item () .home_team .long_name;
+	}, [ match_item ])
+	var home_shirt_color = mechanism (function () {
+		return match_item () .home_team_jersey_color;
+	}, [ match_item ])
+	var home_age_range = mechanism (function () {
+		return match_item () .home_team_average_age;
+	}, [ match_item ])
 		
-		.establish ('away-name', dependent (function () {
-			return my ('team-item') .long_name;
-		}, self .impressions ('team-item')))
-		.establish ('away-age-range', dependent (function () {
-			return my ('team-item') .average_age;
-		}, self .impressions ('team-item')))
+	var away_name = mechanism (function () {
+		return team_item () .long_name;
+	}, [ team_item ])
+	var away_age_range = mechanism (function () {
+		return team_item () .average_age;
+	}, [ team_item ])
 		
 		
-		.establish ('match-date', dependent (function () {
-			//2017年1月15日 星期日
-			var date_time = new Date (my ('match-item') .start_at);
-			return date_to_chi (date_time) + ' 星期' + day_of_week_to_chi (date_time);
-		}, self .impressions ('match-item')))
-		.establish ('match-times', dependent (function () {
-			//3:00 pm - 4:30 pm
-			var start_date_time = new Date (my ('match-item') .start_at)
-			var end_date_time = new Date (my ('match-item') .end_at);
+	var match_date = mechanism (function () {
+		//2017年1月15日 星期日
+		var date_time = new Date (match_item () .start_at);
+		return date_to_chi (date_time) + ' 星期' + day_of_week_to_chi (date_time);
+	}, [ match_item ])
+	var match_times = mechanism (function () {
+		//3:00 pm - 4:30 pm
+		var start_date_time = new Date (match_item () .start_at)
+		var end_date_time = new Date (match_item () .end_at);
+		
+		return times (start_date_time, end_date_time)	
+	}, [ match_item ])
+	var match_location = mechanism (function () {
+		//北區運動場
+		return location_from_api (match_item () .location)
+	}, [ match_item ])
+	var match_pitch = mechanism (function () {
+		//11v11 - 真草
+		return match_item () .match_type + ' - ' + match_item () .pitch .pitch_type;
+	}, [ match_item ])
+	var match_fee = mechanism (function () {
+		//HKD $450
+		return fee_to_chi (match_item () .fee_per_team);
+	}, [ match_item ])
+
+	
+	ref ('apply-button') .thru (tap, function (ref) {
+		ref .addEventListener ('click', function (e) {
+			e .preventDefault ();
 			
-			return times (start_date_time, end_date_time)	
-		}, self .impressions ('match-item')))
-		.establish ('match-location', dependent (function () {
-			//北區運動場
-			return location_from_api (my ('match-item') .location)
-		}, self .impressions ('match-item')))
-		.establish ('match-pitch', dependent (function () {
-			//11v11 - 真草
-			return my ('match-item') .match_type + ' - ' + my ('match-item') .pitch .pitch_type;
-		}, self .impressions ('match-item')))
-		.establish ('match-fee', dependent (function () {
-			//HKD $450
-			return fee_to_chi (my ('match-item') .fee_per_team);
-		}, self .impressions ('match-item')))
-
-	
-	self
-		.establish ('apply-button', ref)
-		.impressions ('apply-button') .thru (tap, function (ref) {
-			ref .addEventListener ('click', function (e) {
-				e .preventDefault ();
-				
-				self .mention ('applying', true);
-				var apply = my ('::match-open') (my ('team-item') .id, parse (args [0]));
-				
-				inquire (self .affiliated (apply))
-					.then (function (data) {
-						self .mention ('applying', false);
-						if (data)
-							window .location .hash = ref .hash;
-					})
-			})
-		}) 
-	self
-		.remembers ('applying')
-		.impressions ('applying') .thru (map, noop) .thru (map, noop) .thru (tap, self .render)
+			applying (true);
+			
+			inquire (api () .match_open (team_item () .id, parse (args [0])))
+				.then (function (data) {
+					applying (false);
+					if (data)
+						window .location .hash = ref .hash;
+				})
+		})
+	}) 
+	var applying = stream ();
+	applying .thru (map, noop) .thru (map, noop) .thru (tap, self .render)
 
 
-	self
-		.impressions (args .cycle__from)
-			.thru (tap, function (cycle) {
-				if (self .affiliated ('::match-to-find-info')) {
-					var match = my ('::match-to-find-info') (parse (args [0]))
-					inquire (self .affiliated (match))
-						.then (function (match) {
-							self .mention ('match-item', match)
-						});
-					inquire (self .affiliated ('::teams'))
-						.then (function (teams) {
-							self .mention ('team-item', teams [0])
-						});
-				}
-				else
-					window .location .hash = '#login'	
-			})
+	args .cycle__from
+		.thru (tap, function (cycle) {
+			if (api () .match_to_find_info) {
+				inquire (api () .match_to_find_info (parse (args [0])))
+					.then (function (match) {
+						match_item (match)
+					});
+				inquire (api () .teams)
+					.then (function (teams) {
+						team_item (teams [0])
+					});
+			}
+			else
+				window .location .hash = '#login'	
+		})
 </script>

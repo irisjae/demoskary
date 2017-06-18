@@ -1,178 +1,170 @@
-<placeholder empty={ my ('empty') }>{ args .placeholder }</placeholder>
+<placeholder empty={ empty () }>{ args .placeholder }</placeholder>
 <field>
-    <component-dynamic-load-all items__from=":selected-tags">
-        <component-tag-control-item item__from=":item" select__to=":delete" />
-    </component-dynamic-load-all>
-    <input ref="input" type={ args .type } maxlength={ args .maxlength } >
+	<component-dynamic-load-all items__from={ selected_tags } no_reorder="true">
+		<component-tag-control-item item__from={ _item .item__from } select__to={ delete_ } />
+	</component-dynamic-load-all>
+	<input ref="input" >
 </field>
 <hr>
-<hr focused={ my ('focused') }>
-<tag-select-box focused={ my ('focused') }>
-    <component-dynamic-load-all items__from=":tags">
-        <component-tag-control-item item__from=":item" select__to=":select" />
-    </component-dynamic-load-all>
+<hr focused={ focused () }>
+<tag-select-box focused={ focused () }>
+	<component-dynamic-load-all items__from={ tags } no_reorder="true">
+		<component-tag-control-item item__from={ _item .item__from } select__to={ select } />
+	</component-dynamic-load-all>
 </tag-select-box>
 
 <style>
-    font-size: 16px;
-    line-height: 24px;
-    width: 100%;
-    height: 48px;
-    display: inline-block;
-    position: relative;
-    background-color: transparent;
-    font-family: Roboto, sans-serif;
-    transition: height 200ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
-    cursor: auto;
-    
-    > placeholder {
-        position: absolute;
-        opacity: 0;
-        color: rgba(0, 0, 0, 0.298039);
-        transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
-        bottom: 12px;
-        
-        &[empty] {
-            opacity: 1;
-        }
-    }
-    > field {
-        display: flex;
-        flex-direction: row;
-        width: 100%;
-        height: 100%;
-        > component-dynamic-load-all {
-            align-self: center;
-            padding: 0 5px 5px 0;
-            display: flex;
-        }
-        > input {
-            flex-grow: 1;
-            padding: 0px;
-            position: relative;
-            border: none; 
-            outline: none; 
-            background-color: rgba(0, 0, 0, 0);
-            color: rgba(0, 0, 0, 0.870588); 
-            cursor: inherit; 
-            font-style: inherit; 
-            font-variant: inherit;
-            font-weight: inherit; 
-            font-stretch: inherit; 
-            font-size: inherit; 
-            line-height: inherit; 
-            font-family: inherit;
-            -webkit-tap-highlight-color: rgba(0, 0, 0, 0); 
-        }
-    }
-    > hr:first-of-type {
-        border-top: none;
-        border-left: none;
-        border-right: none;
-        border-bottom: 1px solid rgba(0,0,0,.5);
-        bottom: 8px;
-        margin: 0px; 
-        position: absolute;
-        width: 100%;
-    }
-    > hr:last-of-type {
-        border-top: none rgb(0, 188, 212);
-        border-left: none rgb(0, 188, 212);
-        border-right: none rgb(0, 188, 212);
-        border-bottom: 2px solid rgb(0, 188, 212);
-        bottom: 8px; 
-        margin: 0px;
-        position: absolute; 
-        width: 100%; 
-        transform: scaleX(0); 
-        transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
-        
-        &[focused] {
-            transform: scaleX(1); 
-        }
-    }
-    > tag-select-box {
-        background-color: rgb(255, 255, 255);
-        transition: transform 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms, opacity 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
-        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-        box-shadow: rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px;
-        border-radius: 2px;
-        opacity: 0;
-        transform: scaleY(0);
-        transform-origin: left top 0px;
-        overflow-y: auto;
-        position: absolute;
-        width: 100%;
-        z-index: 2000;
-        &[focused] {
-            opacity: 1;
-            transform: scaleY(1);
-        }
-        
-        > component-dynamic-load-all {
-            width: 100%;
-            position: relative;
-            display: flex;
-            flex-wrap: wrap;
-            > component-dynamic-load-item {
-                display: flex;
-                flex-grow: 1;
-                justify-content: space-around;
-                padding: 10px;
-            }
-        }
-    }
+	font-size: 16px;
+	line-height: 24px;
+	width: 100%;
+	height: 48px;
+	display: inline-block;
+	position: relative;
+	background-color: transparent;
+	font-family: Roboto, sans-serif;
+	transition: height 200ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+	cursor: auto;
+	
+	> placeholder {
+		position: absolute;
+		opacity: 0;
+		color: rgba(0, 0, 0, 0.298039);
+		transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+		bottom: 12px;
+		
+		&[empty] {
+			opacity: 1;
+		}
+	}
+	> field {
+		display: flex;
+		flex-direction: row;
+		width: 100%;
+		height: 100%;
+		> component-dynamic-load-all {
+			align-self: center;
+			padding: 0 5px 5px 0;
+			display: flex;
+		}
+		> input {
+			flex-grow: 1;
+			padding: 0px;
+			position: relative;
+			border: none; 
+			outline: none; 
+			background-color: rgba(0, 0, 0, 0);
+			color: rgba(0, 0, 0, 0.870588); 
+			cursor: inherit; 
+			font-style: inherit; 
+			font-variant: inherit;
+			font-weight: inherit; 
+			font-stretch: inherit; 
+			font-size: inherit; 
+			line-height: inherit; 
+			font-family: inherit;
+			-webkit-tap-highlight-color: rgba(0, 0, 0, 0); 
+		}
+	}
+	> hr:first-of-type {
+		border-top: none;
+		border-left: none;
+		border-right: none;
+		border-bottom: 1px solid rgba(0,0,0,.5);
+		bottom: 8px;
+		margin: 0px; 
+		position: absolute;
+		width: 100%;
+	}
+	> hr:last-of-type {
+		border-top: none rgb(0, 188, 212);
+		border-left: none rgb(0, 188, 212);
+		border-right: none rgb(0, 188, 212);
+		border-bottom: 2px solid rgb(0, 188, 212);
+		bottom: 8px; 
+		margin: 0px;
+		position: absolute; 
+		width: 100%; 
+		transform: scaleX(0); 
+		transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+		
+		&[focused] {
+			transform: scaleX(1); 
+		}
+	}
+	> tag-select-box {
+		background-color: rgb(255, 255, 255);
+		transition: transform 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms, opacity 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+		box-shadow: rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px;
+		border-radius: 2px;
+		opacity: 0;
+		transform: scaleY(0);
+		transform-origin: left top 0px;
+		overflow-y: auto;
+		position: absolute;
+		width: 100%;
+		z-index: 2000;
+		&[focused] {
+			opacity: 1;
+			transform: scaleY(1);
+		}
+		
+		> component-dynamic-load-all {
+			width: 100%;
+			position: relative;
+			display: flex;
+			flex-wrap: wrap;
+			> component-dynamic-load-item {
+				display: flex;
+				flex-grow: 1;
+				justify-content: space-around;
+				padding: 10px;
+			}
+		}
+	}
 </style>
 
 <script>
-    self
-        .establish ('input', ref)
-        .remembers ('focused')
-        .remembers ('empty', true)
-    
-    self .impressions ('input') .thru (tap, function (ref) {
-        ref .addEventListener ('input', function () {
-            self .mention ('empty', ! ref .value)
-        })
-        ref .addEventListener ('focus', function () {
-            self .mention ('focused', true)
-        })
-        ref .addEventListener ('blur', function () {
-            self .mention ('focused', false)
-        })
-    })
-    
-    
-    self
-        .remembers (':tags', ['asdf', 'asdfasdfasdf', 'sdfgdsfgdsjfgl;dsgf', 'sfgh', 'asdfa', 'qwrt'])
-        .remembers (':selected-tags', [])
-        .impressions (':selected-tags')
-            .thru (tap, function (_selected) {
-                if (args .tags__to)
-                    self .mention (args .tags__to, _selected)
-                self .mention ('empty', _selected .length ? true : false)
-            })
-        
-    self
-        .remembers (':select')
-        .impressions (':select')
-            .thru (tap, function (tag) {
-                self .mention (':tags', my (':tags') .filter (function (_tag) {
-                    return _tag !== tag;
-                }))
-                self .mention (':selected-tags', my (':selected-tags') .concat ([tag]))
-            })
-    self
-        .remembers (':delete')
-        .impressions (':delete')
-            .thru (tap, function (tag) {
-                self .mention (':selected-tags', my (':selected-tags') .filter (function (_tag) {
-                    return _tag !== tag;
-                }))
-                self .mention (':tags', my (':tags') .concat ([tag]))
-            })
-        
-    
-    self .impressions ('focused') .thru (map, noop) .thru (map, noop) .thru (tap, self .render)
-    self .impressions ('empty') .thru (dropRepeats) .thru (map, noop) .thru (map, noop) .thru (tap, self .render)
+	var focused = stream ()
+	var empty = stream (true)
+	
+	ref ('input') .thru (tap, function (ref) {
+		ref .addEventListener ('input', function () {
+			empty (! ref .value)
+		})
+		ref .addEventListener ('focus', function () {
+			focused (true)
+		})
+		ref .addEventListener ('blur', function () {
+			focused (false)
+		})
+	})
+	
+	
+	var tags = stream (['asdf', 'asdfasdfasdf', 'sdfgdsfgdsjfgl;dsgf', 'sfgh', 'asdfa', 'qwrt'])// .thru (tap, known_as ('tags to choose'))
+	var selected_tags =	stream ([])// .thru (tap, known_as ('tags chosen'))
+							.thru (tap, function (_selected) {
+								if (args .tags__to)
+									args .tags__to (_selected)
+								empty (_selected .length ? true : false)
+							})
+		
+	var select =	stream ()
+						.thru (tap, function (tag) {
+							tags (tags () .filter (
+								R. pipe (
+									R. equals (tag), R .not)))
+							selected_tags (selected_tags () .concat ([tag]))
+						})
+	var delete_ =	stream ()
+						.thru (tap, function (tag) {
+							tags (tags () .concat ([tag]));
+							selected_tags (selected_tags () .filter (
+								R. pipe (
+									R. equals (tag), R .not)));
+						})
+		
+	
+	focused .thru (map, noop) .thru (map, noop) .thru (tap, self .render)
+	empty .thru (dropRepeats) .thru (map, noop) .thru (map, noop) .thru (tap, self .render)
 </script>

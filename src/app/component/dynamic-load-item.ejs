@@ -1,17 +1,29 @@
 <yield />
 
 <script>
-	var nth = (+ args .nth);
-	self .remembers (':nth', nth);
-	self .remembers (':item', my (args .item__from));
-	    
+	var nth = stream (+ args .nth);
+	var item = stream (args .item);
+
+	self .nth__from = nth;
+	self .item__from = item;
+	
 	self .one ('updated', function () {
 		self .on ('updated', function () {
-			var nth = (+ args .nth);
-			if (nth < my ('loaded-items') .length) {
-				self .mention (':nth', nth);  
-				self .mention (':item', my (args .item__from));
+			if (! args .garbage) {
+				nth (+ args .nth);
+				item (args .item);
 			}
 		})
-	});//self.impressions(':nth').thru (tap, _debugger)
+	});
+
+	//self .on ('mount', function () { log ('args refreshed'); });
+	
+	/*self .update_strategy = function () {
+		args = self .opts;
+		if (! args .garbage) {
+			nth (+ args .nth);
+			item (args .item);
+		}
+		return false;
+	}//*/
 </script>

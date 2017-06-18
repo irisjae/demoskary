@@ -221,7 +221,7 @@ modal {
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
-    border-top: 1px solid #e6e6e6;
+    /*border-top: 1px solid #e6e6e6;*/
     
     > [patch-layout] {
 	    flex-grow: 1;

@@ -15,10 +15,10 @@
 		<label>
 			請輸入手機驗證碼
 		</label>
-		<component-field-control type="text" placeholder="689" maxlength=5 input__to=":verification" />
+		<component-field-control type="text" placeholder="689" maxlength=5 input__to={ verification } />
 		<component-spacing height="35px" />
 		<component-action>
-			<a href="#team/profile" ref="verify-button" disabled={ my ('verify-ok') !== 'ok' } maybe={ my ('verify-ok') === 'maybe' }>確認</a>
+			<a href="#team/profile" ref="verify-button" disabled={ verify_ok () !== 'ok' } maybe={ verify_ok () === 'maybe' }>確認</a>
 		</component-action>
 		<component-spacing height="15px" />
 		<resend>
@@ -125,58 +125,53 @@
 
 
 <script>
-	self
-		.remembers (':verification')
-		.impressions (':verification')
-			.thru (tap, function () {
-				self .mention ('verify-ok', 'maybe')
-			})
-			.thru (map, function (verify_num) {
-				if ((verify_num + '') .length === 5) {
-					return	stream (true//verify_num === 'D7689'
-								? { data: 'verified' }
-								: { error: 'incorrect verification' })
-								.thru (delay, 400)
-				}
-				else {
-					return stream ({ error: 'invalid code' });
-				}
-			})
-			.thru (switchLatest)
-			.thru (tap, function (res) {
-				if (res .error)
-					self .mention ('verify-ok', 'not-ok')
-				else
-					self .mention ('verify-ok', 'ok')
-			}) 
-
-	self
-		.remembers ('verify-ok', 'not-ok')
-		.impressions ('verify-ok') .thru (map, noop) .thru (tap, self .render);
-	
-	self
-		.establish ('unload-shield', ref)
-		.establish ('verify-button', ref)
-		.impressions ('verify-button') .thru (tap, function (ref) {
-			ref .addEventListener ('click', function (e) {
-				e .preventDefault ();
-				my ('unload-shield') .setAttribute ('active', true);
-				inquire (self .affiliated ('::teams'))
-					.then (function (teams) {
-						//if (teams [0])
-						//	window .location .hash = home_path;
-						//else
-							window .location .hash = '#team/connect';
-					})
-			})
+	var verification = stream ();
+	verification
+		.thru (tap, function () {
+			verify_ok ('maybe')
 		})
-		
-	self
-		.impressions (args .cycle__from)
-			/*.thru (map, function (cycle) {
-				return cycle .end;
-			})*/
-			.thru (tap, function () {
-				my ('unload-shield') .removeAttribute ('active');
-			})
+		.thru (map, function (verify_num) {
+			if ((verify_num + '') .length === 5) {
+				return	stream (true//verify_num === 'D7689'
+							? { data: 'verified' }
+							: { error: 'incorrect verification' })
+							.thru (delay, 400)
+			}
+			else {
+				return stream ({ error: 'invalid code' });
+			}
+		})
+		.thru (switchLatest)
+		.thru (tap, function (res) {
+			if (res .error)
+				verify_ok ('not-ok')
+			else
+				verify_ok ('ok')
+		}) 
+
+	var verify_ok = stream ('not-ok')
+	verify_ok .thru (map, noop) .thru (tap, self .render);
+	
+	var modal = ref ('unload-shield');
+	ref ('verify-button') .thru (tap, function (ref) {
+		ref .addEventListener ('click', function (e) {
+			e .preventDefault ();
+			modal () .setAttribute ('active', true);
+			inquire (api () .teams)
+				.then (function (teams) {
+					//if (teams [0])
+					//	window .location .hash = home_path;
+					//else
+						window .location .hash = '#team/connect';
+				})
+		})
+	})
+	
+	args .cycle__from
+		/*.thru (map, function (cycle) {
+			return cycle .end;
+		})*/
+		.thru (tap, function () {
+			modal () .removeAttribute ('active');
+		})
 </script>

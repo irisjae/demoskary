@@ -1,30 +1,5 @@
 var __so =	function (self) {
 				if (! self .self) {
-					Object .defineProperty
-						(self, 'args', { get: function () { return retaining (self .opts) (self .opts .params || []) } });
-									
-					dialectic ({
-						parent: self .__parent || self ._parent || self .parent,
-						//logging
-						impressed:	function (what, how) {
-										//if (what && what [0] === ':')
-							            	log (self .tag || self .root .localName, what, how);
-									}
-					}, self);
-					self .self = self;
-					self .my = function (topic, thoughts) { return self .affiliated (topic) && self .impression (topic, thoughts); };
-												
-					self .recognize =	function (paper) {
-											paper .realize (self);
-											return self;
-										};
-					self .thru =	function (func, args) {
-										return	func .apply (
-													self, [] .concat .call (args || [], [self])
-												);
-									};
-									
-									
 					var first = true;
 					self .renders = [];
 					self .render_promises = [];

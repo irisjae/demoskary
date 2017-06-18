@@ -1,28 +1,23 @@
-<component-dynamic-load-all items__from=":items">
-	<component-tree-control-item item__from=":item" substitute__to=":substitute" />
+<component-dynamic-load-all items__from={ items }>
+	<component-tree-control-item item__from={ _item .item } substitute__to={ substitute } />
 </component-dynamic-load-all>
 
 
 <script>
-	self
-		.establish ('tree', constant (
-			self .impressions (args .items__from)
-				.thru (dropRepeatsWith, json_equal)
-		))
-		.establish (':items', dependent (function () {
-			return 	Object .keys (my ('tree')) .map (function (name) {
+	var tree = 	args .items__from
+					.thru (dropRepeatsWith, json_equal)
+	var items = mechanism (function () {
+			return 	Object .keys (tree ()) .map (function (name) {
 						return 	{
 									name: name,
-									status: my ('tree') [name]
+									status: tree () [name]
 								};
 					});
-		}, self .impressions ('tree')))
+		}, [tree])
 		
-	self
-		.remembers (':substitute')
-		.impressions (':substitute')
-			.thru (tap, function () {
-				if (! json_equal (my ('tree') [my (':substitute') .item], my (':substitute') .sub))
-					self .mention (args .items__to, with_ (my (':substitute') .item, my (':substitute') .sub) (my ('tree')))
-			})
+	var substitute = 	stream ()
+							.thru (tap, function () {
+								if (! json_equal (tree () [substitute () .item], substitute () .sub))
+									args .items__to (with_ (substitute () .item, substitute () .sub) (tree ()))
+							})
 </script>

@@ -1,5 +1,4 @@
 <style>
-
 @at-root {
     @font-face {
         font-family: 'Checkbox';
@@ -58,11 +57,11 @@
     self .root .addEventListener ('click', function () {
         if (self .root .getAttribute ('checked')) {
             self .root .removeAttribute ('checked');
-            self .mention (args .check__to, false)
+            args .check__to (false)
         }
         else {
             self .root .setAttribute ('checked', true);
-            self .mention (args .check__to, true)
+            args .check__to (true)
         }
     });
 </script>

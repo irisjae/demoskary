@@ -1,4 +1,4 @@
-/* Riot v3.4.2, @license MIT */
+/* Riot v3.6.0, @license MIT */
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -22,6 +22,7 @@ var T_OBJECT = 'object';
 var T_UNDEF  = 'undefined';
 var T_FUNCTION = 'function';
 var XLINK_NS = 'http://www.w3.org/1999/xlink';
+var SVG_NS = 'http://www.w3.org/2000/svg';
 var XLINK_REGEX = /^xlink:(\w+)/;
 var WIN = typeof window === T_UNDEF ? undefined : window;
 var RE_SPECIAL_TAGS = /^(?:t(?:body|head|foot|[rhd])|caption|col(?:group)?|opt(?:ion|group))$/;
@@ -136,7 +137,7 @@ var check = Object.freeze({
  * @returns { Object } dom nodes found
  */
 function $$(selector, ctx) {
-  return (ctx || document).querySelectorAll(selector)
+  return Array.prototype.slice.call((ctx || document).querySelectorAll(selector))
 }
 
 /**
@@ -166,12 +167,22 @@ function createDOMPlaceholder() {
 }
 
 /**
+ * Check if a DOM node is an svg tag
+ * @param   { HTMLElement }  el - node we want to test
+ * @returns {Boolean} true if it's an svg node
+ */
+function isSvg(el) {
+  return !!el.ownerSVGElement
+}
+
+/**
  * Create a generic DOM node
  * @param   { String } name - name of the DOM node we want to create
+ * @param   { Boolean } isSvg - true if we need to use an svg node
  * @returns { Object } DOM node just created
  */
 function mkEl(name) {
-  return document.createElement(name)
+  return name === 'svg' ? document.createElementNS(SVG_NS, name) : document.createElement(name)
 }
 
 /**
@@ -299,6 +310,7 @@ var dom = Object.freeze({
 	$: $,
 	createFrag: createFrag,
 	createDOMPlaceholder: createDOMPlaceholder,
+	isSvg: isSvg,
 	mkEl: mkEl,
 	setInnerHTML: setInnerHTML,
 	toggleVisibility: toggleVisibility,
@@ -371,8 +383,87 @@ var styleManager = {
 
 /**
  * The riot template engine
- * @version v3.0.3
+ * @version v3.0.8
  */
+
+var skipRegex = (function () { //eslint-disable-line no-unused-vars
+
+  var beforeReChars = '[{(,;:?=|&!^~>%*/';
+
+  var beforeReWords = [
+    'case',
+    'default',
+    'do',
+    'else',
+    'in',
+    'instanceof',
+    'prefix',
+    'return',
+    'typeof',
+    'void',
+    'yield'
+  ];
+
+  var wordsLastChar = beforeReWords.reduce(function (s, w) {
+    return s + w.slice(-1)
+  }, '');
+
+  var RE_REGEX = /^\/(?=[^*>/])[^[/\\]*(?:(?:\\.|\[(?:\\.|[^\]\\]*)*\])[^[\\/]*)*?\/[gimuy]*/;
+  var RE_VN_CHAR = /[$\w]/;
+
+  function prev (code, pos) {
+    while (--pos >= 0 && /\s/.test(code[pos])){  }
+    return pos
+  }
+
+  function _skipRegex (code, start) {
+
+    var re = /.*/g;
+    var pos = re.lastIndex = start++;
+    var match = re.exec(code)[0].match(RE_REGEX);
+
+    if (match) {
+      var next = pos + match[0].length;
+
+      pos = prev(code, pos);
+      var c = code[pos];
+
+      if (pos < 0 || ~beforeReChars.indexOf(c)) {
+        return next
+      }
+
+      if (c === '.') {
+
+        if (code[pos - 1] === '.') {
+          start = next;
+        }
+
+      } else if (c === '+' || c === '-') {
+
+        if (code[--pos] !== c ||
+            (pos = prev(code, pos)) < 0 ||
+            !RE_VN_CHAR.test(code[pos])) {
+          start = next;
+        }
+
+      } else if (~wordsLastChar.indexOf(c)) {
+
+        var end = pos + 1;
+
+        while (--pos >= 0 && RE_VN_CHAR.test(code[pos])){  }
+        if (~beforeReWords.indexOf(code.slice(pos + 1, end))) {
+          start = next;
+        }
+      }
+    }
+
+    return start
+  }
+
+  return _skipRegex
+
+})();
+
 /**
  * riot.util.brackets
  *
@@ -396,16 +487,18 @@ var brackets = (function (UNDEF) {
 
     S_QBLOCKS = R_STRINGS.source + '|' +
       /(?:\breturn\s+|(?:[$\w\)\]]|\+\+|--)\s*(\/)(?![*\/]))/.source + '|' +
-      /\/(?=[^*\/])[^[\/\\]*(?:(?:\[(?:\\.|[^\]\\]*)*\]|\\.)[^[\/\\]*)*?(\/)[gim]*/.source,
+      /\/(?=[^*\/])[^[\/\\]*(?:(?:\[(?:\\.|[^\]\\]*)*\]|\\.)[^[\/\\]*)*?([^<]\/)[gim]*/.source,
 
     UNSUPPORTED = RegExp('[\\' + 'x00-\\x1F<>a-zA-Z0-9\'",;\\\\]'),
 
     NEED_ESCAPE = /(?=[[\]()*+?.^$|])/g,
 
+    S_QBLOCK2 = R_STRINGS.source + '|' + /(\/)(?![*\/])/.source,
+
     FINDBRACES = {
-      '(': RegExp('([()])|'   + S_QBLOCKS, REGLOB),
-      '[': RegExp('([[\\]])|' + S_QBLOCKS, REGLOB),
-      '{': RegExp('([{}])|'   + S_QBLOCKS, REGLOB)
+      '(': RegExp('([()])|'   + S_QBLOCK2, REGLOB),
+      '[': RegExp('([[\\]])|' + S_QBLOCK2, REGLOB),
+      '{': RegExp('([{}])|'   + S_QBLOCK2, REGLOB)
     },
 
     DEFAULT = '{ }';
@@ -416,7 +509,7 @@ var brackets = (function (UNDEF) {
     /{[^}]*}/,
     /\\([{}])/g,
     /\\({)|{/g,
-    RegExp('\\\\(})|([[({])|(})|' + S_QBLOCKS, REGLOB),
+    RegExp('\\\\(})|([[({])|(})|' + S_QBLOCK2, REGLOB),
     DEFAULT,
     /^\s*{\^?\s*([$\w]+)(?:\s*,\s*(\S+))?\s+in\s+(\S.*)\s*}/,
     /(^|[^\\]){=[\S\s]*?}/
@@ -450,7 +543,7 @@ var brackets = (function (UNDEF) {
     arr[4] = _rewrite(arr[1].length > 1 ? /{[\S\s]*?}/ : _pairs[4], arr);
     arr[5] = _rewrite(pair.length > 3 ? /\\({|})/g : _pairs[5], arr);
     arr[6] = _rewrite(_pairs[6], arr);
-    arr[7] = RegExp('\\\\(' + arr[3] + ')|([[({])|(' + arr[3] + ')|' + S_QBLOCKS, REGLOB);
+    arr[7] = RegExp('\\\\(' + arr[3] + ')|([[({])|(' + arr[3] + ')|' + S_QBLOCK2, REGLOB);
     arr[8] = pair;
     return arr
   }
@@ -471,19 +564,40 @@ var brackets = (function (UNDEF) {
       pos,
       re = _bp[6];
 
+    var qblocks = [];
+    var prevStr = '';
+    var mark, lastIndex;
+
     isexpr = start = re.lastIndex = 0;
 
     while ((match = re.exec(str))) {
 
+      lastIndex = re.lastIndex;
       pos = match.index;
 
       if (isexpr) {
 
         if (match[2]) {
-          re.lastIndex = skipBraces(str, match[2], re.lastIndex);
+
+          var ch = match[2];
+          var rech = FINDBRACES[ch];
+          var ix = 1;
+
+          rech.lastIndex = lastIndex;
+          while ((match = rech.exec(str))) {
+            if (match[1]) {
+              if (match[1] === ch) { ++ix; }
+              else if (!--ix) { break }
+            } else {
+              rech.lastIndex = pushQBlock(match.index, rech.lastIndex, match[2]);
+            }
+          }
+          re.lastIndex = ix ? str.length : rech.lastIndex;
           continue
         }
+
         if (!match[3]) {
+          re.lastIndex = pushQBlock(pos, lastIndex, match[4]);
           continue
         }
       }
@@ -500,9 +614,15 @@ var brackets = (function (UNDEF) {
       unescapeStr(str.slice(start));
     }
 
+    parts.qblocks = qblocks;
+
     return parts
 
     function unescapeStr (s) {
+      if (prevStr) {
+        s = prevStr + s;
+        prevStr = '';
+      }
       if (tmpl || isexpr) {
         parts.push(s && s.replace(_bp[5], '$1'));
       } else {
@@ -510,18 +630,18 @@ var brackets = (function (UNDEF) {
       }
     }
 
-    function skipBraces (s, ch, ix) {
-      var
-        match,
-        recch = FINDBRACES[ch];
-
-      recch.lastIndex = ix;
-      ix = 1;
-      while ((match = recch.exec(s))) {
-        if (match[1] &&
-          !(match[1] === ch ? ++ix : --ix)) { break }
+    function pushQBlock(_pos, _lastIndex, slash) { //eslint-disable-line
+      if (slash) {
+        _lastIndex = skipRegex(str, _pos);
       }
-      return ix ? s.length : recch.lastIndex
+
+      if (tmpl && _lastIndex > _pos + 2) {
+        mark = '\u2057' + qblocks.length + '~';
+        qblocks.push(str.slice(_pos, _lastIndex));
+        prevStr += str.slice(start, _pos) + mark;
+        start = _lastIndex;
+      }
+      return _lastIndex
     }
   };
 
@@ -572,10 +692,12 @@ var brackets = (function (UNDEF) {
   /* istanbul ignore next: in the browser riot is always in the scope */
   _brackets.settings = typeof riot !== 'undefined' && riot.settings || {};
   _brackets.set = _reset;
+  _brackets.skipRegex = skipRegex;
 
   _brackets.R_STRINGS = R_STRINGS;
   _brackets.R_MLCOMMS = R_MLCOMMS;
   _brackets.S_QBLOCKS = S_QBLOCKS;
+  _brackets.S_QBLOCK2 = S_QBLOCK2;
 
   return _brackets
 
@@ -602,13 +724,18 @@ var tmpl = (function () {
   function _tmpl (str, data) {
     if (!str) { return str }
     
-    if (str .indexOf ('{expression:') != -1) {
+    if (str .indexOf ('{expression:') != -1 || str .indexOf ('{ enter yield }') != -1 || str .indexOf ('{ exit yield }') != -1 || str .indexOf ('{ref prefix}') != -1) {
       data ._tmpl_cache = data ._tmpl_cache || {};
-      return (data ._tmpl_cache[str] || (data ._tmpl_cache[str] = create_native(str)))(data)
-    }/*
-    data ._item = data;//*/
-
-    return (_cache[str] || (_cache[str] = _create(str))).call(data, _logErr)
+      return (data ._tmpl_cache[str] || (data ._tmpl_cache[str] = create_native(str, data)))(data)
+    }
+    else {
+      return (_cache[str] || (_cache[str] = _create(str))).call(
+        data, _logErr.bind({
+          data: data,
+          tmpl: str
+        })
+      )
+    }
   }
 
   _tmpl.hasExpr = brackets.hasExpr;
@@ -632,27 +759,59 @@ var tmpl = (function () {
       typeof console !== 'undefined' &&
       typeof console.error === 'function'
     ) {
-      if (err.riotData.tagName) {
-        console.error('Riot template error thrown in the <%s> tag', err.riotData.tagName);
-      }
-      console.error(err);
+      console.error(err.message);
+      console.log('<%s> %s', err.riotData.tagName || 'Unknown tag', this.tmpl); // eslint-disable-line
+      console.log(this.data); // eslint-disable-line
     }
   }
 
-  var x = function (str) {
-            //console.log('path a');
-            var expression = /expression:([^:]+):(\d+)/.exec(str);
-            var tag_name = expression[1];
-            var n = expression[2];
-            
-            var scope = window .tag_scopes [tag_name];
-            return scope.expressions[n-1]/*/
-            return function(_item){
-              try {return scope.expressions[n-1](_item);} catch (e) {console.error(e)}
-            }//*/
+
+  var climb = function (n, scope) {
+                for (var i = 0; i < n; i ++) {
+                  scope = scope .parent;
+                }
+                return scope;
+              }
+  var _yield = function () { return 'yield:' }
+  var _self = function () { return 'self:' }
+  var x = function (str, apparent_scope) {
+            if (str .trim () === 'enter yield') {
+              return apparent_scope ._yield_on;
+            }
+            else if (str .trim () === 'exit yield') {
+              return apparent_scope ._yield_off;
+            }
+            else if (str .trim () === 'ref prefix') {
+              if (apparent_scope ._yielding)
+                return _yield;
+              else
+                return _self;
+            }
+            else {
+              //console.log('path a');
+              var expression = /expression:([^:]+):(\d+)/.exec(str);
+              //var tag_name = expression[1];
+              var n = expression[2];
+              
+              if (! apparent_scope ._loaded) apparent_scope = apparent_scope .parent;
+              //var scope = window .tag_scopes [tag_name];
+              
+              var scope = apparent_scope;
+              
+              if (scope ._yield_level) {
+                scope = climb (scope ._yield_level, scope);
+                while (scope ._yield_levels)
+                  scope = climb (scope ._yield_levels, scope);
+              }
+              //console.log(str, scope);
+              return scope.expressions[n-1]/*/
+              return function(_item){
+                try {return scope.expressions[n-1](_item);} catch (e) {console.error(e)}
+              }/**/
+            }
           }
   var q = function (x){return function (){return x;}};
-  var create_native = function (str) {
+  var create_native = function (str, tag) {
     //console.log('path', str);
       var
         expr,
@@ -667,7 +826,7 @@ var tmpl = (function () {
   
           if (expr && (expr = i & 1
   
-              ? x(expr)
+              ? x(expr, tag)
   
               : q(expr)
   
@@ -679,7 +838,7 @@ var tmpl = (function () {
              : function (_item) { return list.map(function(x){return x(_item);}).join('')};
   
       } else {
-        expr = x(parts[1]);
+        expr = x(parts[1], tag);
       }
       return expr;/*
       return function (_item) {
@@ -693,28 +852,16 @@ var tmpl = (function () {
 
     if (expr.slice(0, 11) !== 'try{return ') { expr = 'return ' + expr; }
 
-    var intp = new Function('E', expr + ';');// eslint-disable-line no-new-func
-
-    return intp;/*
-    return function () {
-      window.called++;var start = window.performance.now();
-      var res =  intp .apply (this, arguments);
-      window .eval_ms += window.performance.now() - start; return res;
-    }//*/
+    return new Function('E', expr + ';')    // eslint-disable-line no-new-func
   }
 
-  var
-    CH_IDEXPR = String.fromCharCode(0x2057),
-    RE_CSNAME = /^(?:(-?[_A-Za-z\xA0-\xFF][-\w\xA0-\xFF]*)|\u2057(\d+)~):/,
-    RE_QBLOCK = RegExp(brackets.S_QBLOCKS, 'g'),
-    RE_DQUOTE = /\u2057/g,
-    RE_QBMARK = /\u2057(\d+)~/g;
+  var RE_DQUOTE = /\u2057/g;
+  var RE_QBMARK = /\u2057(\d+)~/g;
 
   function _getTmpl (str) {
-    var
-      qstr = [],
-      expr,
-      parts = brackets.split(str.replace(RE_DQUOTE, '"'), 1);
+    var parts = brackets.split(str.replace(RE_DQUOTE, '"'), 1);
+    var qstr = parts.qblocks;
+    var expr;
 
     if (parts.length > 2 || parts[0]) {
       var i, j, list = [];
@@ -745,7 +892,7 @@ var tmpl = (function () {
       expr = _parseExpr(parts[1], 0, qstr);
     }
 
-    if (qstr[0]) {
+    if (qstr.length) {
       expr = expr.replace(RE_QBMARK, function (_, pos) {
         return qstr[pos]
           .replace(/\r/g, '\\r')
@@ -755,6 +902,7 @@ var tmpl = (function () {
     return expr
   }
 
+  var RE_CSNAME = /^(?:(-?[_A-Za-z\xA0-\xFF][-\w\xA0-\xFF]*)|\u2057(\d+)~):/;
   var
     RE_BREND = {
       '(': /[()]/g,
@@ -765,11 +913,8 @@ var tmpl = (function () {
   function _parseExpr (expr, asText, qstr) {
 
     expr = expr
-          .replace(RE_QBLOCK, function (s, div) {
-            return s.length > 2 && !div ? CH_IDEXPR + (qstr.push(s) - 1) + '~' : s
-          })
-          .replace(/\s+/g, ' ').trim()
-          .replace(/\ ?([[\({},?\.:])\ ?/g, '$1');
+      .replace(/\s+/g, ' ').trim()
+      .replace(/\ ?([[\({},?\.:])\ ?/g, '$1');
 
     if (expr) {
       var
@@ -824,7 +969,6 @@ var tmpl = (function () {
     JS_NOPROPS = /^(?=(\.[$\w]+))\1(?:[^.[(]|$)/;
 
   function _wrapExpr (expr, asText, key) {
-    
     var tb;
 
     expr = expr.replace(JS_VARNAME, function (match, p, mvar, pos, s) {
@@ -861,7 +1005,7 @@ var tmpl = (function () {
     return expr
   }
 
-  _tmpl.version = brackets.version = 'v3.0.3';
+  _tmpl.version = brackets.version = 'v3.0.8';
 
   return _tmpl
 
@@ -1090,7 +1234,9 @@ var misc = Object.freeze({
 });
 
 var settings$1 = extend(Object.create(brackets.settings), {
-  skipAnonymousTags: true
+  skipAnonymousTags: true,
+  // handle the auto updates on any DOM event
+  autoUpdate: true
 });
 
 /**
@@ -1121,6 +1267,9 @@ function handleEvent(dom, handler, e) {
 
   handler.call(this, e);
 
+  // avoid auto updates
+  if (!settings$1.autoUpdate) { return }
+
   if (!e.preventUpdate) {
     var p = getImmediateCustomParentTag(this);
     // fixes #2083
@@ -1138,6 +1287,10 @@ function handleEvent(dom, handler, e) {
 function setEventHandler(name, handler, dom, tag) {
   var eventName,
     cb = handleEvent.bind(tag, dom, handler);
+
+  // avoid to bind twice the same event
+  // possible fix for #2332
+  dom[name] = null;
 
   // normalize event name
   eventName = name.replace(RE_EVENTS_PREFIX, '');
@@ -1168,7 +1321,6 @@ function updateDataIs(expr, parent, tagName) {
   isVirtual = expr.dom.tagName === 'VIRTUAL';
   // sync _parent to accommodate changing tagnames
   if (expr.tag) {
-
     // need placeholder before unmount
     if(isVirtual) {
       head = expr.tag.__.head;
@@ -1178,6 +1330,8 @@ function updateDataIs(expr, parent, tagName) {
 
     expr.tag.unmount(true);
   }
+
+  if (!isString(tagName)) { return }
 
   expr.impl = __TAG_IMPL[tagName];
   conf = {root: expr.dom, parent: parent, hasImpl: true, tagName: tagName};
@@ -1229,6 +1383,7 @@ function updateExpression(expr) {
     // detect the style attributes
     isStyleAttr = attrName === 'style',
     isClassAttr = attrName === 'class',
+    hasValue,
     isObj,
     value;
 
@@ -1249,7 +1404,8 @@ function updateExpression(expr) {
   if (expr.update) { return expr.update() }
 
   // ...it seems to be a simple expression so we try to calculat its value
-  value = tmpl(expr.expr, this);
+  value = tmpl(expr.expr, isToggle ? extend({}, Object.create(this.parent), this) : this);
+  hasValue = !isBlank(value);
   isObj = isObject(value);
 
   // convert the style/class objects to strings
@@ -1263,7 +1419,7 @@ function updateExpression(expr) {
   }
 
   // remove original attribute
-  if (expr.attr && (!expr.isAttrRemoved || !value)) {
+  if (expr.attr && (!expr.isAttrRemoved || !hasValue || value === false)) {
     remAttr(dom, expr.attr);
     expr.isAttrRemoved = true;
   }
@@ -1319,7 +1475,7 @@ function updateExpression(expr) {
       dom.value = value;
     }
 
-    if (!isBlank(value) && value !== false) {
+    if (hasValue && value !== false) {
       setAttr(dom, attrName, value);
     }
 
@@ -1343,7 +1499,7 @@ var IfExpr = {
     remAttr(dom, CONDITIONAL_DIRECTIVE);
     this.tag = tag;
     this.expr = expr;
-    this.stub = document.createTextNode('');
+    this.stub = createDOMPlaceholder();
     this.pristine = dom;
 
     var p = dom.parentNode;
@@ -1375,9 +1531,6 @@ var IfExpr = {
   },
   unmount: function unmount() {
     unmountAll(this.expressions || []);
-    delete this.pristine;
-    delete this.parentNode;
-    delete this.stub;
   }
 };
 
@@ -1394,17 +1547,13 @@ var RefExpr = {
     var old = this.value;
     var customParent = this.parent && getImmediateCustomParentTag(this.parent);
     // if the referenced element is a custom tag, then we set the tag itself, rather than DOM
-    var tagOrDom = this.tag || this.dom;
+    var tagOrDom = this.dom.__ref || this.tag || this.dom;
 
     this.value = this.hasExp ? tmpl(this.rawValue, this.parent) : this.rawValue;
 
     // the name changed, so we need to remove it from the old key (if present)
     if (!isBlank(old) && customParent) { arrayishRemove(customParent.refs, old, tagOrDom); }
-
-    if (isBlank(this.value)) {
-      // if the value is blank, we remove it
-      remAttr(this.dom, this.attr);
-    } else {
+    if (!isBlank(this.value) && isString(this.value)) {
       // add it to the refs of parent tag (this behavior was changed >=3.0)
       if (customParent) { arrayishAdd(
         customParent.refs,
@@ -1414,17 +1563,23 @@ var RefExpr = {
         null,
         this.parent.__.index
       ); }
-      // set the actual DOM attr
-      setAttr(this.dom, this.attr, this.value);
+
+      if (this.value !== old) {
+        setAttr(this.dom, this.attr, this.value);
+      }
+    } else {
+      remAttr(this.dom, this.attr);
     }
+
+    // cache the ref bound to this dom node
+    // to reuse it in future (see also #2329)
+    if (!this.dom.__ref) { this.dom.__ref = tagOrDom; }
   },
   unmount: function unmount() {
     var tagOrDom = this.tag || this.dom;
     var customParent = this.parent && getImmediateCustomParentTag(this.parent);
     if (!isBlank(this.value) && customParent)
       { arrayishRemove(customParent.refs, this.value, tagOrDom); }
-    delete this.dom;
-    delete this.parent;
   }
 };
 
@@ -1575,6 +1730,10 @@ function _each(dom, parent, expr) {
       isObject$$1 = !isArray(items) && !isString(items),
       root = placeholder.parentNode;
 
+    // if this DOM was removed the update here is useless
+    // this condition fixes also a weird async issue on IE in our unit test
+    if (!root) { return }
+
     // object loop. any changes cause full redraw
     if (isObject$$1) {
       hasKeys = items || false;
@@ -1666,6 +1825,7 @@ function _each(dom, parent, expr) {
     // clone the items array
     oldItems = items.slice();
 
+    // this condition is weird u
     root.insertBefore(frag, placeholder);
   };
 
@@ -1772,6 +1932,8 @@ function parseAttributes(dom, attrs, fn) {
   var this$1 = this;
 
   each(attrs, function (attr) {
+    if (!attr) { return false }
+
     var name = attr.name, bool = isBoolAttr(name), expr;
 
     if (contains(REF_DIRECTIVES, name)) {
@@ -1797,6 +1959,7 @@ var reYieldDest = /<yield\s+from=['"]?([-\w]+)['"]?\s*(?:\/>|>([\S\s]*?)<\/yield
 var rootEls = { tr: 'tbody', th: 'tr', td: 'tr', col: 'colgroup' };
 var tblTags = IE_VERSION && IE_VERSION < 10 ? RE_SPECIAL_TAGS : RE_SPECIAL_TAGS_NO_OPTION;
 var GENERIC = 'div';
+var SVG = 'svg';
 
 
 /*
@@ -1859,12 +2022,13 @@ function replaceYield(tmpl, html) {
  * @param   { String } tmpl  - The template coming from the custom tag definition
  * @param   { String } html - HTML content that comes from the DOM element where you
  *           will mount the tag, mostly the original tag in the page
+ * @param   { Boolean } isSvg - true if the root node is an svg
  * @returns { HTMLElement } DOM element with _tmpl_ merged through `YIELD` with the _html_.
  */
-function mkdom(tmpl, html) {
+function mkdom(tmpl, html, isSvg$$1) {
   var match   = tmpl && tmpl.match(/^\s*<([-\w]+)/),
     tagName = match && match[1].toLowerCase(),
-    el = mkEl(GENERIC);
+    el = mkEl(isSvg$$1 ? SVG : GENERIC);
 
   // replace all the yield tags with the tag inner html
   tmpl = replaceYield(tmpl, html);
@@ -1966,10 +2130,11 @@ function tag2$1(name, tmpl, css, attrs, fn) {
  */
 function mount$1(selector, tagName, opts) {
   var tags = [];
+  var elem, allTags;
 
   function pushTagsTo(root) {
     if (root.tagName) {
-      var riotTag = getAttr(root, IS_DIRECTIVE);
+      var riotTag = getAttr(root, IS_DIRECTIVE), tag;
 
       // have tagName? force riot-tag to be the same
       if (tagName && riotTag !== tagName) {
@@ -1977,7 +2142,7 @@ function mount$1(selector, tagName, opts) {
         setAttr(root, IS_DIRECTIVE, tagName);
       }
 
-      var tag = mountTo(root, riotTag || root.tagName.toLowerCase(), opts);
+      tag = mountTo(root, riotTag || root.tagName.toLowerCase(), opts);
 
       if (tag)
         { tags.push(tag); }
@@ -1992,9 +2157,6 @@ function mount$1(selector, tagName, opts) {
     opts = tagName;
     tagName = 0;
   }
-
-  var elem;
-  var allTags;
 
   // crawl the DOM to find the tag
   if (isString(selector)) {
@@ -2052,7 +2214,7 @@ var mixins_id = 0;
 function mixin$1(name, mix, g) {
   // Unnamed global
   if (isObject(name)) {
-    mixin$1(("__unnamed_" + (mixins_id++)), name, true);
+    mixin$1(("__" + (mixins_id++) + "__"), name, true);
     return
   }
 
@@ -2061,7 +2223,7 @@ function mixin$1(name, mix, g) {
   // Getter
   if (!mix) {
     if (isUndefined(store[name]))
-      { throw new Error('Unregistered mixin: ' + name) }
+      { throw new Error(("Unregistered mixin: " + name)) }
 
     return store[name]
   }
@@ -2081,10 +2243,10 @@ function update$1() {
 }
 
 function unregister$1(name) {
-  delete __TAG_IMPL[name];
+  __TAG_IMPL[name] = null;
 }
 
-var version$1 = 'v3.4.2';
+var version$1 = 'v3.6.0';
 
 
 var core = Object.freeze({
@@ -2150,6 +2312,7 @@ function Tag$1(impl, conf, innerHTML) {
     root = conf.root,
     tagName = conf.tagName || getTagName(root),
     isVirtual = tagName === 'virtual',
+    isInline = !isVirtual && !impl.tmpl,
     propsInSyncWithParent = [],
     dom;
 
@@ -2168,6 +2331,7 @@ function Tag$1(impl, conf, innerHTML) {
     tagName: tagName,
     index: index,
     isLoop: isLoop,
+    isInline: isInline,
     // tags having event listeners
     // it would be better to use weak maps here but we can not introduce breaking changes now
     listeners: [],
@@ -2189,7 +2353,12 @@ function Tag$1(impl, conf, innerHTML) {
   defineProperty(this, 'tags', {});
   defineProperty(this, 'refs', {});
 
-  dom = isLoop && isAnonymous ? root : mkdom(impl.tmpl, innerHTML, isLoop);
+  if (isInline || isLoop && isAnonymous) {
+    dom = root;
+  } else {
+    if (!isVirtual) { root.innerHTML = ''; }
+    dom = mkdom(impl.tmpl, innerHTML, isSvg(root));
+  }
 
   /**
    * Update the tag expressions and options
@@ -2323,7 +2492,7 @@ function Tag$1(impl, conf, innerHTML) {
 
     this.update(item);
 
-    if (!isAnonymous) {
+    if (!isAnonymous && !isInline) {
       while (dom.firstChild) { root.appendChild(dom.firstChild); }
     }
 
@@ -2367,6 +2536,7 @@ function Tag$1(impl, conf, innerHTML) {
     walkAttrs(impl.attrs, function (name) {
       if (startsWith(name, ATTRS_PREFIX))
         { name = name.slice(ATTRS_PREFIX.length); }
+
       remAttr(root, name);
     });
 
@@ -2391,8 +2561,10 @@ function Tag$1(impl, conf, innerHTML) {
           });
         } else {
           arrayishRemove(ptag.tags, tagName, this);
-          if(parent !== ptag) // remove from _parent too
-            { arrayishRemove(parent.tags, tagName, this); }
+          // remove from _parent too
+          if(parent !== ptag) {
+            arrayishRemove(parent.tags, tagName, this);
+          }
         }
       } else {
         // remove the tag contents
@@ -2505,10 +2677,6 @@ function initChildTag(child, opts, innerHTML, parent) {
   // and also to the real parent tag
   if (ptag !== parent)
     { arrayishAdd(parent.tags, tagName, tag); }
-
-  // empty the child node once we got its template
-  // to avoid that its children get compiled multiple times
-  opts.root.innerHTML = '';
 
   return tag
 }
@@ -2638,9 +2806,6 @@ function mountTo(root, tagName, opts, ctx) {
     tag = ctx || (implClass ? Object.create(implClass.prototype) : {}),
     // cache the inner HTML to fix #855
     innerHTML = root._innerHTML = root._innerHTML || root.innerHTML;
-
-  // clear the inner html
-  root.innerHTML = '';
 
   var conf = extend({ root: root, opts: opts }, { parent: opts ? opts.parent : null });
 

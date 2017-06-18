@@ -12,7 +12,7 @@
 </nav>
 <component-main-content>
 	<choose-match>
-		<info-area info="choose-team" if={ ! my ('opponent-info') }>
+		<info-area info="choose-team" if={ ! opponent_info () }>
 			<info-holder>
 				<info-header>
 					<home>主隊(己隊)</home>
@@ -30,14 +30,14 @@
 				</away-team>
 				<component-spacing height="5px" />
 				<team-name>
-					<home>{ my ('home-name') }</home>
+					<home>{ home_name () }</home>
 					<label>VS</label>
 				</team-name>
 				<component-spacing height="5px" />
 				<component-separator />
 				<component-spacing height="5px" />
 				<team-age-range>
-					<home>{ my ('home-age-range') }</home>
+					<home>{ home_age_range () }</home>
 					<label>年齡</label>
 				</team-age-range>
 				<component-spacing height="5px" />
@@ -64,7 +64,7 @@
 				<component-spacing height="5px" />
 			</info-holder>
 		</info-area>
-		<info-area info="team" if={ my ('opponent-info') }>
+		<info-area info="team" if={ opponent_info () }>
 			<info-holder>
 				<info-header>
 					<home>主隊</home>
@@ -72,17 +72,17 @@
 				</info-header>
 				<component-spacing height="5px" />
 				<team-name>
-					<home>{ my ('home-team-name') }</home>
+					<home>{ home_team_name () }</home>
 					<label>VS</label>
-					<away>{ my ('away-team-name') }</away>
+					<away>{ away_team_name () }</away>
 				</team-name>
 				<component-spacing height="5px" />
 				<component-separator />
 				<component-spacing height="5px" />
 				<team-age-range>
-					<home>{ my ('home-age-range') }</home>
+					<home>{ home_age_range () }</home>
 					<label>年齡</label>
-					<away>{ my ('away-age-range') }</away>
+					<away>{ away-age-range () }</away>
 				</team-age-range>
 				<component-spacing height="5px" />
 				<component-separator />
@@ -115,14 +115,14 @@
 			<info-holder>
 				<info-header>賽事資料</info-header>
 				<match-details>
-					<date>{ my ('match-date') }</date>
-					<time>{ my ('match-time') }</time>
+					<date>{ match_date () }</date>
+					<time>{ match_time () }</time>
 				</match-details>
 				<match-location>
 					<label>地點</label>
 					<item>
 						<icon-holder><icon class="fa-map-marker"></icon></icon-holder>
-						{ my ('match-location') }
+						{ match_location () }
 					</item>
 				</match-location>
 				<component-spacing height="5px" />
@@ -130,14 +130,14 @@
 				<component-spacing height="5px" />
 				<match-pitch>
 					<label>場地</label>
-					<item>{ my ('match-pitch') }</item>
+					<item>{ match_pitch () }</item>
 				</match-pitch>
 				<component-spacing height="5px" />
 				<component-separator />
 				<component-spacing height="5px" />
 				<match-fee>
 					<label>費用</label>
-					<item>{ my ('match-fee') }</item>
+					<item>{ match_fee () }</item>
 				</match-fee>
 				<component-spacing height="5px" />
 				<component-separator />
@@ -156,7 +156,7 @@
 		<info-area info="choices">
 			<info-holder>
 				<info-header>
-					{ my ('apply-number') }隊報名
+					{ apply_number () }隊報名
 				</info-header>
 				<component-schedule-match-applicant-item />
 				<component-schedule-match-applicant-item />
@@ -301,81 +301,77 @@
 </style>
 
 <script>
-	self
-		.remembers ('match-info')
-		.remembers ('team-info')
-		.remembers ('choices-info')
+	var match_info = stream ()
+	var team_info = stream ()
+	var opponent_info = stream ();
+	var choices_info = stream ()
+
 	mergeAll ([
-		self .impressions ('match-info'),
-		self .impressions ('team-info'),
-		self .impressions ('choices-info')
+		match_info,
+		team_info,
+		choices_info
 	])
-		.thru (map, noop) .thru (tap, self .render);
+	.thru (map, noop) .thru (tap, self .render);
 
-	self
-		.establish ('home-name', dependent (function () {
-			return my ('team-info') .long_name;
-		}, self .impressions ('team-info')))
-		.establish ('home-age-range', dependent (function () {
-			return my ('team-info') .average_age;
-		}, self .impressions ('team-info')))
-		
-		
-		.establish ('match-date', dependent (function () {
-			//2017年1月15日 星期日
-			var date_time = new Date (my ('match-info') .start_at);
-			return date_to_chi (date_time) + ' 星期' + day_of_week_to_chi (date_time);
-		}, self .impressions ('match-info')))
-		.establish ('match-time', dependent (function () {
-			//3:00 pm - 4:30 pm
-			var start_date_time = new Date (my ('match-info') .start_at)
-			var end_date_time = new Date (my ('match-info') .end_at);
-			
-			return times (start_date_time, end_date_time)
-		}, self .impressions ('match-info')))
-		.establish ('match-location', dependent (function () {
-			//北區運動場
-			return location_from_api (my ('match-info') .location)
-		}, self .impressions ('match-info')))
-		.establish ('match-pitch', dependent (function () {
-			//11v11 - 真草
-			return my ('match-info') .match_type + ' - ' + my ('match-info') .pitch .pitch_type;
-		}, self .impressions ('match-info')))
-		.establish ('match-fee', dependent (function () {
-			//HKD $450
-			return fee_to_chi (my ('match-info') .fee_per_team);
-		}, self .impressions ('match-info')))
+	var home_name = mechanism (function () {
+		return team_info () .long_name;
+	}, [ team_info ])
+	var home_age_range = mechanism (function () {
+		return team_info () .average_age;
+	}, [ team_info ])
 	
-		.establish ('apply-number', dependent (function () {
-			//HKD $450
-			return my ('choices-info') .length;
-		}, self .impressions ('choices-info')))
+	
+	var match_date = mechanism (function () {
+		//2017年1月15日 星期日
+		var date_time = new Date (match_info () .start_at);
+		return date_to_chi (date_time) + ' 星期' + day_of_week_to_chi (date_time);
+	}, [ match_info ])
+	var match_time = mechanism (function () {
+		//3:00 pm - 4:30 pm
+		var start_date_time = new Date (match_info () .start_at)
+		var end_date_time = new Date (match_info () .end_at);
+		
+		return times (start_date_time, end_date_time)
+	}, [ match_info ])
+	var match_location = mechanism (function () {
+		//北區運動場
+		return location_from_api (match_info () .location)
+	}, [ match_info ])
+	var match_pitch = mechanism (function () {
+		//11v11 - 真草
+		return match_info () .match_type + ' - ' + match_info () .pitch .pitch_type;
+	}, [ match_info ])
+	var match_fee = mechanism (function () {
+		//HKD $450
+		return fee_to_chi (match_info () .fee_per_team);
+	}, [ match_info ])
+
+	var apply_number = mechanism (function () {
+		//HKD $450
+		return choices_info () .length;
+	}, [ choices_info ])
 
 
-	self
-		.impressions (args .cycle__from)
-			.thru (tap, function (cycle) {
-				if (self .affiliated ('::match-to-find-info')) {
-					var match_info = my ('::match-to-find-info') (parse (args [0]));
-					
-					inquire (self .affiliated (match_info))
-						//.thru (takeUntil, my (args .cycle__from) .end)
-						.then (function (match) {
-							self .mention ('match-info', match)
-						});
-					inquire (self .affiliated ('::teams'))
-						.then (function (teams) {
-							self .mention ('team-info', teams [0])
-						})
-						.then (function () {
-							var applications_info = my ('::match-applications') (my ('team-info') .id, parse (args [0]));
-							inquire (self .affiliated (applications_info))
-								.then (function (choices) {
-									self .mention ('choices-info', choices)
-								});
-						})
-				}
-				else
-					window .location .hash = '#login'
-			})
+	args .cycle__from
+		.thru (tap, function (cycle) {
+			if (api () .match_to_find_info) {
+				inquire (api () .match_to_find_info (parse (args [0])))
+					//.thru (takeUntil, args .cycle__from () .end)
+					.then (function (match) {
+						match_info (match)
+					});
+				inquire (api () .teams)
+					.then (function (teams) {
+						team_info (teams [0])
+					})
+					.then (function () {
+						inquire (api () .match_applications (team_info () .id, parse (args [0])))
+							.then (function (choices) {
+								choices_info (choices)
+							});
+					})
+			}
+			else
+				window .location .hash = '#login'
+		})
 </script>

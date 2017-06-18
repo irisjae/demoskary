@@ -154,18 +154,6 @@ var flatten =	function (ary) {
 								return a .concat (b)
 							}, [])
 				};
-				
-var consistentfy =	function (original_refs) {
-						var shallow_refs = {};
-						for (var ref in original_refs) {
-							shallow_refs [ref] = original_refs [ref]
-							if (! shallow_refs [ref] .length)
-								shallow_refs [ref] = [shallow_refs [ref]];
-							else
-								shallow_refs [ref] = shallow_refs [ref] .slice ();
-						}
-						return shallow_refs;
-					};
 					
 var constant =	function (x) {
 					return function () { return x; };
@@ -215,3 +203,12 @@ var make =	function (func) {
 				func (x);
 				return x;
 			}		
+			
+			
+			
+var climb = function (n, scope) {
+            for (var i = 0; i < n; i ++) {
+              scope = scope .parent;
+            }
+            return scope;
+          }

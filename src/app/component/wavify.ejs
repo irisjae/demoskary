@@ -58,6 +58,6 @@
             (self .root .removeChild .bind (self .root, wave))
     
         if (args .waves__to)
-            self .mention (args .waves__to, from_promise (done))
+            args .waves__to (from_promise (done))
     }, true);
 </script>

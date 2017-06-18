@@ -249,3 +249,8 @@ var from =	function (pushes) {
 				pushes (s);
 				return s;
 			};
+var begins_with =	function (what, s) {
+						if (! s .hasVal)
+							s (what)
+						return s;
+					}

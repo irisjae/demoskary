@@ -18,16 +18,18 @@
 	    position: absolute !important;
 	    transform: translateX(-50%) translateY(-50%);
 	    
-	    &::before, &::after {
+	    &:before, &:after {
 			content: initial;
 		}
 	}
 </style>
 
 <script>
+	var input = ref ('input');
+
 	self
 		.on ('mount', function () {
-			var picker =	new Flatpickr (my ('input'), {
+			var picker =	new Flatpickr (input (), {
 								inline: true,
 								minDate: (function () {
 									var today = new Date();
@@ -39,11 +41,9 @@
 			picker .currentYearElement .setAttribute ('readonly', true);
 		})
 		
-		.establish ('input', ref)
-		
-	self .impressions ('input') .thru (tap, function (input) {
+	input .thru (tap, function (input) {
 		input .addEventListener ('change', function () {
-			self .mention (args .date__to, input .value);
+			args .date__to (input .value);
 		});
 	})
 </script>

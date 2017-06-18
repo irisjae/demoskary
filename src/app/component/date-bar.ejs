@@ -1,4 +1,4 @@
-<span>{ my ('year') }{ my ('month') }</span>
+    <span>{ year () }{ month () }</span>
 
 <style>
     font-size: 13px;
@@ -15,18 +15,17 @@
 </style>
 
 <script>
-    self
-        .establish ('year', dependent (function () {
-            if (my (args .date__from)) {
-                var date = fecha .parse (my (args .date__from), 'YYYYMM');
-                if (fecha .format (new Date (), 'YYYY') !== fecha .format (date, 'YYYY'))
-                    return fecha .format (date, 'YYYY年');
-            }
-        }, self .impressions (args .date__from)))
-        .establish ('month', dependent (function () {
-            if (my (args .date__from)) {
-                var date = fecha .parse (my (args .date__from), 'YYYYMM');
-                return fecha .format (date, 'M月');   
-            }
-        }, self .impressions (args .date__from)))
+    var year = mechanism (function () {
+        if (args .date__from ()) {
+            var date = fecha .parse (args .date__from (), 'YYYYMM');
+            if (fecha .format (new Date (), 'YYYY') !== fecha .format (date, 'YYYY'))
+                return fecha .format (date, 'YYYY年');
+        }
+    }, [args .date__from])
+    var month = mechanism (function () {
+        if (args .date__from ()) {
+            var date = fecha .parse (args .date__from (), 'YYYYMM');
+            return fecha .format (date, 'M月');   
+        }
+    }, [args .date__from])
 </script>

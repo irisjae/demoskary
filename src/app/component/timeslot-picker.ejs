@@ -1,31 +1,31 @@
 <modal>
     <start>
         <hour>
-            <input value={ ('0' + my ('start-hour')) .slice (-2) } pattern="d*" step="1" min="1" max="12" readonly="true">
+            <input value={ ('0' + start_hour ()) .slice (-2) } pattern="d*" step="1" min="1" max="12" readonly="true">
             <label up ref="start-hour-up" />
             <label down ref="start-hour-down" />
         </hour>
         <separator>:</separator>
         <minutes>
-            <input value={ ('0' + my ('start-minute')) .slice (-2) } pattern="d*" step="1" min="1" max="12" readonly="true">
+            <input value={ ('0' + start_minute ()) .slice (-2) } pattern="d*" step="1" min="1" max="12" readonly="true">
             <label up ref="start-minute-up" />
             <label down ref="start-minute-down" />
         </minutes>
-        <label ref="start-ampm-toggle">{ my ('start-ampm') }</label>
+        <label ref="start-ampm-toggle">{ start_ampm () }</label>
     </start>
     <end>
         <hour>
-            <input value={ ('0' + my ('end-hour')) .slice (-2) } pattern="d*" step="1" min="1" max="12" readonly="true">
+            <input value={ ('0' + end_hour ()) .slice (-2) } pattern="d*" step="1" min="1" max="12" readonly="true">
             <label up ref="end-hour-up" />
             <label down ref="end-hour-down" />
         </hour>
         <separator>:</separator>
         <minutes>
-            <input value={ ('0' + my ('end-minute')) .slice (-2) } pattern="d*" step="1" min="1" max="12" readonly="true">
+            <input value={ ('0' + end_minute ()) .slice (-2) } pattern="d*" step="1" min="1" max="12" readonly="true">
             <label up ref="end-minute-up" />
             <label down ref="end-minute-down" />
         </minutes>
-        <label ref="end-ampm-toggle">{ my ('end-ampm') }</label>
+        <label ref="end-ampm-toggle">{ end_ampm () }</label>
     </end>
 </modal>
 
@@ -110,90 +110,95 @@
 </style>
 
 <script>
-    self
-        .remembers ('start-hour', 7)
-        .remembers ('start-minute', 30)
-        .remembers ('start-ampm', 'PM')
-        .remembers ('end-hour', 9)
-        .remembers ('end-minute', 0)
-        .remembers ('end-ampm', 'PM')
+    var start_hour = stream (7)
+    var start_minute = stream (30)
+    var start_ampm = stream ('PM')
+    var end_hour = stream (9)
+    var end_minute = stream (0)
+    var end_ampm = stream ('PM')
         
-        .establish ('start-hour-up', ref)
-        .establish ('start-hour-down', ref)
-        .establish ('start-minute-up', ref)
-        .establish ('start-minute-down', ref)
-        .establish ('start-ampm-toggle', ref)
-        .establish ('end-hour-up', ref)
-        .establish ('end-hour-down', ref)
-        .establish ('end-minute-up', ref)
-        .establish ('end-minute-down', ref)
-        .establish ('end-ampm-toggle', ref)
-        
+    var start_hour_up = ref ('start-hour-up')
+    var start_hour_down = ref ('start-hour-down')
+    var start_minute_up = ref ('start-minute-up')
+    var start_minute_down = ref ('start-minute-down')
+    var start_ampm_toggle = ref ('start-ampm-toggle')
+    var end_hour_up = ref ('end-hour-up')
+    var end_hour_down = ref ('end-hour-down')
+    var end_minute_up = ref ('end-minute-up')
+    var end_minute_down = ref ('end-minute-down')
+    var end_ampm_toggle = ref ('end-ampm-toggle')
+
     mergeAll ([
-        self .impressions ('start-hour'),
-        self .impressions ('start-minute'),
-        self .impressions ('start-ampm'),
-        self .impressions ('end-hour'),
-        self .impressions ('end-minute'),
-        self .impressions ('end-ampm')
+        start_hour, start_minute, start_ampm,
+        end_hour, end_minute, end_ampm
     ])
-        .thru (map, noop) .thru (tap, self .render)
-        .thru (tap, function () {
-            if (args .timeslot__to)
-                self .mention (args .timeslot__to, {
-                    start: ('0' + my ('start-hour')) .slice (-2) + ':' + ('0' + my ('start-minute')) .slice (-2) + ' ' + my ('start-ampm'),
-                    end: ('0' + my ('end-hour')) .slice (-2) + ':' + ('0' + my ('end-minute')) .slice (-2) + ' ' + my ('end-ampm')
-                })
-        })
+    .thru (map, noop) .thru (tap, self .render)
+    .thru (tap, function () {
+        if (args .timeslot__to)
+            args .timeslot__to ({
+                start: ('0' + start_hour ()) .slice (-2) + ':' + ('0' + start_minute ()) .slice (-2) + ' ' + start_ampm (),
+                end: ('0' + end_hour ()) .slice (-2) + ':' + ('0' + end_minute ()) .slice (-2) + ' ' + end_ampm ()
+            })
+    })
         
-    self .impressions ('start-hour-up') .thru (tap, function (ref) {
+    start_hour_up .thru (tap, function (ref) {
         ref .addEventListener ('click', function () {
-            self .mention ('start-hour', (my ('start-hour') % 12) + 1)
+            start_hour (
+                (start_hour () % 12) + 1)
         })
     })
-    self .impressions ('start-hour-down') .thru (tap, function (ref) {
+    start_hour_down .thru (tap, function (ref) {
         ref .addEventListener ('click', function () {
-            self .mention ('start-hour', (my ('start-hour') - 1) || 12)
+            start_hour (
+                (start_hour () - 1) || 12)
         })
     })
-    self .impressions ('start-minute-up') .thru (tap, function (ref) {
+    start_minute_up .thru (tap, function (ref) {
         ref .addEventListener ('click', function () {
-            self .mention ('start-minute', (my ('start-minute') + 30) % 60)
+            start_minute (
+                (start_minute () + 30) % 60)
         })
     })
-    self .impressions ('start-minute-down') .thru (tap, function (ref) {
+    start_minute_down .thru (tap, function (ref) {
         ref .addEventListener ('click', function () {
-            self .mention ('start-minute', (my ('start-minute') + 30) % 60)
+            start_minute (
+                (start_minute () + 30) % 60)
         })
     })
-    self .impressions ('start-ampm-toggle') .thru (tap, function (ref) {
+    start_ampm_toggle .thru (tap, function (ref) {
         ref .addEventListener ('click', function () {
-            self .mention ('start-ampm', my ('start-ampm') === 'AM' ? 'PM' : 'AM')
+            start_ampm (
+                start_ampm () === 'AM' ? 'PM' : 'AM')
         })
     })
-    self .impressions ('end-hour-up') .thru (tap, function (ref) {
+    end_hour_up .thru (tap, function (ref) {
         ref .addEventListener ('click', function () {
-            self .mention ('end-hour', (my ('end-hour') % 12) + 1)
+            end_hour (
+                (end_hour () % 12) + 1)
         })
     })
-    self .impressions ('end-hour-down') .thru (tap, function (ref) {
+    end_hour_down .thru (tap, function (ref) {
         ref .addEventListener ('click', function () {
-            self .mention ('end-hour', (my ('end-hour') - 1) || 12)
+            end_hour (
+                (end_hour () - 1) || 12)
         })
     })
-    self .impressions ('end-minute-up') .thru (tap, function (ref) {
+    end_minute_up .thru (tap, function (ref) {
         ref .addEventListener ('click', function () {
-            self .mention ('end-minute', (my ('end-minute') + 30) % 60)
+            end_minute (
+                (end_minute () + 30) % 60)
         })
     })
-    self .impressions ('end-minute-down') .thru (tap, function (ref) {
+    end_minute_down .thru (tap, function (ref) {
         ref .addEventListener ('click', function () {
-            self .mention ('end-minute', (my ('end-minute') + 30) % 60)
+            end_minute (
+                (end_minute () + 30) % 60)
         })
     })
-    self .impressions ('end-ampm-toggle') .thru (tap, function (ref) {
+    end_ampm_toggle .thru (tap, function (ref) {
         ref .addEventListener ('click', function () {
-            self .mention ('end-ampm', my ('end-ampm') === 'AM' ? 'PM' : 'AM')
+            end_ampm (
+                end_ampm () === 'AM' ? 'PM' : 'AM')
         })
     })
 </script>

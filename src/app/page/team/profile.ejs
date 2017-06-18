@@ -21,7 +21,7 @@
 		<info-graphic>
 			<team-picture>
 				 <img src="http://placehold.it/128x128">
-				 <label style=" display: block; font-size: 1.5em; font-weight: bold; text-align: center; color: black; ">{ my ('name') }</label>
+				 <label style=" display: block; font-size: 1.5em; font-weight: bold; text-align: center; color: black; ">{ name () }</label>
 			</team-picture> 
 		</info-graphic>
 		
@@ -51,7 +51,7 @@
 				<component-spacing height="5px" />
 				<team-age-range>
 					<label>年齡</label>
-					<item>{ my ('age-lower') }-{ my ('age-higher') }</item>
+					<item>{ age_lower () }-{ age_higher () }</item>
 				</team-age-range>
 				<component-spacing height="5px" />
 				<component-separator />
@@ -65,7 +65,7 @@
 				<component-spacing height="5px" />
 				<team-is-league-active>
 					<label>聯賽</label>
-					<item>{ my ('is-league?') }</item>
+					<item>{ league () }</item>
 				</team-is-league-active>
 				<component-spacing height="5px" />
 			</info-holder>
@@ -76,7 +76,7 @@
 				<component-spacing height="5px" />
 				<preferred-match-type>
 					<label>人數</label>
-					<item>{ my ('preferred-match-type') }</item>
+					<item>{ preferred_match_type () }</item>
 				</preferred-match-type>
 				<component-spacing height="5px" />
 				<component-separator />
@@ -144,74 +144,65 @@
 </style>
 
 <script>
-	self
-		.impressions (args .cycle__from)
-			.thru (filter, function () {
-				if (self .affiliated ('::teams'))
-					return true;
-				else
-					window .location .hash = '#login';
-			})
-			.thru (tap, function () {
-				inquire (self .affiliated ('::teams'))
-					.then (function (team) {
-						self .mention ('team-info', team)
+	args .cycle__from
+		.thru (filter, function () {
+			if (api () .teams)
+				return true;
+			else
+				window .location .hash = '#login';
+		})
+		.thru (tap, function () {
+			inquire (api () .teams)
+				.then (function (team) {
+					team_info (team)
+				});
+		})
+	
+	var team_info = stream ();
+	var team =	team_info
+					.thru (filter, function (res) {
+						return res [0]
+					})
+	 				.thru (map, function (res) {
+						return res [0]
+					})
+	 				.thru (map, function (team) {
+						return 	{
+									win_rate: 			win_rate (team .team_statistic .won, team .team_statistic .played_match) + '%',
+									approve_number:			team .team_statistic .num_of_opponent_acceptance,
+									opponent_number:		team .team_statistic .num_of_played_against_team,
+									name: 					team .long_name,
+									age_lower: 				team .age_group_lower,
+									age_higher: 			team .age_group_upper,
+									is_league: 			is_league (team .is_frequent_league_player),
+									preferred_match_type: 	team .team_preference .match_type_list .join ('//')
+								}
 					});
-			})
 	
-	self
-		.remembers ('team-info')
-		.establish ('team', constant (
-			(function () {
-				var teams =	self .impressions ('team-info')
-								.thru (filter, function (res) {
-									return res [0]
-								})
-				 				.thru (map, function (res) {
-									return res [0]
-								})
-				 				.thru (map, function (team) {
-									return 	{
-												win_rate: 			win_rate (team .team_statistic .won, team .team_statistic .played_match) + '%',
-												approve_number:			team .team_statistic .num_of_opponent_acceptance,
-												opponent_number:		team .team_statistic .num_of_played_against_team,
-												name: 					team .long_name,
-												age_lower: 				team .age_group_lower,
-												age_higher: 			team .age_group_upper,
-												is_league: 			is_league (team .is_frequent_league_player),
-												preferred_match_type: 	team .team_preference .match_type_list .join ('//')
-											}
-								});
-				
-				return teams;
-			}) ()
-		))
+	var win_rate = mechanism (function () {
+		return team () .win_rate
+	}, [ team ])
+	var approve_number = mechanism (function () {
+		return team () .approve_number
+	}, [ team ])
+	var opponent_number = mechanism (function () {
+		return team () .opponent_number
+	}, [ team ])
+	var name = mechanism (function () {
+		return team () .name
+	}, [ team ])
+	var age_lower = mechanism (function () {
+		return team () .age_lower
+	}, [ team ])
+	var age_higher = mechanism (function () {
+		return team () .age_higher
+	}, [ team ])
+	var league = mechanism (function () {
+		return team () .is_league
+	}, [ team ])
+	var preferred_match_type = mechanism (function () {
+		return team () .preferred_match_type
+	}, [ team ])
 	
-	self
-		.establish ('win-rate', dependent (function () {
-			return my ('team') .win_rate
-		}, self .impressions ('team')))
-		.establish ('approve-number', dependent (function () {
-			return my ('team') .approve_number
-		}, self .impressions ('team')))
-		.establish ('opponent-number', dependent (function () {
-			return my ('team') .opponent_number
-		}, self .impressions ('team')))
-		.establish ('name', dependent (function () {
-			return my ('team') .name
-		}, self .impressions ('team')))
-		.establish ('age-lower', dependent (function () {
-			return my ('team') .age_lower
-		}, self .impressions ('team')))
-		.establish ('age-higher', dependent (function () {
-			return my ('team') .age_higher
-		}, self .impressions ('team')))
-		.establish ('is-league?', dependent (function () {
-			return my ('team') .is_league
-		}, self .impressions ('team')))
-		.establish ('preferred-match-type', dependent (function () {
-			return my ('team') .preferred_match_type
-		}, self .impressions ('team')))
-	
-	self .impressions ('team') .thru (map, noop) .thru (tap, self .render)
+	team .thru (map, noop) .thru (tap, self .render)
 </script>

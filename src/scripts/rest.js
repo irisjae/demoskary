@@ -17,7 +17,7 @@ var stateful =	function (opts) {
 					var error = opts .error;
 					var value = opts .value;
 					
-					return function (inquiries) {
+					return dialogue (function (inquiries) {
 							
 								var states = stream ();
 								var states_persistence = persistance (states, key, cache_prefix);
@@ -178,7 +178,7 @@ var stateful =	function (opts) {
 								states .cached = states_persistence .cached;
 								
 								return states;
-						}
+						})
 					};
 
 

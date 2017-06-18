@@ -1,10 +1,10 @@
-<component-date-bar date__from=":date" if={ my (':date') } />
-<a href="#match/catalog/preview/#{ my ('id') }" if={ my ('match') } >
+<component-date-bar date__from={ date } if={ date () } />
+<a href="#match/catalog/preview/#{ id () }" if={ match () } >
 	<match>
 		<match-graphic>
 			<image-holder size="96x96">
 				<highlight-holder>
-					<component-timeslot-highlight timeslot__from=":timeslot" />
+					<component-timeslot-highlight timeslot__from={ timeslot } />
 				</highlight-holder>
 			</image-holder>
 		</match-graphic>
@@ -12,19 +12,19 @@
 			<info-holder>
 				<match-location>
 					<icon-holder><icon class="fa-map-marker" /></icon-holder>
-					{ my ('location') }
+					{ location () }
 				</match-location>
-				<match-type>{ my ('num-of-players') }人{ my ('field-type') }</match-type>
+				<match-type>{ num_of_players () }人{ field_type () }</match-type>
 				
 				<br>
 				
 				<match-opponent>
 					<svg width="12" height="12" viewBox="0 0 12 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:figma="http://www.figma.com/figma/ns"> <title>home team</title> <desc>Created using Figma</desc> <g id="Canvas" transform="translate(904 -135)" figma:type="canvas"> <g id="home team" style="mix-blend-mode:normal;" figma:type="frame"> <g id="Ellipse" style="mix-blend-mode:normal;" figma:type="ellipse"> <use xlink:href="#8b683baf-6a70-4b4e-9644-1df0db18ce07" transform="translate(-904 135)" fill="#FFFFFF" style="mix-blend-mode:normal;"/> <mask id="mask0_outline_ins"> <use xlink:href="#8b683baf-6a70-4b4e-9644-1df0db18ce07" fill="white" transform="translate(-904 135)"/> </mask> <g mask="url(#mask0_outline_ins)"> <use xlink:href="#a998b656-5177-4dbc-ab8b-cfd938771cee" transform="translate(-904 135)" style="mix-blend-mode:normal;"/> </g> </g> <g id="&#228;&#184;&#187;" style="mix-blend-mode:normal;" figma:type="text"> <use xlink:href="#9e67a4c0-1545-4fa1-8048-fa2f855c342f" transform="translate(-902 137)" style="mix-blend-mode:normal;"/> </g> </g> </g> <defs> <path id="8b683baf-6a70-4b4e-9644-1df0db18ce07" d="M 12 6C 12 9.31371 9.31371 12 6 12C 2.68629 12 0 9.31371 0 6C 0 2.68629 2.68629 0 6 0C 9.31371 0 12 2.68629 12 6Z"/> <path id="a998b656-5177-4dbc-ab8b-cfd938771cee" d="M 11 6C 11 8.76142 8.76142 11 6 11L 6 13C 9.86599 13 13 9.86599 13 6L 11 6ZM 6 11C 3.23858 11 1 8.76142 1 6L -1 6C -1 9.86599 2.13401 13 6 13L 6 11ZM 1 6C 1 3.23858 3.23858 1 6 1L 6 -1C 2.13401 -1 -1 2.13401 -1 6L 1 6ZM 6 1C 8.76142 1 11 3.23858 11 6L 13 6C 13 2.13401 9.86599 -1 6 -1L 6 1Z"/> <path id="9e67a4c0-1545-4fa1-8048-fa2f855c342f" d="M 0.392 6.64L 0.392 7.352L 7.592 7.352L 7.592 6.64L 4.352 6.64L 4.352 4.664L 7.152 4.664L 7.152 3.96L 4.352 3.96L 4.352 2.2L 7.312 2.2L 7.312 1.488L 4.208 1.488L 4.456 1.288C 4.136 0.84 3.832 0.48 3.544 0.224L 3 0.704C 3.208 0.888 3.44 1.152 3.696 1.488L 0.648 1.488L 0.648 2.2L 3.648 2.2L 3.648 3.96L 0.832 3.96L 0.832 4.664L 3.648 4.664L 3.648 6.64L 0.392 6.64Z"/> </defs> </svg>
-					{ my ('team-name') }
+					{ team_name () }
 				</match-opponent>
 			</info-holder>
 		</match-info>
-		<match-substatus>{ my ('apply-numbers') }隊報名</match-substatus>
+		<match-substatus>{ apply_numbers () }隊報名</match-substatus>
 	</match>
 </a>
 
@@ -68,48 +68,43 @@
 </style>
 
 <script>
-    self
-        .establish ('item', constant (
-            self
-                .impressions (args .item__from)
-                    .thru (dropRepeatsWith, json_equal))
-        )
+    var item =	args .item__from
+                	.thru (dropRepeatsWith, json_equal)
         
-        .establish (':date', dependent (function () {
-            return my ('item') .date;
-        }, self .impressions ('item')))
-        .establish ('match', dependent (function () {
-            return my ('item') .match;
-        }, self .impressions ('item')))
-        
+    var date = mechanism (function () {
+        return item () .date;
+    }, [ item ])
+    var match = mechanism (function () {
+        return item () .match;
+    }, [ item ])
     
-	self
-		.establish ('region', dependent (function () {
-			return region_from_api (my ('match') .location);
-		}, self .impressions ('match')))
-		.establish ('location', dependent (function () {
-			return location_from_api (my ('match') .location);
-		}, self .impressions ('match')))
-		.establish ('num-of-players', dependent (function () {
-			return num_of_players_to_num (my ('match') .match_type);
-		}, self .impressions ('match')))
-		.establish ('team-name', dependent (function () {
-			return my ('match') .home_team .long_name;
-		}, self .impressions ('match')))
-		.establish ('field-type', dependent (function () {
-			return field_type_to_chi (my ('match') .pitch_type);
-		}, self .impressions ('match')))
-		.establish ('apply-numbers', dependent (function () {
-			return my ('match') .applied_team_count;
-		}, self .impressions ('match')))
+
+	var region = mechanism (function () {
+		return region_from_api (match () .location);
+	}, [ match ])
+	var location = mechanism (function () {
+		return location_from_api (match () .location);
+	}, [ match ])
+	var num_of_players = mechanism (function () {
+		return num_of_players_to_num (match () .match_type);
+	}, [ match ])
+	var team_name = mechanism (function () {
+		return match () .home_team .long_name;
+	}, [ match ])
+	var field_type = mechanism (function () {
+		return field_type_to_chi (match () .pitch_type);
+	}, [ match ])
+	var apply_numbers = mechanism (function () {
+		return match () .applied_team_count;
+	}, [ match ])
+	
+	var timeslot = mechanism (function () {
+		return new Date (match () .start_at);
+	}, [ match ])
+	
+	var id = mechanism (function () {
+		return match () .id;
+	}, [ match ])
 		
-		.establish (':timeslot', dependent (function () {
-			return new Date (my ('match') .start_at);
-		}, self .impressions ('match')))
-		
-		.establish ('id', dependent (function () {
-			return my ('match') .id;
-		}, self .impressions ('match')))
-		
-    self .impressions ('item') .thru (map, noop) .thru (tap, self .render)
+    item .thru (map, noop) .thru (tap, self .render)
 </script>

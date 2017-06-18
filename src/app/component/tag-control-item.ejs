@@ -1,32 +1,24 @@
 <a ref="ref" >
-	<tag>{ my ('tag') }</tag>
+	<tag>{ item () }</tag>
 </a>
 
 <style>
 	/*> a:hover > tag {
-	    background: #777;
-	    color: #EEE;
+		background: #777;
+		color: #EEE;
 	}*/
 </style>
 
 <script>
-    self
-        .establish ('item', constant (
-            self 
-                .impressions (args .item__from) 
-                    .thru (dropRepeatsWith, json_equal))
-        )
-        .establish ('tag', dependent (function () {
-            return my ('item');
-        }, self .impressions ('item')))
+	var item =	args .item__from
+					.thru (dropRepeatsWith, json_equal)
 
-        .establish ('ref', ref)
-        .impressions ('ref')
-            .thru (tap, function (_ref) {
-                _ref .addEventListener ('click', function () {
-                        self .mention (args .select__to, my ('tag'))
-                })
-            })
+	ref ('ref') .thru (tap, function (_ref) {
+		_ref .addEventListener ('click', function () {
+			args .select__to (
+				item ())
+		})
+	})
 
-	self .impressions ('tag') .thru (map, noop) .thru (tap, self .render)
+	item .thru (map, noop) .thru (tap, self .render)
 </script>

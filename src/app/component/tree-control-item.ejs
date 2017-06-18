@@ -1,21 +1,21 @@
 <item ref="item">
 	<status>
-		<svg if={ my ('empty') } viewBox="0 0 24 24"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path></svg>
-		<svg if={ my ('half') } viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2z"></path></svg>
-		<svg if={ my ('full') } viewBox="0 0 24 24"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg>
+		<svg if={ empty () } viewBox="0 0 24 24"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path></svg>
+		<svg if={ half () } viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2z"></path></svg>
+		<svg if={ full () } viewBox="0 0 24 24"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg>
 	</status>
-	<label>{ my ('name') }</label>
-	<branch-status if={ my ('branched') }>
+	<label>{ name () }</label>
+	<branch-status if={ branched () }>
 		<button type="button">
-			<svg if={ ! my ('empty') } viewBox="0 0 24 24"><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"></path></svg>
-			<svg if={ my ('empty') } viewBox="0 0 24 24"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path></svg>
+			<svg if={ ! empty () } viewBox="0 0 24 24"><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"></path></svg>
+			<svg if={ empty () } viewBox="0 0 24 24"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path></svg>
 			<component-wavify center />
 		</button>
 	</branch-status>
 	<component-wavify />
 </item>
-<branch if={ my ('branch-open') }>
-	<component-tree-control items__from=":status" items__to=":modifications" />
+<branch if={ branch-open () }>
+	<component-tree-control items__from={ status } items__to={ modifications } />
 </branch>	
 
 <style>
@@ -139,46 +139,41 @@
 							return true;
 						}
 					});
-	self
-        .establish ('tree', constant (self .impressions (args .item__from) .thru (dropRepeatsWith, json_equal)))
-    	.impressions ('tree')
-    		.thru (map, noop) .thru (tap, self .render)
+	var tree = args .item__from .thru (dropRepeatsWith, json_equal);
+		tree .thru (map, noop) .thru (tap, self .render)
     		
     		
-    self
-        .establish ('name', dependent (function () {
-            return my ('tree') .name;
-        }, self .impressions ('tree')))
-        .establish (':status', dependent (function () {
-            return my ('tree') .status;
-        }, self .impressions ('tree')))
+    var name = mechanism (function () {
+        return tree () .name;
+    }, [tree])
+    var status = mechanism (function () {
+        return tree () .status;
+    }, [tree])
         
-        .establish ('empty', dependent (function () {
-            return zeroed (my (':status'));
-        }, self .impressions (':status')))
-        .establish ('half', dependent (function () {
-            return ! zeroed (my (':status')) && ! filled (my (':status'));
-        }, self .impressions (':status')))
-        .establish ('full', dependent (function () {
-            return filled (my (':status'));
-        }, self .impressions (':status')))
+    var empty = dependent (function () {
+        return zeroed (status ());
+    }, [status])
+    var half = mechanism (function () {
+        return ! zeroed (status ()) && ! filled (status ());
+    }, [status])
+    var full = mechanism (function () {
+        return filled (status ());
+    }, [status])
         
-        .establish ('branched', dependent (function () {
-            return typeof my (':status') !== 'boolean';
-        }, self .impressions (':status')))
-        .establish ('branch-open', dependent (function () {
-            return typeof my (':status') !== 'boolean' && ! zeroed (my (':status'));
-        }, self .impressions (':status')))
+    var branched = mechanism (function () {
+        return typeof status () !== 'boolean';
+    }, [status])
+    var branch_open = mechanism (function () {
+        return typeof status () !== 'boolean' && ! zeroed (status ());
+    }, [status])
         
     
-    self
-		.establish ('item', ref)
-		.impressions ('item')
-			.thru (tap, function (ref) {
-				ref .addEventListener ('click', function () {
-					self .mention ('toggle');
-				}, true)
-			});
+    ref ('item')
+		.thru (tap, function (ref) {
+			ref .addEventListener ('click', function () {
+				toggle ('click');
+			}, true)
+		});
 			
 			
 
@@ -210,26 +205,22 @@
 						return tree;
 					}
 				};
-	self
-		.remembers ('toggle')
-		.impressions ('toggle')
-			.thru (tap, function () {
-				var name = my ('name');
-				var status = my (':status');
-				self .mention (args .substitute__to, {
-					item: name,
-					sub: zeroed (status) ? fill (status) : zero (status)
-				})
-			});
-			
-			
-	self
-		.remembers (':modifications')
-		.impressions (':modifications')
-			.thru (tap, function (sub) {
-				self .mention (args .substitute__to, {
-					item: my ('name'),
-					sub: sub
-				})
+	var toggle = stream ()
+		.thru (tap, function () {
+			var name = name ();
+			var status = status ();
+			args .substitute__to ({
+				item: name,
+				sub: zeroed (status) ? fill (status) : zero (status)
 			})
+		});
+			
+			
+	var modifications =	stream ()
+		.thru (tap, function (sub) {
+			args .substitute__to ({
+				item: name (),
+				sub: sub
+			})
+		})
 </script>

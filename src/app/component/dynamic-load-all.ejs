@@ -1,8 +1,6 @@
-<virtual each={ wrap, i in my ('target-items') }>
-	<component-dynamic-load-item nth={ _item .wrap .nth } item__from={ my ('loaded-item') (_item .wrap .nth) } >
-		<yield />
-	</component-dynamic-load-item>
-</virtual>
+<component-dynamic-load-item each={ wrap, i in target_items () } nth={ _item .wrap .nth } item={ loaded_item (_item .wrap .nth) } garbage={ _item .wrap .nth < loaded_range () .from || loaded_range () .to < _item .wrap .nth } no-reorder={ args .no_reorder } >
+	<yield />
+</component-dynamic-load-item>
 
 <script>
 	self .update_strategy = 'pull';
@@ -19,27 +17,19 @@
 					};
 
 	
-	self
-		.establish ('loaded-items', constant (self .impressions (item_source)))
-		.establish ('loaded-range', (dependent (function () {
-			return rangify (my ('loaded-items'));
-		}, self .impressions ('loaded-items'))))
-		.remembers ('loaded-item', function (nth) {
-			var item_label = ':item-' + nth;
-			
-			if (! self .personal (item_label))
-				self .establish (item_label, dependent (function () {
-					return my ('loaded-items') [nth];
-				}, self .impressions ('loaded-items')))
-			
-			return item_label;	
-		})
-		.establish ('target-items', dependent (function () {
-			return arrayify (my ('loaded-range')) .map (wrap_nth);
-		}, self .impressions ('loaded-range')))
+	var loaded_items = item_source;
+	var loaded_range = mechanism (function () {
+		return rangify (loaded_items ());
+	}, [loaded_items])
+	var loaded_item = function (nth) {
+		return loaded_items () [nth];	
+	}
+	var target_items = mechanism (function () {
+		return arrayify (loaded_range ()) .map (wrap_nth);
+	}, [ loaded_range ])
 		
 		
-	self .impressions ('loaded-items')
+	loaded_items
 		.thru (tap, function () {
 			var date = new Date ();
 			self .render ()

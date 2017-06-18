@@ -10,10 +10,10 @@
 		<label>
 			請輸入手機號碼
 		</label>
-		<component-field-control type="number" placeholder="999" input__to=":phone" />
+		<component-field-control type="number" placeholder="999" input__to={ phone } />
 		<component-spacing height="35px" />
 		<component-action>
-			<a href="#user/verify/verify-step" ref="phone-button" disabled={ my ('phone-ok') !== 'ok' } maybe={ my ('phone-ok') === 'maybe' }>確定</a>
+			<a href="#user/verify/verify-step" ref="phone-button" disabled={ phone_ok () !== 'ok' } maybe={ phone_ok () === 'maybe' }>確定</a>
 		</component-action>
 		<disclaimer>
 			請輸入電話號碼及點擊繼續，FOFI將會透過SMS發送手機驗證碼給您。
@@ -79,43 +79,39 @@
 
 
 <script>
-	self
-		.remembers (':phone')
-		.impressions (':phone')
-			.thru (tap, function () {
-				self .mention ('phone-ok', 'maybe')
-			})
-			.thru (map, function (phone_num) {
-				if ((phone_num + '') .length === 8) {
-					return 	logged_with ('asdf')(from_promise (
-								inquire (self .affiliated ('::contact'), {			
-	        						country: 'HKG',
-									phone_number: '+852' + phone_num 
-								}) .then (tap_ (logged_with (1)))
-									.then (R .curryN (2) (wait) (400)) .then (tap_ (logged_with (2)))
-							))
-				}
-				else
-					return stream ({ error: 'invalid input' });
-			})
-			.thru (switchLatest).thru(tap, log)
-			.thru (tap, function (res) {
-				if (res .error)
-					self .mention ('phone-ok', 'not-ok')
-				else
-					self .mention ('phone-ok', 'ok')
-			}) 
-			
-	self 
-		.remembers ('phone-ok', 'not-ok')
-		.impressions ('phone-ok') .thru (map, noop) .thru (tap, self .render);
-		
-	self
-		.establish ('phone-button', ref)
-		.impressions ('phone-button') .thru (tap, function (ref) {
-			ref .addEventListener ('click', function (e) {
-				e .preventDefault ();
-				window .location .hash = ref .hash  + '/#' + ([ '+852' + my (':phone') ] .map (stringify)) .join ('/')
-			})
+	var phone = stream ()
+	phone
+		.thru (tap, function () {
+			phone_ok ('maybe')
 		})
+		.thru (map, function (phone_num) {
+			if ((phone_num + '') .length === 8) {
+				return 	from_promise (
+							inquire (api () .contact, {			
+        						country: 'HKG',
+								phone_number: '+852' + phone_num 
+							})// .then (tap_ (logged_with (1)))
+								.then (R .curryN (2) (wait) (400))// .then (tap_ (logged_with (2)))
+						)
+			}
+			else
+				return stream ({ error: 'invalid input' });
+		})
+		.thru (switchLatest)//.thru(tap, log)
+		.thru (tap, function (res) {
+			if (res .error)
+				phone_ok ('not-ok')
+			else
+				phone_ok ('ok')
+		}) 
+			
+	var phone_ok = stream ('not-ok')
+	phone_ok .thru (map, noop) .thru (tap, self .render);
+	
+	ref ('phone-button') .thru (tap, function (ref) {
+		ref .addEventListener ('click', function (e) {
+			e .preventDefault ();
+			window .location .hash = ref .hash  + '/#' + ([ '+852' + phone () ] .map (stringify)) .join ('/')
+		})
+	})
 </script>

@@ -25,7 +25,7 @@
 			</days-to-reserve>
 		</reserve-priorities>
 		<component-action>
-			<a href="#schedule/upcoming" ref="open-button" disabled={ my ('opening') }>建立</a>
+			<a href="#schedule/upcoming" ref="open-button" disabled={ opening () }>建立</a>
 		</component-action>
 	</open-match>
 </component-main-content>
@@ -50,76 +50,71 @@
 <script>
 	self .temp = true;
 
-	self
-		.remembers ('opening')
-		.impressions ('opening') .thru (map, noop) .thru (tap, self .render)
+	var opening = stream ();
+	opening .thru (map, noop) .thru (tap, self .render)
 		
-	self
-		.establish ('open-button', ref)
-		.impressions ('open-button') .thru (tap, function (ref) {
-			ref .addEventListener ('click', function (e) {
-				e .preventDefault ();
-				
-				self .mention ('opening', true);
-				
-				inquire_last (self .affiliated ('::teams')) .then (function (teams) {
-					return teams [0] .id
-				}) .then (function (team_id) {
-					var match_open = my ('::match-open') (team_id)
-					inquire (self .affiliated (match_open), {
-				        start_at: 	fecha .format
-				        				(fecha .parse (parse (args [0]) + ' ' + parse (args [1]) .split (' - ') [0], 'YYYY年M月D日 h:mm A'),
-				        				'YYYY-MM-DDTHH:mm:ss+08:00'),//'2017-06-01T12:00:00+08:00',
-				        end_at: 	fecha .format
-				        				(fecha .parse (parse (args [0]) + ' ' + parse (args [1]) .split (' - ') [1], 'YYYY年M月D日 h:mm A'),
-				        				'YYYY-MM-DDTHH:mm:ss+08:00'),
-				        reserved_day_for_trusted_team: 0,
-						home_team_average_age: 30,
-				        home_team_jersey_color: parse (args [3]),
-				        fee_per_team: + parse (args [4]) || +0,
-				        match_type: parse (args [5]),
-				        pitch_id: 1,
-				        tag_list: ['lol']
-					})
-						.then (function (data) {
-							self .mention ('opening', false);
-							if (data)
-								window .location .hash = ref .hash;
-						})
+	ref ('open-button') .thru (tap, function (ref) {
+		ref .addEventListener ('click', function (e) {
+			e .preventDefault ();
+			
+			opening (true);
+			
+			inquire_last (api () .teams) .then (function (teams) {
+				return teams [0] .id
+			}) .then (function (team_id) {
+				inquire (api () .match_open (team_id), {
+			        start_at: 	fecha .format
+			        				(fecha .parse (parse (args [0]) + ' ' + parse (args [1]) .split (' - ') [0], 'YYYY年M月D日 h:mm A'),
+			        				'YYYY-MM-DDTHH:mm:ss+08:00'),//'2017-06-01T12:00:00+08:00',
+			        end_at: 	fecha .format
+			        				(fecha .parse (parse (args [0]) + ' ' + parse (args [1]) .split (' - ') [1], 'YYYY年M月D日 h:mm A'),
+			        				'YYYY-MM-DDTHH:mm:ss+08:00'),
+			        reserved_day_for_trusted_team: 0,
+					home_team_average_age: 30,
+			        home_team_jersey_color: parse (args [3]),
+			        fee_per_team: + parse (args [4]) || +0,
+			        match_type: parse (args [5]),
+			        pitch_id: 1,
+			        tag_list: ['lol']
 				})
+					.then (function (data) {
+						opening (false);
+						if (data)
+							window .location .hash = ref .hash;
+					})
 			})
-		}) 
+		})
+	}) 
 
-	self
-		.remembers ('date', function () {
-			//2017年1月15日 星期日
-			var date = parse (args [0]);
-			var date_time = date_from_chi (date)
-			return date + ' ' + day_of_week_to_chi (date_time);
-		})
-		.remembers ('times', function () {
-			//3:00 pm - 4:30 pm
-			var date = parse (args [0]);
-			var time = parse (args [1]);
-			var duration = parse (args [2]);
-			
-			var start_date_time = fecha .parse (date + ' ' + time, 'YYYY年M月D日 h:mm A')
-			var end_date_time = new Date (start_date_time .getTime () + duration * 60000);
-			
-			return times (start_date_time, end_date_time)
-		})
-		.remembers ('location', function () {
-			//北區運動場
-			return parse (args [4])
-		})
-		.remembers ('match-type', function () {
-			//11v11 - 真草
-			return parse (args [6]) + ' - ' + parse (args [7]);
-		})
-		.remembers ('fee', function () {
-			//HKD $450
-			var fee = parse (args [5]);
-			return fee_to_chi (fee)
-		})
+	var date = function () {
+		//2017年1月15日 星期日
+		var date = parse (args [0]);
+		var date_time = date_from_chi (date)
+		return date + ' ' + day_of_week_to_chi (date_time);
+	}
+	var times = function () {
+		//3:00 pm - 4:30 pm
+		var date = parse (args [0]);
+		var time = parse (args [1]);
+		var duration = parse (args [2]);
+		
+		var start_date_time = fecha .parse (date + ' ' + time, 'YYYY年M月D日 h:mm A')
+		var end_date_time = new Date (start_date_time .getTime () + duration * 60000);
+		
+		return times (start_date_time, end_date_time)
+	}
+	var location = function () {
+		//北區運動場
+		return parse (args [4])
+	}
+	var match_type = function () {
+		//11v11 - 真草
+		return parse (args [6]) + ' - ' + parse (args [7]);
+	}
+	var fee = function () {
+		//HKD $450
+		var fee = parse (args [5]);
+		return fee_to_chi (fee)
+	}
 	
 </script>

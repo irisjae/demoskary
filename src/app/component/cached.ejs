@@ -52,7 +52,7 @@
 				var mother = self .root;
 				
 				var put_back;
-				var main_cache = self .refs .render;
+				var main_cache = ref ('render') ();
 				window .component_cache [key] =	function (put){
 													if (put_back)
 														main_cache .parentNode .insertBefore (put_back, main_cache);
@@ -68,7 +68,7 @@
 												}
 			}
 			else {
-				window .component_cache [key] (self .refs .render);
+				window .component_cache [key] (ref ('render') ());
 			}
 		})
 </script>

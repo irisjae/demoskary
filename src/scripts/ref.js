@@ -1,75 +1,83 @@
-var ref =	function (ref_changes) {
-				return	ref_changes
-							.thru (filter, function (change) {
-								return change .add;
-							})
-							.thru (map, function (change) {
-								return change .add;
-							});
-			};
-var ref_set =	function (ref_changes) {
-					var refs = [];
-					ref_changes .thru (tap, function (change) {
-						if (change .add)
-							refs .push (change .add);
-						if (change .remove)
-							refs .splice (refs .indexOf (change .remove), 1);
-					})
-					return	ref_changes
-								.thru (map, function () {
-									return refs .slice ();
-								});
-				};	
-
-(function () {
-	riot .mixin (
-		{
-			init:	function () {
-						(function (self) {
-							var last_refs = {};
-							mergeAll ([
-								from (function (when) { self .on ('mount', function (x) { when (x); }); }),
-								from (function (when) { self .on ('updated', function (x) { when (x); }); }),
-								from (function (when) { self .on ('before-unmount', function (x) { when (x); }); })
-							])
-								.map (function () {
-									return self .refs
+var ref_diff =	function (name, ref_diffs) {
+					return	ref_diffs
+								.thru (spread)
+								.thru (filter, function (diff) {
+									return diff .type === 'add' && diff .ref === name;
 								})
+								.thru (map, function (diff) {
+									return diff .node;
+								});
+				};
+var ref_set_diff =	function (name, ref_diffs) {//TODO: add hashmap from node id (is there such a thing?) to index, so becomes O(1)
+						var refs = [];
+						return	ref_diffs
+									.thru (tap, function (diffs) {
+										diffs .forEach (function (diff) {
+											if (diff .type === 'add')
+												refs .push (diff .node);
+											if (diff .type === 'remove')
+												refs .splice (refs .indexOf (diff .node), 1);
+										})
+									})
+									.thru (map, function () {
+										return refs .slice ();
+									});
+					};	
+var diff_refs =	function (refs) {
+					var last_refs = {};
+					return	refs
 								.map (function (current) {
 									var prev_refs = last_refs;
-									last_refs = consistentfy (current);
-								    return diff_refs (prev_refs, current);
+									last_refs = current;
+								    return diff_ref (prev_refs, current);
 								})
-								.thru (spread)
-								.thru (tap, function (change) {
-									var diff = {};
-									diff [change .type] = change .node;
-									((self .affiliated (change .ref) || {}) .mention || noop) (diff);
-								})
-						}) (this);			
+				}
+				
+var yield_refs =	function (refs) {
+						var _refs = {};
+						for (var yield_name in refs) {
+							if (yield_name .startsWith ('yield:'))
+								_refs [yield_name .slice ('yield:' .length)] = refs [yield_name]
+						}
+						return _refs;
 					}
-		} );
-							var diff_refs =	function (last_refs, now_refs) {
-												now_refs = consistentfy (now_refs);
-								
-											    var diff = [];
-											    //debugger;
-											    for (var ref in now_refs) {
-											    	for (var node of now_refs [ref]) {
-											    		var node_index;
-											    		if (last_refs [ref] && (node_index = last_refs [ref] .indexOf (node)) !== -1) {
-											    			last_refs [ref] .splice (node_index, 1);
-											    		}
-											    		else {
-											    			diff .unshift ({ ref: ref, type: 'add', node: node });
-											    		}
-											    	}
-											    } 
-											    for (var ref in last_refs) {
-											    	for (var node of last_refs [ref]) {
-											    		diff .unshift ({ ref: ref, type: 'remove', node: node });
-											    	}
-											    } 
-											    return diff;
-											};
-}) ();
+var self_refs =	function (refs) {
+					var _refs = {};
+					for (var yield_name in refs) {
+						if (yield_name .startsWith ('self:'))
+							_refs [yield_name .slice ('self:' .length)] = refs [yield_name]
+					}
+					return _refs;
+				}
+var diff_ref =	function (last_refs, now_refs) {
+			    var diff = [];
+			    for (var ref in now_refs) {
+			    	for (var node of now_refs [ref]) {
+			    		var node_index;
+			    		if (last_refs [ref] && (node_index = last_refs [ref] .indexOf (node)) !== -1) {
+			    			last_refs [ref] .splice (node_index, 1);
+			    		}
+			    		else {
+			    			diff .unshift ({ ref: ref, type: 'add', node: node });
+			    		}
+			    	}
+			    } 
+			    for (var ref in last_refs) {
+			    	for (var node of last_refs [ref]) {
+			    		diff .unshift ({ ref: ref, type: 'remove', node: node });
+			    	}
+			    } 
+			    return diff;
+			};
+							
+var consistentfy =	function (original_refs) {
+						var shallow_refs = {};
+						for (var ref in original_refs) {
+							shallow_refs [ref] = original_refs [ref]
+							if (! shallow_refs [ref] .length)
+								shallow_refs [ref] = [shallow_refs [ref]];
+							else
+								shallow_refs [ref] = shallow_refs [ref] .slice ();
+						}
+						return shallow_refs;
+					};

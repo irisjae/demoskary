@@ -1,0 +1,51 @@
+<nav>
+	<nav-bar>
+		<nav-title>
+			<component-page-title>建立球隊</component-page-title>
+		</nav-title>
+	</nav-bar>
+</nav>
+<component-main-content>
+	<test-list>
+		接受球賽通知
+		<br>當球賽即將開始時，你願意接受球賽通知？
+	    <component-tree-control items__from={ test } items__to={ test } />
+	</test-list>
+</component-main-content>
+
+<style>
+	@extend [page-layout];
+	
+	test-list {
+		@extend [padded-layout];
+	}
+</style>
+
+<script>
+	var test = stream ({
+	    香港:	{
+			        中西區: false,
+			        東區: false,
+			        南區: false,
+			        灣仔區: false
+			    },
+	    九龍: 	{
+	    			深水埗區: false,
+	    			九龍城區: false,
+	    			觀塘區: false,
+	    			黃大仙區: false,
+	    			油尖旺區: false
+			    },
+	    新界: 	{
+			        離島區: false,
+			        葵青區: false,
+			        北區: false,
+			        西貢區: false,
+			        沙田區: false,
+			        大埔區: false,
+			        荃灣區: false,
+			        屯門區: false,
+			        元朗區: false
+			    }
+	})
+</script>

@@ -19,13 +19,11 @@
 </style>
 
 <script>
-    if (args .action__by)
-        self
-            .establish (args .action__by, ref)
-            .impressions (args .action__by)
-                .thru (tap, function (ref) {
-                    ref .addEventListener ('click', function () {
-                        self .mention (args .action__to, my (args .value__by))
-                    })
+    if (args .action__from)
+        args .action__from
+            .thru (tap, function (ref) {
+                ref .addEventListener ('click', function () {
+                    args .action__to (args .value__by ())
                 })
+            })
 </script>

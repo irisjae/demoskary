@@ -1,12 +1,12 @@
 <modal>
-    <jersey ref="first" if={ my ('jersey') [0] }>
-        <label>{ my ('jersey') [0] }</label>
+    <jersey ref="first" if={ jersey () [0] }>
+        <label>{ jersey () [0] }</label>
     </jersey>
-    <jersey ref="second" if={ my ('jersey') [1] }>
-        <label>{ my ('jersey') [1] }</label>
+    <jersey ref="second" if={ jersey () [1] }>
+        <label>{ jersey () [1] }</label>
     </jersey>
     <jersey ref="free">
-        <component-field-control placeholder="其他球衣" input__to=":free-jersey" />
+        <component-field-control placeholder="其他球衣" input__to={ free_jersey } />
     </jersey>
 </modal>
 
@@ -43,43 +43,41 @@
 </style>
 
 <script>
-    self
-        .remembers ('jersey', [ '曼聯衫', '球衣二' ])
-        .remembers (':free-jersey')
+    var jersey = stream ([ '曼聯衫', '球衣二' ])
+    var free_jersey = stream ()
         
-    self .impressions ('jersey')
+    jersey
         .thru (dropRepeatsWith, json_equal)
         .thru (map, noop) .thru (tap, self .render)
         
-    self
-        .establish ('first', ref)
-        .establish ('second', ref)
-        .establish ('free', ref)
+    var first = ref ('first')
+    var second = ref ('second')
+    var free = ref ('free')
         
-    self .impressions ('first')
+    first
         .thru (tap, function (_ref) {
             _ref .addEventListener ('click', function () {
                 if (args .jersey__to)
-                    self .mention (args .jersey__to, my ('jersey') [0])
+                    args .jersey__to (jersey () [0])
             })
         })
-    self .impressions ('second')
+    second
         .thru (tap, function (_ref) {
             _ref .addEventListener ('click', function () {
                 if (args .jersey__to)
-                    self .mention (args .jersey__to, my ('jersey') [1])
+                    args .jersey__to (jersey () [1])
             })
         })
-    self .impressions ('free')
+    free
         .thru (tap, function (_ref) {
             _ref .addEventListener ('click', function () {
                 if (args .jersey__to)
-                    self .mention (args .jersey__to, my (':free-jersey'))
+                    args .jersey__to (free_jersey ())
             })
         })
-    self .impressions (':free-jersey')
+    free_jersey
         .thru (tap, function () {
             if (args .jersey__to)
-                self .mention (args .jersey__to, my (':free-jersey'))
+                args .jersey__to (free_jersey ())
         })
 </script>

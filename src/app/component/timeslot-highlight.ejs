@@ -1,19 +1,19 @@
-<soon-highlight if={ my ('soon') () }>
-	{ Math .floor (my ('how-soon') ()) === 2 && '後天' }
-	{ Math .floor (my ('how-soon') ()) === 1 && '明天' }
-	{ Math .floor (my ('how-soon') ()) === 0 && '今天' }
+<soon-highlight if={ soon () }>
+	{ Math .floor (how_soon ()) === 2 && '後天' || '' }
+	{ Math .floor (how_soon ()) === 1 && '明天' || '' }
+	{ Math .floor (how_soon ()) === 0 && '今天' || '' }
 </soon-highlight>
-<month-highlight if={ ! my ('soon') () }>
-	{ my ('month') () }
+<month-highlight if={ ! soon () }>
+	{ month () }
 </month-highlight>
-<day-highlight if={ ! my ('soon') () }>
-	{ my ('day') () }
+<day-highlight if={ ! soon () }>
+	{ day () }
 </day-highlight>
 <day-of-week-highlight>
-	{ my ('day-of-week') () }
+	{ day_of_week () }
 </day-of-week-highlight>
 <time-highlight>
-	{ my ('time') () }
+	{ time () }
 </time-highlight>
 
 <style>
@@ -64,32 +64,31 @@
 </style>
 
 <script>
-    self
-		.remembers ('time', function () {
-			var date_time = new Date (my (args .timeslot__from));
-			return (function (am_pm) {
-				if (am_pm === 'AM') return '上午'
-				if (am_pm === 'PM') return '下午'
-			}) (fecha .format (date_time, 'A')) + ' ' + fecha .format (date_time, 'h:mm');
-		})
-        .remembers ('month', function () {
-            //2016年7月7日
-            return fecha .format (new Date (my (args .timeslot__from)), 'M月');
-        })
-        .remembers ('day', function () {
-            //2016年7月7日
-            return fecha .format (new Date (my (args .timeslot__from)), 'D');
-        })
-        .remembers ('day-of-week', function () {
-            //週日
-            return '週' + day_of_week_to_chi (new Date (my (args .timeslot__from)));
-        })
-        .remembers ('how-soon', function () {
-			return day_difference (fecha .format (new Date (), 'YYYY-MM-DD'), fecha .format (my (args .timeslot__from), 'YYYY-MM-DD'));
-        })
-        .remembers ('soon', function () {
-			return my ('how-soon') < 3;
-        })
+	var time = function () {
+		var date_time = new Date (args .timeslot__from ());
+		return (function (am_pm) {
+			if (am_pm === 'AM') return '上午'
+			if (am_pm === 'PM') return '下午'
+		}) (fecha .format (date_time, 'A')) + ' ' + fecha .format (date_time, 'h:mm');
+	}
+    var month = function () {
+        //2016年7月7日
+        return fecha .format (new Date (args .timeslot__from ()), 'M月');
+    }
+    var day = function () {
+        //2016年7月7日
+        return fecha .format (new Date (args .timeslot__from ()), 'D');
+    }
+    var day_of_week = function () {
+        //週日
+        return '週' + day_of_week_to_chi (new Date (args .timeslot__from ()));
+    }
+    var how_soon = function () {
+		return day_difference (fecha .format (new Date (), 'YYYY-MM-DD'), fecha .format (args .timeslot__from (), 'YYYY-MM-DD'));
+    }
+    var soon = function () {
+		return how_soon () < 3;
+    }
         
-    self .impressions (args .timeslot__from) .thru (map, noop) .thru (tap, self .render)
+    args .timeslot__from .thru (map, noop) .thru (tap, self .render)
 </script>

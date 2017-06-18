@@ -25,9 +25,9 @@
 					</label>
 					<item>
 						<control-holder>
-							<component-table-control message__from=":date">
+							<component-table-control message__from={ date }>
 								<component-modal-holder>
-									<component-date-picker date__to=":date" />
+									<component-date-picker date__to={ date } />
 								</component-modal-holder>
 							</component-table-control>
 						</control-holder>
@@ -43,9 +43,9 @@
 					</label>
 					<item>
 						<control-holder>
-							<component-table-control message__from=":timeslot">
+							<component-table-control message__from={ timeslot }>
 								<component-modal-holder>
-									<component-timeslot-picker timeslot__to=":temp-timeslot" />
+									<component-timeslot-picker timeslot__to={ temp_timeslot } />
 									<component-spacing height="25px" />
 									<component-action>
 										<a ref="timeslot-button">
@@ -67,8 +67,8 @@
 					</label>
 					<item>
 						<control-holder>
-							<component-table-control message__from=":location">
-								<component-pitch-picker location__to=":location" />
+							<component-table-control message__from={ location }>
+								<component-pitch-picker location__to={ location } />
 							</component-table-control>
 						</control-holder>
 					</item>
@@ -83,7 +83,7 @@
 					</label>
 					<item>
 						<control-holder>
-							<component-select-control select__to=":number-of-players">
+							<component-select-control select__to={ number_of_players }>
 								<a>5v5</a>
 								<a>7v7</a>
 								<a>9v9</a>
@@ -102,7 +102,7 @@
 					</label>
 					<item>
 						<control-holder>
-							<component-select-control select__to=":pitch-type">
+							<component-select-control select__to={ pitch_type }>
 								<a>硬地</a>
 								<a>人造草</a>
 								<a>仿真草</a>
@@ -121,9 +121,9 @@
 					</label>
 					<item>
 						<control-holder>
-							<component-table-control message__from=":jersey">
+							<component-table-control message__from={ jersey }>
 								<component-modal-holder>
-									<component-jersey-picker jersey__to=":temp-jersey" />
+									<component-jersey-picker jersey__to={ temp_jersey } />
 									<component-spacing height="25px" />
 									<component-action>
 										<a ref="jersey-button">
@@ -146,7 +146,7 @@
 					</label>
 					<item>
 						<control-holder>
-							<component-input-control change__to=":fee" type="number" placeholder="免費或輸入" />
+							<component-input-control change__to={ fee } type="number" placeholder="免費或輸入" />
 						</control-holder>
 					</item>
 				</match-fee>
@@ -156,7 +156,7 @@
 		</info-area>
 		<component-spacing height="35px" />
 		<component-action>
-			<a href="#match/open/tag-step" disabled={ ! my ('can-open') } ref="open-button">確定</a>
+			<a href="#match/open/tag-step" disabled={ ! can_open () } ref="open-button">確定</a>
 		</component-action>
 	</open-match>
 </component-main-content>
@@ -233,68 +233,65 @@
 </style>
 
 <script>
-	self .impressions (args .cycle__from)
+	args .cycle__from
 		.thru (tap, function () {
-			if (! self .affiliated ('::user'))
+			if (! api () .user)
 				window .location .hash = '#login'
 		}) 
 	
-	self
-		.remembers (':date')
-		.remembers (':timeslot')
-		.remembers (':jersey')
-		.remembers (':location')
-		.remembers (':fee')
-		.remembers (':number-of-players')
-		.remembers (':pitch-type')
-		
-		.remembers (':temp-timeslot')
-		.remembers (':temp-jersey')
-		
-	self
-		.establish ('timeslot-button', ref)
-		.impressions ('timeslot-button') .thru (tap, function (ref) {
-			ref .addEventListener ('click', function () {
-				self .mention (':timeslot', my (':temp-timeslot') .start + ' - ' + my (':temp-timeslot') .end)				
-			})
-		});
-	self
-		.establish ('jersey-button', ref)
-		.impressions ('jersey-button') .thru (tap, function (ref) {
-			ref .addEventListener ('click', function () {
-				self .mention (':jersey', my (':temp-jersey'))				
-			})
-		});
-		
+	var date = stream ()
+	var timeslot = stream ()
+	var jersey = stream ()
+	var location = stream ()
+	var fee = stream ()
+	var number_of_players = stream ()
+	var pitch_type = stream ()
 	
-	self
-		.establish ('can-open', dependent (function () {
-			if (! my (':date'))
-				return false;
-			if (! my (':timeslot'))
-				return false;
-			if (! my (':jersey'))
-				return false;
-			if (! my (':location'))
-				return false;
-			if (! my (':number-of-players'))
-				return false;
-			if (! my (':pitch-type'))
-				return false;
-				
-			return true;
-		}, mergeAll
-			([self .impressions (':date'), self .impressions (':timeslot'), self .impressions (':jersey'), self .impressions (':location'), self .impressions (':number-of-players'), self .impressions (':pitch-type')])
-		))
-		.impressions ('can-open')
-			.thru (trans, R .dropRepeats)
-			.thru (map, noop) .thru (tap, self .render)
+	var temp_timeslot = stream ()
+	var temp_jersey = stream ()
 		
-	self .establish ('open-button', ref)
-		.impressions ('open-button') .thru (tap, function (ref) {
+	ref ('timeslot-button') .thru (tap, function (ref) {
+		ref .addEventListener ('click', function () {
+			timeslot (temp_timeslot () .start + ' - ' + temp_timeslot () .end)				
+		})
+	});
+	ref ('jersey-button') .thru (tap, function (ref) {
+		ref .addEventListener ('click', function () {
+			jersey (temp_jersey ())				
+		})
+	});
+	
+	
+	var can_open = mechanism (function () {
+		if (! date ())
+			return false;
+		if (! timeslot ())
+			return false;
+		if (! jersey ())
+			return false;
+		if (! location ())
+			return false;
+		if (! number_of_players ())
+			return false;
+		if (! pitch_type ())
+			return false;
+			
+		return true;
+	}, [
+		mergeAll ([
+			date, timeslot, jersey, location, number_of_players, pitch_type
+		])
+	]);
+	
+	
+	can_open
+		.thru (trans, R .dropRepeats)
+		.thru (map, noop) .thru (tap, self .render)
+		
+	ref ('open-button') .thru (tap, function (ref) {
 			ref .addEventListener ('click', function (e) {
 				e .preventDefault ();
-				window .location .hash = ref .hash + '/#' + [ my (':date'), my (':timeslot'), my (':jersey'), my (':location'), my (':fee'), my (':number-of-players'), my (':pitch-type') ] .map (stringify) .join ('/')
+				window .location .hash = ref .hash + '/#' + [ date (), timeslot (), jersey (), location (), fee (), number_of_players (), pitch_type () ] .map (stringify) .join ('/')
 			})
 		})
 </script>

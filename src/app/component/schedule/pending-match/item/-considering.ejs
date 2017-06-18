@@ -3,7 +3,7 @@
 		<match-graphic>
 			<image-holder size="96x96">
 				<highlight-holder>
-					<component-timeslot-highlight timeslot__from=":timeslot" />
+					<component-timeslot-highlight timeslot__from={ timeslot } />
 				</highlight-holder>
 			</image-holder>
 		</match-graphic>
@@ -11,14 +11,14 @@
 			<info-holder>
 				<match-location>
 					<icon-holder><icon class="fa-map-marker" /></icon-holder>
-					{ my ('location') }
+					{ location () }
 				</match-location>
-				<match-type>{my ('num-of-players') }人{ my ('field-type') }</match-type>
+				<match-type>{num-of-players () }人{ field-type () }</match-type>
 				
 				<br>
 				
 				<match-opponent>
-					{ my ('apply-numbers') }隊已報名, 點擊以選擇對手!
+					{ apply-numbers () }隊已報名, 點擊以選擇對手!
 				</match-opponent>
 			</info-holder>
 		</match-info>
@@ -64,38 +64,34 @@
 </style>
 
 <script>
-	self
-		.establish ('location', dependent (function () {
-			return location_from_api (my (args .match__from) .location);
-		}, self .impressions (args .match__from)))
-		.establish ('num-of-players', dependent (function () {
-			return num_of_players_to_num (my (args .match__from) .match_type);
-		}, self .impressions (args .match__from)))
-		.establish ('team-name', dependent (function () {
-			return my (args .match__from) .home_team .long_name;
-		}, self .impressions (args .match__from)))
-		.establish ('field-type', dependent (function () {
-			return field_type_to_chi (my (args .match__from) .pitch .pitch_type);
-		}, self .impressions (args .match__from)))
-		.establish ('apply-numbers', dependent (function () {
-			return my (args .match__from) .applied_opponent_count;
-		}, self .impressions (args .match__from)))
+	var location = mechanism (function () {
+		return location_from_api (args .match__from () .location);
+	}, [args .match__from])
+	var num_of_players = mechanism (function () {
+		return num_of_players_to_num (args .match__from () .match_type);
+	}, [args .match__from])
+	var team_name = mechanism (function () {
+		return args .match__from () .home_team .long_name;
+	}, [args .match__from])
+	var field_type = mechanism (function () {
+		return field_type_to_chi (args .match__from () .pitch .pitch_type);
+	}, [args .match__from])
+	var apply_numbers = mechanism (function () {
+		return args .match__from () .applied_opponent_count;
+	}, [args .match__from])
+	var timeslot = mechanism (function () {
+		return new Date (args .match__from () .start_at);
+	}, [args .match__from])
+	var id = mechanism (function () {
+		return args .match__from () .id;
+	}, [args .match__from])
 		
-		.establish (':timeslot', dependent (function () {
-			return new Date (my (args .match__from) .start_at);
-		}, self .impressions (args .match__from)))
+	args .match__from .thru (map, noop) .thru (tap, self .render)
 		
-		.establish ('id', dependent (function () {
-			return my (args .match__from) .id;
-		}, self .impressions (args .match__from)))
-		
-	self .impressions (args .match__from) .thru (map, noop) .thru (tap, self .render)
-		
-	self .establish ('todo-button', ref)
-	self .impressions ('todo-button') .thru (tap, function (ref) {
+	ref ('todo-button') .thru (tap, function (ref) {
 		ref .addEventListener ('click', function (e) {
 			e .preventDefault ();
-			window .location .hash = ref .hash + '/#' + stringify (my ('id'))
+			window .location .hash = ref .hash + '/#' + stringify (id ())
 		})
 	})
 </script>

@@ -306,34 +306,10 @@ var render =	function (tag_name, tag_src, parent_name) {
 					var eaches
 					var loop_expressions = [];
 					var scripts = [];
-					var refs = /<[^>]+ refs=[^>]+>/ .test (tag_src);
+					var refs = /<[^>]+ ref=[^>]+>/ .test (tag_src);
 					var yield_tag = /<yield \/>/ .test (tag_src);
 	
 					return	R. pipe (
-								/* Extract subcomponents 
-								function (def) {
-									return def .replace (/^(?:(?:(?!<\/component>)[^])*)<component(?:| [^>]*)>([^]*)<\/component>(?:(?:(?!<\/component>)[^])*)$/g, function (match, subcomponent_src) {
-										subcomponents .push (render (tag_name + '-sub-' + (subcomponents .length + 1), subcomponent_src, tag_name));
-										return '';
-									})
-								},//*/
-								/* Extract eaches 
-								function (def) {
-									
-									var matcher_each = /<\s*[^/>\s]+ [^>]*each=[^>]+>/g;
-									var matcher_next_tag = /(<\s*[^/>\s]+\s*(?:\ (?!\/)[^>\s]+|\ (?:(?!\/)[^>\s]+\s+)+(?!\/)[^>\s]+)?\s*>)|(<\s*\/\s*[^/>\s]+\s*(?:\ (?!\/)[^>\s]+|\ (?:(?!\/)[^>\s]+\s+)+(?!\/)[^>\s]+)?\s*>)/g;
-									var result;
-									while (result = matcher_each .exec (def)) {
-										var each_start_index = matcher_each .lastIndex;
-										var depth;
-										
-										matcher_next_tag .lastIndex = each_start_index;
-									}
-									return def .replace (/^(?:(?:(?!<\/component>)[^])*)<component(?:| [^>]*)>([^]*)<\/component>(?:(?:(?!<\/component>)[^])*)$/g, function (match, subcomponent_src) {
-										subcomponents .push (render (tag_name + '-sub-' + (subcomponents .length + 1), subcomponent_src, tag_name));
-										return '';
-									})
-								},//*/
 								/* Extract styles */
 								function (def) {
 									return def .replace (/<style>((?:(?!<\/)[^])*)<\/style>/g, function (match, metastyles) {
@@ -350,39 +326,76 @@ var render =	function (tag_name, tag_src, parent_name) {
 								},
 								/* Extract expressions  */
 								function (def) {
-									return def .replace (/{((?=(?:(?:(?!\ in)[^({])*\()+(?:(?!\ in)[^({])*\ in[^{]+})(?:[^{]+)|(?:(?!\ in)[^{])+)}/g, function (match, expression) {
+									return def .replace (/{((?=(?:(?:(?!\ in )[^({])*\()+(?:(?!\ in )[^({])*\ in[^{]+})(?:[^{]+)|(?:(?!\ in )[^{])+)}/g, function (match, expression) {
 										expressions .push (expression);
 										return '{ expression:' + tag_name + ':' + expressions .length + ' }';
 									})
 								},
 								/* Extract looper expressions  */
 								function (def) {
-									return def .replace (/{((?:(?!\ in)[^{])*)\ in([^{]+)}/g, function (match, loop_syntax, expression) {
+									return def .replace (/{((?:(?!\ in )[^{])*)\ in ([^{]+)}/g, function (match, loop_syntax, expression) {
 										expressions .push (expression);
 										return '{' + loop_syntax + ' in expression:' + tag_name + ':' + expressions .length + ' }';
 									})
 								},/**/
-								/* Inject sciprts  */
+								/* Inject ref expressions  */
+								function (def) {
+									return def .replace (/(<[^>]+ ref=")([^">]+)("[^>]*>)/g, function (match, before, ref, after) {
+										return before + '{ ref prefix }' + ref + after;
+									})
+								},
+								/* Inject scripts  */
 								function (def) {
 									return def .replace (/\n<\/[^]+>$/g, function (match) {
 										return ((scripts .length || expressions .length || yield_tag || refs) ?
-											indent ('<script>\n(function (self, args, my) {\n'
-												+ '\n var refs = stream ();'
-												+ scripts .join (';\n')
-												+ (expressions .length ?
-													('\nwindow .tag_scopes = (window .tag_scopes || {});'
-														+ '\nself .on ("before-mount", function () {window .tag_scopes ["' + tag_name + '"] = self;})'
-														+ '\nself .on ("update", function () {window .tag_scopes ["' + tag_name + '"] = self;})'
+											indent ('<script>\n(function (self, args) {\n'
+												+ '\n self ._loaded = true;'
+												+ '\n self ._scope = function () {};'
+												/*+ '\n self .on ("before-mount", function () { log ("' + tag_name + ' enter mount"); });'
+												+ '\n self .on ("mount", function () { log ("' + tag_name + ' exit mount"); });'
+												+ '\n self .on ("update", function () { log ("' + tag_name + ' enter update"); });'
+												+ '\n self .on ("updated", function () { log ("' + tag_name + ' exit update"); });'*/
+												+ (yield_tag
+													? '\nself ._yield_levels = 0;'
+														+ '\nself ._yield_level = 0;'
+														+ '\nself ._yield_on = function () { /*log ("' + tag_name + ' yield enter");*/ self ._yielding = true; self ._yield_level++; if (self ._yield_level > self ._yield_levels) self ._yield_levels = self ._yield_level; return ""; };'
+														+ '\nself ._yield_off = function () { /*log ("' + tag_name + ' yield exit");*/ self ._yielding = false; self ._yield_level--; return ""; };'
+													: '')
+												+ (yield_tag
+													? '\nvar _refs = mergeAll ([ from (function (when) { self .on ("mount", function () { when (self .refs); }); }), from (function (when) { self .on ("updated", function () { when (self .refs); }); }) ]) .thru (map, consistentfy) /*.thru (tap, function (how) { log (self .root .localName, "cons refs", how);})*/;'
+														+ '\nvar yield_scope = self .parent;'
+														+ '\nwhile (yield_scope ._yield_levels) yield_scope = climb (yield_scope ._yield_levels, yield_scope);'
+														//+ '\nlog (self .root .localName, "located father", yield_scope);'
+														+ '\nif (yield_scope .yielded_diff) _refs .thru (map, yield_refs) .thru (diff_refs) .thru (tap, yield_scope .yielded_diff);'
+													: '')
+												+ (refs || yield_tag
+													? '\nvar self_diff = stream ();'
+														+ '\nvar yielded_diff = stream ();'
+														+ '\nself .yielded_diff = yielded_diff/* .thru (tap, function (how) { log (self .root .localName, "recieved", how);})*/;'
+														+ '\nvar diffs = mergeAll ([ self_diff, yielded_diff ]);'
+														+ '\nvar ref = function (name) { return ref_diff (name, diffs) };'
+														+ '\nvar ref_set = function (name) { return ref_set_diff (name, diffs) };'
+														+ (! yield_tag
+															? '\nvar _refs = mergeAll ([ from (function (when) { self .on ("mount", function () { when (self .refs); }); }), from (function (when) { self .on ("updated", function () { when (self .refs); }); }) ]) .thru (map, consistentfy) /*.thru (tap, function (how) { log (self .root .localName, "cons refs", how);})*/;'
+															: '')
+														+ '\n_refs .thru (map, self_refs) .thru (diff_refs) .thru (tap, self_diff);'
+													: '')
+												+ (scripts .length
+													? '\nvar known_as = function (what) { return function (how) { log (self .root .localName, what, how);} };'
 														+ '\nself .on ("update", function () {args = self .opts});\n'
-														+ '\nself .expressions = {};\n'
-														+ expressions .map (function (expression, i) {
+													: '')
+												+ scripts .join (';\n')
+												+ (expressions .length
+													? '\nself .expressions = {};\n'
+														+ '\n' + expressions .map (function (expression, i) {
 															return 'self .expressions [' + i + '] = function (_item) { return ' + expression + ' };';
-														}) .join ('\n'))
+														}) .join ('\n')
 													: '')
-												+ (yield_tag ?
-													'\nif (! self .update_strategy || self .update_strategy === "push") self .shouldUpdate = R .T;'
+												+ (yield_tag
+													? '\nif (! self .update_strategy || self .update_strategy === "push") self .shouldUpdate = R .T;'
 													: '')
-												+ '\n}) (this, this .args, this .my);\n</script>')
+												+ '\nif (typeof self .update_strategy === "function") self .shouldUpdate = self .update_strategy;'
+												+ '\n}) (this, this .opts);\n</script>')
 											: '') + match;
 									})
 								},
@@ -418,7 +431,14 @@ var escape_function =	function (the_function) {
 //build
 time ('build', function () {
 	write (tags_dist)
-		(compiler .compile (
+		(R .pipe (
+			/* Inject yield hooks  */
+			function (def) {
+				return def .replace (/<yield><\/yield>/g, function (match) {
+					return '{ enter yield }<yield></yield>{ exit yield }';
+				})
+			}
+		) (compiler .compile (
 			files ('.ejs') (tags_src)
 				.map (function (tag_path) {
 					var tag_relative_path = tag_path .slice (tags_src .length + 1);
@@ -430,18 +450,6 @@ time ('build', function () {
 											.split ('.')
 												.slice (0, -1)
 											.join ('.');
-					/*var tag_resource =	function (resource_name) {
-											return	file (tag_dir_path + '/' + resource_name);
-										};
-										
-					ejs .render (file (tag_full_path), {
-						tag: tag_name,
-						//file: tag_resource,
-						//pages: pages,
-						$__: escape_string,
-						__: escape_function
-					})*/
-								
 					try {
 						console .log ('rendering ' + tag_name);
 						
@@ -453,7 +461,7 @@ time ('build', function () {
 					}
 				})
 				.reduce (function (sum, next) { return sum + next; }, '')
-		)
+		))
 	);
 	write (styles_dist) (styles .grow ());
 });

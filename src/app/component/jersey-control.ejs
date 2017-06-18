@@ -1,5 +1,5 @@
-<component-dynamic-load-all items__from=":items">
-	<component-jersey-control-item nth__from=":nth" item__from=":item" modify__to=":modify" />
+<component-dynamic-load-all items__from={ items }>
+	<component-jersey-control-item nth__from={ _item .nth__from } item__from={ _item .item__from } modify__to={ modify } />
 </component-dynamic-load-all>
 
 
@@ -12,37 +12,44 @@
 				
 	var limit = 2;
 
-	self
-		.remembers ('jerseys-to')
-		.impressions ('jerseys-to')
-			.thru (map, function (_jerseys) {
-				return _jerseys .slice (0, limit)
-			})
-			.thru (dropRepeatsWith, json_equal)
-			.thru (tap, function (_jerseys) {
-				self .mention (args .jerseys__to, _jerseys)
-			})
+	var jerseys_to = stream ();
+	jerseys_to
+		.thru (map, function (_jerseys) {
+			return _jerseys .slice (0, limit)
+		})
+		.thru (dropRepeatsWith, json_equal)
+		.thru (tap, function (_jerseys) {
+			args .jerseys__to (_jerseys)
+		})
 
-	self
-		.establish (':items', dependent (function () {
-			return	my (args .jerseys__from) .concat (one_more) .slice (0, limit) .map (function (jersey, nth) {
-						return	{
-									placeholder: '第' + (nth + 1) + '隻球衣' + (nth < 2 ? '(例：黑白間、藍色)' : ''),
-									value: jersey
-								};
-					})
-		}, self .impressions (args .jerseys__from)))
-		.remembers (':modify')
-		.impressions (':modify')
-			.thru (tap, function () {
-				var modification = my (':modify')
-				if (modification .action === 'delete')
-					self .mention ('jerseys-to', my (args .jerseys__from) .slice (0, modification .nth) .concat (my (args .jerseys__from) .slice (modification .nth + 1)))
-				else if (modification .action === 'assume') { 
-					if (modification .nth >= my (args .jerseys__from) .length)
-						self .mention ('jerseys-to', my (args .jerseys__from) .concat (more (modification .nth - my (args .jerseys__from) .length + 1)))
-				}
-				else if (modification .action === 'set')
-					self .mention ('jerseys-to', my (args .jerseys__from) .slice (0, modification .nth) .concat ([ modification .value ]) .concat (my (args .jerseys__from) .slice (modification .nth + 1)))
-			})
+	var items = mechanism (function () {
+		return	args .jerseys__from () .concat (one_more) .slice (0, limit) .map (function (jersey, nth) {
+					return	{
+								placeholder: '第' + (nth + 1) + '隻球衣' + (nth < 2 ? '(例：黑白間、藍色)' : ''),
+								value: jersey
+							};
+				})
+	}, [ args .jerseys__from ]) .thru (tap, known_as ('items'))
+	
+	var modify = stream () .thru (tap, known_as ('modification'));
+	modify
+		.thru (tap, function (modification) {
+			if (modification .action === 'delete')
+				jerseys_to (
+					args .jerseys__from () .slice (0, modification .nth)
+						.concat (
+							args .jerseys__from () .slice (modification .nth + 1)))
+			else if (modification .action === 'assume') { 
+				if (modification .nth >= args .jerseys__from () .length)
+					jerseys_to (
+						args .jerseys__from () .concat (
+							more (modification .nth - args .jerseys__from () .length + 1)))
+			}
+			else if (modification .action === 'set')
+				jerseys_to (
+					args .jerseys__from () .slice (0, modification .nth)
+						.concat ([ modification .value ])
+						.concat (
+							args .jerseys__from () .slice (modification .nth + 1)))
+		})
 </script>

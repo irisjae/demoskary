@@ -12,15 +12,15 @@
 </nav>
 <component-main-content>
     <match-catalog>
-		<component-loading-item if={ my ('status') === 'loading' } />
-		<component-item if={ my ('status') === 'no-items' } >未有球賽</component-item>
+		<component-loading-item if={ status () === 'loading' } />
+		<component-item if={ status () === 'no-items' } >未有球賽</component-item>
 		<component-dynamic-load
 		    items_to_load=13
 		    interval_for_loading=50
-		    item_height__from=":item-height"
-		    items__from=":matches"
+		    item_height={ item_height }
+		    items__from={ matches }
 		>
-			<component-match-catalog-item item__from=":item" />
+			<component-match-catalog-item item__from={ _item .item__from } />
 		</component-dynamic-load>
     </match-catalog>
 </component-main-content>
@@ -41,12 +41,9 @@
 </style>
 
 <script>
-	self
-		.remembers ('matches-items');
+	var matches_items = stream ();
 		
-	self
-		.establish (':matches', function (requests) { 
-			return 	self .impressions ('matches-items')
+	var matches =	matches_items
 						.thru (map, function (match_list) {
 							var last_date;
 							return 	match_list .map (function (match) {
@@ -59,38 +56,31 @@
 										}
 									});
 						})
-		})
-		.remembers (':item-height', function (item) {
-			var height = 0;
-			if (item .match)
-				height += 96;
-			if (item .date)
-				height += 26;
-			return height;
-		})
+	var item_height = function (item) {
+		var height = 0;
+		if (item .match)
+			height += 96;
+		if (item .date)
+			height += 26;
+		return height;
+	}
 		
-		.establish ('status', constant (
-			mechanism (function () {
-				if (my (':matches') .length)
-					return 'loaded';
-				else
-					return 'no-items'
-			}, [self .impressions (':matches')])
-				.thru (function (status) {
-					if (! status .hasVal)
-						status ('loading')
-					return status;
-				}))
-		)
-		.impressions ('status') .thru (map, noop) .thru (tap, self .render)
+	var status =	mechanism (function () {
+						if (matches () .length)
+							return 'loaded';
+						else
+							return 'no-items'
+					}, [matches])
+						.thru (begins_with, 'loading')
+	status .thru (map, noop) .thru (tap, self .render)
 
 
-	self .impressions (args .cycle__from)
+	args .cycle__from
 		.thru (tap, function (cycle) {
-			if (self .affiliated ('::matches-to-find')) {
-				inquire (self .affiliated ('::matches-to-find'))
+			if (api () .matches_to_find) {
+				inquire (api () .matches_to_find)
 					.then (function (matches) {
-						self .mention ('matches-items', matches)
+						matches_items (matches)
 					})
 			}
 		})

@@ -41,7 +41,7 @@
                                 return select .textContent
                             })
             if (args .select__to)
-                self .mention (args .select__to, multiple ? values : values [0]);
+                args .select__to (multiple ? values : values [0]);
         }
     })
 </script>

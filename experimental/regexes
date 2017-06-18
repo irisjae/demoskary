@@ -1,0 +1,14 @@
+\.remembers \(':?(.+?)'(?:, )?
+
+my \(':?(.+?)'\)
+my \((.+?)\)
+
+self \.mention \(':?(.+?)', (.+)\)
+self \.mention \((.+?), (.+)\)
+
+\.impressions \(':?(.+?)'\)
+\.impressions \((.+?)\)
+
+(__to|__from)=":?(.+?)"
+
+\.establish \(':?(.+?)', dependent

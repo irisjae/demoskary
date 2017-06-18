@@ -13642,7 +13642,7 @@ modal {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  border-top: 1px solid #e6e6e6;
+  /*border-top: 1px solid #e6e6e6;*/
 }
 
 [strip-layout] > [patch-layout] {
@@ -14187,11 +14187,11 @@ component-date-picker > .flatpickr-calendar {
   transform: translateX(-50%) translateY(-50%);
 }
 
-component-date-picker > .flatpickr-calendar::before {
+component-date-picker > .flatpickr-calendar:before {
   content: initial;
 }
 
-component-date-picker > .flatpickr-calendar::after {
+component-date-picker > .flatpickr-calendar:after {
   content: initial;
 }
 
@@ -14430,7 +14430,7 @@ component-jersey-picker > modal > jersey {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  border-top: 1px solid #e6e6e6;
+  /*border-top: 1px solid #e6e6e6;*/
 }
 
 component-jersey-picker > modal > jersey > [patch-layout] {
@@ -15307,58 +15307,6 @@ component-pitch-picker > football-field-map {
   flex: 1;
 }
 
-component-schedule---invalidated--confirmed-match-item a {
-  background-color: white;
-  border-radius: 5px;
-  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
-  display: block;
-  padding: 20px;
-}
-
-component-schedule---invalidated--confirmed-match-item a:not(:last-child) {
-  margin-bottom: 20px;
-}
-
-component-schedule---invalidated--confirmed-match-item a:not(:last-child) {
-  margin-bottom: unset;
-}
-
-component-schedule---invalidated--confirmed-match-item a {
-  padding: 10px;
-  border-radius: 0;
-  display: block;
-}
-
-component-schedule---invalidated--confirmed-match-item a {
-  background: rgba(253, 254, 254, 0.3);
-  padding: 0;
-}
-
-component-schedule---invalidated--confirmed-match-item a match-info {
-  padding-right: 30px;
-  word-break: break-word;
-  white-space: pre-wrap;
-}
-
-component-schedule---invalidated--confirmed-match-item a match-info info-holder match-location {
-  font-size: 1.2em;
-  font-weight: bolder;
-}
-
-component-schedule---invalidated--confirmed-match-item a match-info info-holder match-location > icon-holder {
-  width: 10px;
-  transform: translateY(1px);
-  margin-left: -10px;
-}
-
-component-schedule---invalidated--confirmed-match-item a match-info info-holder match-type {
-  word-break: keep-all;
-}
-
-component-schedule---invalidated--confirmed-match-item a match-info info-holder match-opponent {
-  padding-left: 10px;
-}
-
 component-schedule-match-applicant-item > a {
   background-color: white;
   border-radius: 5px;
@@ -15925,8 +15873,8 @@ component-table-control > svg {
 
 component-tag-control-item {
   /*> a:hover > tag {
-		    background: #777;
-		    color: #EEE;
+			background: #777;
+			color: #EEE;
 		}*/
 }
 
@@ -16124,7 +16072,7 @@ component-timeslot-picker > modal > start {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  border-top: 1px solid #e6e6e6;
+  /*border-top: 1px solid #e6e6e6;*/
 }
 
 component-timeslot-picker > modal > end {
@@ -16139,7 +16087,7 @@ component-timeslot-picker > modal > end {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  border-top: 1px solid #e6e6e6;
+  /*border-top: 1px solid #e6e6e6;*/
 }
 
 component-timeslot-picker > modal > start > [patch-layout] {
@@ -16899,1196 +16847,6 @@ page-league-table table tr[active] {
 
 page-league-table rest {
   margin-top: -20px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date > control-holder > component-input-control > input {
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  background-color: white;
-  border: 1px solid #dbdbdb;
-  border-radius: 3px;
-  color: #566573;
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  font-size: 14px;
-  height: 32px;
-  -webkit-box-pack: start;
-  -ms-flex-pack: start;
-  justify-content: flex-start;
-  line-height: 24px;
-  padding-left: 8px;
-  padding-right: 8px;
-  position: relative;
-  vertical-align: top;
-  box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.1);
-  max-width: 100%;
-  width: 100%;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time > control-holder > component-input-control > input {
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  background-color: white;
-  border: 1px solid #dbdbdb;
-  border-radius: 3px;
-  color: #566573;
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  font-size: 14px;
-  height: 32px;
-  -webkit-box-pack: start;
-  -ms-flex-pack: start;
-  justify-content: flex-start;
-  line-height: 24px;
-  padding-left: 8px;
-  padding-right: 8px;
-  position: relative;
-  vertical-align: top;
-  box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.1);
-  max-width: 100%;
-  width: 100%;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location > control-holder > component-input-control > input {
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  background-color: white;
-  border: 1px solid #dbdbdb;
-  border-radius: 3px;
-  color: #566573;
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  font-size: 14px;
-  height: 32px;
-  -webkit-box-pack: start;
-  -ms-flex-pack: start;
-  justify-content: flex-start;
-  line-height: 24px;
-  padding-left: 8px;
-  padding-right: 8px;
-  position: relative;
-  vertical-align: top;
-  box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.1);
-  max-width: 100%;
-  width: 100%;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > control-holder > component-input-control > input {
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  background-color: white;
-  border: 1px solid #dbdbdb;
-  border-radius: 3px;
-  color: #566573;
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  font-size: 14px;
-  height: 32px;
-  -webkit-box-pack: start;
-  -ms-flex-pack: start;
-  justify-content: flex-start;
-  line-height: 24px;
-  padding-left: 8px;
-  padding-right: 8px;
-  position: relative;
-  vertical-align: top;
-  box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.1);
-  max-width: 100%;
-  width: 100%;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > control-holder > component-input-control > input {
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  background-color: white;
-  border: 1px solid #dbdbdb;
-  border-radius: 3px;
-  color: #566573;
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  font-size: 14px;
-  height: 32px;
-  -webkit-box-pack: start;
-  -ms-flex-pack: start;
-  justify-content: flex-start;
-  line-height: 24px;
-  padding-left: 8px;
-  padding-right: 8px;
-  position: relative;
-  vertical-align: top;
-  box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.1);
-  max-width: 100%;
-  width: 100%;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > control-holder > component-input-control > input {
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  background-color: white;
-  border: 1px solid #dbdbdb;
-  border-radius: 3px;
-  color: #566573;
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  font-size: 14px;
-  height: 32px;
-  -webkit-box-pack: start;
-  -ms-flex-pack: start;
-  justify-content: flex-start;
-  line-height: 24px;
-  padding-left: 8px;
-  padding-right: 8px;
-  position: relative;
-  vertical-align: top;
-  box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.1);
-  max-width: 100%;
-  width: 100%;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee > control-holder > component-input-control > input {
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  background-color: white;
-  border: 1px solid #dbdbdb;
-  border-radius: 3px;
-  color: #566573;
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  font-size: 14px;
-  height: 32px;
-  -webkit-box-pack: start;
-  -ms-flex-pack: start;
-  justify-content: flex-start;
-  line-height: 24px;
-  padding-left: 8px;
-  padding-right: 8px;
-  position: relative;
-  vertical-align: top;
-  box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.1);
-  max-width: 100%;
-  width: 100%;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date > control-holder > component-input-control > input:hover {
-  border-color: #b5b5b5;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time > control-holder > component-input-control > input:hover {
-  border-color: #b5b5b5;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location > control-holder > component-input-control > input:hover {
-  border-color: #b5b5b5;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > control-holder > component-input-control > input:hover {
-  border-color: #b5b5b5;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > control-holder > component-input-control > input:hover {
-  border-color: #b5b5b5;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > control-holder > component-input-control > input:hover {
-  border-color: #b5b5b5;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee > control-holder > component-input-control > input:hover {
-  border-color: #b5b5b5;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date > control-holder > component-input-control > input:active {
-  border-color: #00d1b2;
-  outline: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time > control-holder > component-input-control > input:active {
-  border-color: #00d1b2;
-  outline: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location > control-holder > component-input-control > input:active {
-  border-color: #00d1b2;
-  outline: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > control-holder > component-input-control > input:active {
-  border-color: #00d1b2;
-  outline: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > control-holder > component-input-control > input:active {
-  border-color: #00d1b2;
-  outline: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > control-holder > component-input-control > input:active {
-  border-color: #00d1b2;
-  outline: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee > control-holder > component-input-control > input:active {
-  border-color: #00d1b2;
-  outline: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date > control-holder > component-input-control > input:focus {
-  border-color: #00d1b2;
-  outline: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time > control-holder > component-input-control > input:focus {
-  border-color: #00d1b2;
-  outline: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location > control-holder > component-input-control > input:focus {
-  border-color: #00d1b2;
-  outline: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > control-holder > component-input-control > input:focus {
-  border-color: #00d1b2;
-  outline: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > control-holder > component-input-control > input:focus {
-  border-color: #00d1b2;
-  outline: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > control-holder > component-input-control > input:focus {
-  border-color: #00d1b2;
-  outline: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee > control-holder > component-input-control > input:focus {
-  border-color: #00d1b2;
-  outline: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date > control-holder > component-input-control > input[disabled] {
-  background-color: whitesmoke;
-  border-color: #dbdbdb;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time > control-holder > component-input-control > input[disabled] {
-  background-color: whitesmoke;
-  border-color: #dbdbdb;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location > control-holder > component-input-control > input[disabled] {
-  background-color: whitesmoke;
-  border-color: #dbdbdb;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > control-holder > component-input-control > input[disabled] {
-  background-color: whitesmoke;
-  border-color: #dbdbdb;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > control-holder > component-input-control > input[disabled] {
-  background-color: whitesmoke;
-  border-color: #dbdbdb;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > control-holder > component-input-control > input[disabled] {
-  background-color: whitesmoke;
-  border-color: #dbdbdb;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee > control-holder > component-input-control > input[disabled] {
-  background-color: whitesmoke;
-  border-color: #dbdbdb;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date > control-holder > component-input-control > input[disabled]::-moz-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time > control-holder > component-input-control > input[disabled]::-moz-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location > control-holder > component-input-control > input[disabled]::-moz-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > control-holder > component-input-control > input[disabled]::-moz-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > control-holder > component-input-control > input[disabled]::-moz-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > control-holder > component-input-control > input[disabled]::-moz-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee > control-holder > component-input-control > input[disabled]::-moz-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date > control-holder > component-input-control > input[disabled]::-webkit-input-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time > control-holder > component-input-control > input[disabled]::-webkit-input-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location > control-holder > component-input-control > input[disabled]::-webkit-input-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > control-holder > component-input-control > input[disabled]::-webkit-input-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > control-holder > component-input-control > input[disabled]::-webkit-input-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > control-holder > component-input-control > input[disabled]::-webkit-input-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee > control-holder > component-input-control > input[disabled]::-webkit-input-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date > control-holder > component-input-control > input[disabled]:-moz-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time > control-holder > component-input-control > input[disabled]:-moz-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location > control-holder > component-input-control > input[disabled]:-moz-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > control-holder > component-input-control > input[disabled]:-moz-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > control-holder > component-input-control > input[disabled]:-moz-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > control-holder > component-input-control > input[disabled]:-moz-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee > control-holder > component-input-control > input[disabled]:-moz-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date > control-holder > component-input-control > input[disabled]:-ms-input-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time > control-holder > component-input-control > input[disabled]:-ms-input-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location > control-holder > component-input-control > input[disabled]:-ms-input-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > control-holder > component-input-control > input[disabled]:-ms-input-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > control-holder > component-input-control > input[disabled]:-ms-input-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > control-holder > component-input-control > input[disabled]:-ms-input-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee > control-holder > component-input-control > input[disabled]:-ms-input-placeholder {
-  color: rgba(54, 54, 54, 0.3);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date > control-holder > component-input-control > input[type="search"] {
-  border-radius: 290486px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time > control-holder > component-input-control > input[type="search"] {
-  border-radius: 290486px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location > control-holder > component-input-control > input[type="search"] {
-  border-radius: 290486px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > control-holder > component-input-control > input[type="search"] {
-  border-radius: 290486px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > control-holder > component-input-control > input[type="search"] {
-  border-radius: 290486px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > control-holder > component-input-control > input[type="search"] {
-  border-radius: 290486px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee > control-holder > component-input-control > input[type="search"] {
-  border-radius: 290486px;
-}
-
-@media screen and (max-width: 768px) {
-  [row-layout] > label:not(:last-child),
-  page-match-catalog-filter open-match info-area > info-holder > match-date > label:not(:last-child),
-  page-match-catalog-filter open-match info-area > info-holder > match-time > label:not(:last-child),
-  page-match-catalog-filter open-match info-area > info-holder > match-location > label:not(:last-child),
-  page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > label:not(:last-child),
-  page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > label:not(:last-child),
-  page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > label:not(:last-child),
-  page-match-catalog-filter open-match info-area > info-holder > match-fee > label:not(:last-child),
-  [row-layout] > item:not(:last-child),
-  page-match-catalog-filter open-match info-area > info-holder > match-date > item:not(:last-child),
-  page-match-catalog-filter open-match info-area > info-holder > match-time > item:not(:last-child),
-  page-match-catalog-filter open-match info-area > info-holder > match-location > item:not(:last-child),
-  page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > item:not(:last-child),
-  page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > item:not(:last-child),
-  page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > item:not(:last-child),
-  page-match-catalog-filter open-match info-area > info-holder > match-fee > item:not(:last-child) {
-    margin-bottom: 10px;
-  }
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date {
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  -ms-grid-row-align: center;
-  align-items: center;
-  -webkit-box-pack: justify;
-  -ms-flex-pack: justify;
-  justify-content: space-between;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time {
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  -ms-grid-row-align: center;
-  align-items: center;
-  -webkit-box-pack: justify;
-  -ms-flex-pack: justify;
-  justify-content: space-between;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location {
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  -ms-grid-row-align: center;
-  align-items: center;
-  -webkit-box-pack: justify;
-  -ms-flex-pack: justify;
-  justify-content: space-between;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players {
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  -ms-grid-row-align: center;
-  align-items: center;
-  -webkit-box-pack: justify;
-  -ms-flex-pack: justify;
-  justify-content: space-between;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch {
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  -ms-grid-row-align: center;
-  align-items: center;
-  -webkit-box-pack: justify;
-  -ms-flex-pack: justify;
-  justify-content: space-between;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color {
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  -ms-grid-row-align: center;
-  align-items: center;
-  -webkit-box-pack: justify;
-  -ms-flex-pack: justify;
-  justify-content: space-between;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee {
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  -ms-grid-row-align: center;
-  align-items: center;
-  -webkit-box-pack: justify;
-  -ms-flex-pack: justify;
-  justify-content: space-between;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date:not(:last-child) {
-  margin-bottom: 20px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time:not(:last-child) {
-  margin-bottom: 20px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location:not(:last-child) {
-  margin-bottom: 20px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players:not(:last-child) {
-  margin-bottom: 20px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch:not(:last-child) {
-  margin-bottom: 20px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color:not(:last-child) {
-  margin-bottom: 20px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee:not(:last-child) {
-  margin-bottom: 20px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date code {
-  border-radius: 3px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time code {
-  border-radius: 3px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location code {
-  border-radius: 3px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players code {
-  border-radius: 3px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch code {
-  border-radius: 3px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color code {
-  border-radius: 3px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee code {
-  border-radius: 3px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date img {
-  display: inline-block;
-  vertical-align: top;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time img {
-  display: inline-block;
-  vertical-align: top;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location img {
-  display: inline-block;
-  vertical-align: top;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players img {
-  display: inline-block;
-  vertical-align: top;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch img {
-  display: inline-block;
-  vertical-align: top;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color img {
-  display: inline-block;
-  vertical-align: top;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee img {
-  display: inline-block;
-  vertical-align: top;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date > label:not(:last-child) {
-  margin-bottom: 0;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time > label:not(:last-child) {
-  margin-bottom: 0;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location > label:not(:last-child) {
-  margin-bottom: 0;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > label:not(:last-child) {
-  margin-bottom: 0;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > label:not(:last-child) {
-  margin-bottom: 0;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > label:not(:last-child) {
-  margin-bottom: 0;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee > label:not(:last-child) {
-  margin-bottom: 0;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date > item:not(:last-child) {
-  margin-bottom: 0;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time > item:not(:last-child) {
-  margin-bottom: 0;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location > item:not(:last-child) {
-  margin-bottom: 0;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > item:not(:last-child) {
-  margin-bottom: 0;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > item:not(:last-child) {
-  margin-bottom: 0;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > item:not(:last-child) {
-  margin-bottom: 0;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee > item:not(:last-child) {
-  margin-bottom: 0;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date > label {
-  -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time > label {
-  -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location > label {
-  -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > label {
-  -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > label {
-  -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > label {
-  -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee > label {
-  -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date > item {
-  -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time > item {
-  -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location > item {
-  -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > item {
-  -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > item {
-  -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > item {
-  -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee > item {
-  -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
-}
-
-@media screen and (min-width: 769px) {
-  [row-layout],
-  page-match-catalog-filter open-match info-area > info-holder > match-date,
-  page-match-catalog-filter open-match info-area > info-holder > match-time,
-  page-match-catalog-filter open-match info-area > info-holder > match-location,
-  page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players,
-  page-match-catalog-filter open-match info-area > info-holder > match-type-pitch,
-  page-match-catalog-filter open-match info-area > info-holder > team-shirt-color,
-  page-match-catalog-filter open-match info-area > info-holder > match-fee,
-  match,
-  team {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-  }
-
-  [row-layout] > label,
-  page-match-catalog-filter open-match info-area > info-holder > match-date > label,
-  page-match-catalog-filter open-match info-area > info-holder > match-time > label,
-  page-match-catalog-filter open-match info-area > info-holder > match-location > label,
-  page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > label,
-  page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > label,
-  page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > label,
-  page-match-catalog-filter open-match info-area > info-holder > match-fee > label,
-  [row-layout] > item,
-  page-match-catalog-filter open-match info-area > info-holder > match-date > item,
-  page-match-catalog-filter open-match info-area > info-holder > match-time > item,
-  page-match-catalog-filter open-match info-area > info-holder > match-location > item,
-  page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > item,
-  page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > item,
-  page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > item,
-  page-match-catalog-filter open-match info-area > info-holder > match-fee > item {
-    -webkit-box-flex: 1;
-    -ms-flex-positive: 1;
-    flex-grow: 1;
-  }
-}
-
-page-match-catalog-filter:after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.1;
-  z-index: -1;
-  background: url(../imgs/3d_soccer15.gif);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > info-header {
-  padding: 4px 15px 2px 15px;
-  height: 28px;
-  display: block;
-  background: #e0ebeb;
-  color: black;
-  text-align: center;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date > label {
-  flex-grow: 0 !important;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time > label {
-  flex-grow: 0 !important;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location > label {
-  flex-grow: 0 !important;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > label {
-  flex-grow: 0 !important;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > label {
-  flex-grow: 0 !important;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > label {
-  flex-grow: 0 !important;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee > label {
-  flex-grow: 0 !important;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date > item {
-  display: flex;
-  flex-grow: 1;
-  margin-left: 20px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time > item {
-  display: flex;
-  flex-grow: 1;
-  margin-left: 20px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location > item {
-  display: flex;
-  flex-grow: 1;
-  margin-left: 20px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > item {
-  display: flex;
-  flex-grow: 1;
-  margin-left: 20px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > item {
-  display: flex;
-  flex-grow: 1;
-  margin-left: 20px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > item {
-  display: flex;
-  flex-grow: 1;
-  margin-left: 20px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee > item {
-  display: flex;
-  flex-grow: 1;
-  margin-left: 20px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date:not(:last-child) {
-  margin-bottom: unset;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time:not(:last-child) {
-  margin-bottom: unset;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location:not(:last-child) {
-  margin-bottom: unset;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players:not(:last-child) {
-  margin-bottom: unset;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch:not(:last-child) {
-  margin-bottom: unset;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color:not(:last-child) {
-  margin-bottom: unset;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee:not(:last-child) {
-  margin-bottom: unset;
-}
-
-page-match-catalog-filter open-match {
-  padding: 10px 15px 10px 15px;
-  display: block;
-}
-
-page-match-catalog-filter open-match [unpadded-layouting] {
-  margin-left: -15px;
-  margin-right: -15px;
-}
-
-[padded-layout] page-match-catalog-filter open-match info-area > info-holder > info-header {
-  margin-left: -15px;
-  margin-right: -15px;
-}
-
-page-match-catalog-filter open-match [padded-layout] info-area > info-holder > info-header {
-  margin-left: -15px;
-  margin-right: -15px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > info-header {
-  margin-left: -15px;
-  margin-right: -15px;
-}
-
-page-match-catalog-filter open-match > :first-child[unpadded-layouting] {
-  margin-top: -10px;
-}
-
-page-match-catalog-filter open-match info-area > info-holder[padded-layout] > info-header:first-child {
-  margin-top: -10px;
-}
-
-page-match-catalog-filter open-match > :first-child > :first-child[unpadded-layouting] {
-  margin-top: -10px;
-}
-
-page-match-catalog-filter open-match info-area[padded-layout] > info-holder:first-child > info-header:first-child {
-  margin-top: -10px;
-}
-
-page-match-catalog-filter open-match > :first-child > :first-child > :first-child[unpadded-layouting] {
-  margin-top: -10px;
-}
-
-page-match-catalog-filter open-match [padded-layout] > info-area:first-child > info-holder:first-child > info-header:first-child {
-  margin-top: -10px;
-}
-
-page-match-catalog-filter open-match > info-area:first-child > info-holder:first-child > info-header:first-child {
-  margin-top: -10px;
-}
-
-page-match-catalog-filter open-match > :first-child > :first-child > :first-child > :first-child[unpadded-layouting] {
-  margin-top: -10px;
-}
-
-page-match-catalog-filter open-match [padded-layout] > :first-child > info-area:first-child > info-holder:first-child > info-header:first-child {
-  margin-top: -10px;
-}
-
-page-match-catalog-filter open-match > :first-child > info-area:first-child > info-holder:first-child > info-header:first-child {
-  margin-top: -10px;
-}
-
-page-match-catalog-filter {
-  height: 100%;
-  display: flex;
-  flex-flow: column;
-  transition: opacity 2s cubic-bezier(0.23, 1, 0.32, 1) 0ms, transform 1s cubic-bezier(0.23, 1, 0.32, 1) 0ms;
-}
-
-page-match-catalog-filter > component-nav {
-  flex: 0 1 auto;
-}
-
-page-match-catalog-filter > component-tabs {
-  flex: 0 1 auto;
-}
-
-page-match-catalog-filter > component-main-content {
-  flex: 1 1 auto;
-  position: relative;
-}
-
-page-match-catalog-filter[no-background] {
-  background: white;
-}
-
-page-match-catalog-filter[no-background]:after {
-  content: unset;
-}
-
-page-match-catalog-filter[light-background] {
-  background: rgba(255, 255, 255, 0.4);
-}
-
-page-match-catalog-filter open-match info-area > info-holder > info-header {
-  text-align: center;
-  margin-bottom: 10px !important;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date > control-holder > component-select-control > a {
-  font-size: 0.9em;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time > control-holder > component-select-control > a {
-  font-size: 0.9em;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location > control-holder > component-select-control > a {
-  font-size: 0.9em;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > control-holder > component-select-control > a {
-  font-size: 0.9em;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > control-holder > component-select-control > a {
-  font-size: 0.9em;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > control-holder > component-select-control > a {
-  font-size: 0.9em;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee > control-holder > component-select-control > a {
-  font-size: 0.9em;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date > control-holder > component-input-control {
-  width: 100%;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time > control-holder > component-input-control {
-  width: 100%;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location > control-holder > component-input-control {
-  width: 100%;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > control-holder > component-input-control {
-  width: 100%;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > control-holder > component-input-control {
-  width: 100%;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > control-holder > component-input-control {
-  width: 100%;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee > control-holder > component-input-control {
-  width: 100%;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-date > control-holder > component-input-control > input {
-  text-align: right;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-time > control-holder > component-input-control > input {
-  text-align: right;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-location > control-holder > component-input-control > input {
-  text-align: right;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-number-of-players > control-holder > component-input-control > input {
-  text-align: right;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-type-pitch > control-holder > component-input-control > input {
-  text-align: right;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > team-shirt-color > control-holder > component-input-control > input {
-  text-align: right;
-}
-
-page-match-catalog-filter open-match info-area > info-holder > match-fee > control-holder > component-input-control > input {
-  text-align: right;
 }
 
 @media screen and (max-width: 768px) {
@@ -23617,6 +22375,76 @@ page-team-profile team-profile > info-area > info-holder > preferred-day-of-week
 
 page-team-profile team-profile > info-area > info-holder > team-name > item {
   font-size: 1.5em;
+}
+
+page-test-list:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.1;
+  z-index: -1;
+  background: url(../imgs/3d_soccer15.gif);
+}
+
+page-test-list test-list {
+  padding: 10px 15px 10px 15px;
+  display: block;
+}
+
+page-test-list test-list [unpadded-layouting] {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+page-test-list test-list > :first-child[unpadded-layouting] {
+  margin-top: -10px;
+}
+
+page-test-list test-list > :first-child > :first-child[unpadded-layouting] {
+  margin-top: -10px;
+}
+
+page-test-list test-list > :first-child > :first-child > :first-child[unpadded-layouting] {
+  margin-top: -10px;
+}
+
+page-test-list test-list > :first-child > :first-child > :first-child > :first-child[unpadded-layouting] {
+  margin-top: -10px;
+}
+
+page-test-list {
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  transition: opacity 2s cubic-bezier(0.23, 1, 0.32, 1) 0ms, transform 1s cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+}
+
+page-test-list > component-nav {
+  flex: 0 1 auto;
+}
+
+page-test-list > component-tabs {
+  flex: 0 1 auto;
+}
+
+page-test-list > component-main-content {
+  flex: 1 1 auto;
+  position: relative;
+}
+
+page-test-list[no-background] {
+  background: white;
+}
+
+page-test-list[no-background]:after {
+  content: unset;
+}
+
+page-test-list[light-background] {
+  background: rgba(255, 255, 255, 0.4);
 }
 
 page-user-verify-phone-step phone-verification > component-input-control input {

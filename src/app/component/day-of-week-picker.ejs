@@ -9,13 +9,13 @@
 		<th>日</th>
 	</tr>
 	<tr>
-		<td><component-checkbox check__to=":mon" /></td>
-		<td><component-checkbox check__to=":tue" /></td>
-		<td><component-checkbox check__to=":wed" /></td>
-		<td><component-checkbox check__to=":thu" /></td>
-		<td><component-checkbox check__to=":fri" /></td>
-		<td><component-checkbox check__to=":sat" /></td>
-		<td><component-checkbox check__to=":sun" /></td>
+		<td><component-checkbox check__to={ mon } /></td>
+		<td><component-checkbox check__to={ tue } /></td>
+		<td><component-checkbox check__to={ wed } /></td>
+		<td><component-checkbox check__to={ thu } /></td>
+		<td><component-checkbox check__to={ fri } /></td>
+		<td><component-checkbox check__to={ sat } /></td>
+		<td><component-checkbox check__to={ sun } /></td>
 	</tr>
 </table>
 
@@ -38,29 +38,25 @@
 </style>
 
 <script>
-	self
-		.remembers (':mon')
-		.remembers (':tue')
-		.remembers (':wed')
-		.remembers (':thu')
-		.remembers (':fri')
-		.remembers (':sat')
-		.remembers (':sun')
+	var mon = stream ();
+	var tue = stream ();
+	var wed = stream ();
+	var thu = stream ();
+	var fri = stream ();
+	var sat = stream ();
+	var sun = stream ();
 		
-		.establish ('days', dependent (function () {
-			return 	(my (':mon') ? ['mon'] : []) .concat
-					(my (':tue') ? ['tue'] : []) .concat
-					(my (':wed') ? ['wed'] : []) .concat
-					(my (':thu') ? ['thu'] : []) .concat
-					(my (':fri') ? ['fri'] : []) .concat
-					(my (':sat') ? ['sat'] : []) .concat
-					(my (':sun') ? ['sun'] : [])
-		}, mergeAll
-			([self .impressions (':mon'), self .impressions (':tue'), self .impressions (':wed'), self .impressions (':thu'), self .impressions (':fri'), self .impressions (':sat'), self .impressions (':sun')])
-		))
-		.impressions ('days')
-			.thru (tap, function (days) {
-				if (args .days__to)
-					self .mention (args .days__to, days);
-			})
+	mechanism (function () {
+		return 	(mon () ? ['mon'] : []) .concat
+				(tue () ? ['tue'] : []) .concat
+				(wed () ? ['wed'] : []) .concat
+				(thu () ? ['thu'] : []) .concat
+				(fri () ? ['fri'] : []) .concat
+				(sat () ? ['sat'] : []) .concat
+				(sun () ? ['sun'] : [])
+	}, [ mergeAll ([mon, tue, wed, thu, fri, sat, sun]) ])
+	.thru (tap, known_as ('days'))
+	.thru (tap, function (days) {
+		args .days__to (days);
+	})
 </script>

@@ -11,7 +11,7 @@
 			<component-wavify />
 		</a>
 	</tab>
-	<highlight style="left: { my ('highlight-position') () }%;" />
+	<highlight style="left: { highlight_position () }%;" />
 </tabs>
 
 
@@ -72,10 +72,9 @@
 </style>
 
 <script>
-	self
-		.remembers ('tabs', ['upcoming', 'history'])
-		
-		.remembers ('highlight-position', function () {
-			return 100 * my ('tabs') .indexOf (args .tab) / my ('tabs') .length
-		})
+	var tabs = stream (['upcoming', 'history'])
+	
+	var highlight_position = function () {
+		return 100 * tabs () .indexOf (args .tab) / tabs () .length
+	}
 </script>

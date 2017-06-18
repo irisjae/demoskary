@@ -1,7 +1,7 @@
-<placeholder empty={ my ('empty') }>{ args .placeholder }</placeholder>
+<placeholder empty={ empty () }>{ args .placeholder }</placeholder>
 <input ref="input" type={ args .type } maxlength={ args .maxlength }>
 <hr>
-<hr focused={ my ('focused') }>
+<hr focused={ focused () }>
 
 <style>
     font-size: 16px;
@@ -74,49 +74,49 @@
 </style>
 
 <script>
-    self
-        .establish ('input', ref)
-        .remembers ('focused')
-        .remembers ('empty')
+    var focused = stream ()
+    var empty = stream ()
     
-    var vals = stream (args .val);
-    self .on ('updated', function () {
-        vals (args .val);
+    var vals = from (function (_vals) {
+        _vals (args .val);
+        self .on ('updated', function () {
+            _vals (args .val);
+        })
     })
     
-    self .impressions ('input') .thru (tap, function (ref) {
+    ref ('input') .thru (tap, function (ref) {
         
         vals .thru (dropRepeats) .thru (tap, function (val) {
             if (val) {
                 ref .value = val;
-                self .mention ('empty', false)
+                empty (false)
             }
             else {
                 ref .value = '';
-                self .mention ('empty', true)
+                empty (true)
             }
         })
         
         if (args .change__to)
             ref .addEventListener ('change', function () {
-                self .mention (args .change__to, ref .value)
+                args .change__to (ref .value)
             })
         if (args .input__to)
             ref .addEventListener ('input', function () {
-                self .mention (args .input__to, ref .value)
+                args .input__to (ref .value)
             })
             
         ref .addEventListener ('input', function () {
-            self .mention ('empty', ! ref .value)
+            empty (! ref .value)
         })
         ref .addEventListener ('focus', function () {
-            self .mention ('focused', true)
+            focused (true)
         })
         ref .addEventListener ('blur', function () {
-            self .mention ('focused', false)
+            focused (false)
         })
     })
     
-    self .impressions ('focused') .thru (map, noop) .thru (map, noop) .thru (tap, self .render)
-    self .impressions ('empty') .thru (dropRepeats) .thru (map, noop) .thru (map, noop) .thru (tap, self .render)
+    focused .thru (map, noop) .thru (map, noop) .thru (tap, self .render)
+    empty .thru (dropRepeats) .thru (map, noop) .thru (map, noop) .thru (tap, self .render)
 </script>

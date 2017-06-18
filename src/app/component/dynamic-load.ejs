@@ -1,9 +1,7 @@
-<virtual each={ wrap, i in my ('target-items') }>
-	<component-dynamic-load-item nth={ _item .wrap .nth } item__from={ my ('loaded-item') (_item .wrap .nth) } style="transform: translateY({ my ('height-up-to') (_item .wrap .nth) }px);" >
-		<yield />
-	</component-dynamic-load-item>
-</virtual>
-<stretcher style="height: { my ('height-up-to') ((my ('loaded-range') || null_range) .to + 1) }px;" />
+<component-dynamic-load-item each={ wrap, i in target_items () } nth={ _item .wrap .nth } item={ loaded_item (_item .wrap .nth) } garbage={ _item .wrap .nth < loaded_range () .from || loaded_range () .to < _item .wrap .nth } style="transform: translateY({ height_up_to (_item .wrap .nth) }px);" >
+	<yield />
+</component-dynamic-load-item>
+<stretcher style="height: { height_up_to (loaded_range () .to + 1) }px;" />
 
 <style>
     width: 100%;
@@ -59,7 +57,7 @@
 	var loading_interval = + args .interval_for_loading;
 	
 	var item_source = args .items__from;
-	var item_height = args .item_height__from;
+	var item_height = args .item_height;
 	
 	var nths = {};
 	var wrap_nth =	function (nth) {
@@ -70,95 +68,82 @@
 	
 
 	
-	self
-		.establish ('loaded-items', constant (self .impressions (item_source)))
-		.establish ('loaded-range', dependent (function () {
-			return rangify (my ('loaded-items'));
-		}, self .impressions ('loaded-items')))
-		.remembers ('loaded-item', function (nth) {
-			var item_label = ':item-' + nth;
+	var loaded_items = item_source;
+	var loaded_range = mechanism (function () {
+		return rangify (loaded_items ());
+	}, [loaded_items]) .thru (begins_with, null_range)
+	var loaded_item = function (nth) {
+		return loaded_items () [nth];	
+	}
+	var height_up_to = function (nth) {
+		return 	arrayify ({
+					from: 0,
+					to: nth - 1
+				})
+				.map (loaded_item)
+				.reduce (function (total, item) {
+					return total + item_height (item)
+				}, 0);
+	}
+		
+		
+		
+		
+	var scroll_range = function () {
+		return	{
+					from: positive_or_zero (list .scrollTop - dynamic_load .offsetTop),
+					to: positive_or_zero (list .scrollTop - dynamic_load .offsetTop + list .clientHeight)
+				};
+	};
+	var target_range = mechanism (function () {
+		var _scroll_range = scroll_range ();
+		var _loaded_range = loaded_range ();
+		
+		var start =	(function () {
+			var middle = (_scroll_range .from + _scroll_range .to) / 2;
+			var min;
 			
-			if (! self .personal (item_label))
-				self .establish (item_label, dependent (function () {
-					return my ('loaded-items') [nth];
-				}, self .impressions ('loaded-items')))
+			var total = 0;
+			var least_asymmetry = middle;
 			
-			return item_label;	
-		})
-		.remembers ('height-up-to', function (nth) {
-			return 	arrayify ({
-						from: 0,
-						to: nth - 1
-					}) .map (function (nth) {
-						return my ('loaded-items') [nth]
-					}) .reduce (function (total, item) {
-						return total + my (item_height) (item)
-					}, 0);
-		})
-		
-		
-		
-		
-		.remembers ('scroll-range', function () {
-			return	{
-						from: positive_or_zero (list .scrollTop - dynamic_load .offsetTop),
-						to: positive_or_zero (list .scrollTop - dynamic_load .offsetTop + list .clientHeight)
-					};
-		})
-		.establish ('target-range', dependent (function () {
-			var scroll_range = my ('scroll-range') ();
-			var loaded_range = my ('loaded-range') || null_range;
-			
-			var start =	(function () {
-				var middle = (scroll_range .from + scroll_range .to) / 2;
-				var min;
-				
-				var total = 0;
-				var least_asymmetry = middle;
-				
-				for (var nth = 0; nth <= loaded_range .to; nth ++) {
-					if (total <= scroll_range .from) min = nth;
-					var new_total = total + my (item_height) (my ('loaded-items') [nth]);
-					var new_asymmetry = Math .abs (new_total - middle);
-					if (new_asymmetry < least_asymmetry) {
-						total = new_total;
-						least_asymmetry = new_asymmetry;
-					}
-					else {
-						return Math .min (min, nth);
-					}
+			for (var nth = 0; nth <= _loaded_range .to; nth ++) {
+				if (total <= _scroll_range .from) min = nth;
+				var new_total = total + item_height (loaded_item (nth));
+				var new_asymmetry = Math .abs (new_total - middle);
+				if (new_asymmetry < least_asymmetry) {
+					total = new_total;
+					least_asymmetry = new_asymmetry;
 				}
-				return min || 0;
-			}) ();
-			var curr = intersection (my ('target-range'), loaded_range);
-			var next =	intersection ({
-							from: start,
-							to: start + items_to_load - 1
-						}, loaded_range);
-			return curr && included_in (curr, next) ? curr : next
-		}, mergeAll ([
+				else {
+					return Math .min (min, nth);
+				}
+			}
+			return min || 0;
+		}) ();
+		var curr = intersection (target_range, _loaded_range);
+		var next =	intersection ({
+						from: start,
+						to: start + items_to_load - 1
+					}, _loaded_range);
+		return curr && included_in (curr, next) ? curr : next
+	}, [ mergeAll ([
 			(window .dynamic_load_rendering || (window .dynamic_load_rendering = from (function (self) {
 				document .addEventListener ('animationstart', self, false);
 			})))
-				.thru (map, function (event) {
-					return event .target
-				})
-				.thru (filter, function (root) {
-					return root === self .root
-				})
-				.thru (tap, logged_with ('attached'))
-			/*from (function (when) { self .on ('mount', function (x) { when (x); }); }),//*/,
+				.thru (map, R .prop ('target'))
+				.thru (filter, R .equals (self .root))
+				.thru (tap, logged_with ('attached')),
 			from (function (when) { list .addEventListener ('scroll', function (x) { when (x); }); }) .thru (afterSilence, 5)
-		]), self .impressions ('loaded-range')))
-		.establish ('target-items', dependent (function () {
-			return arrayify (my ('target-range')) .map (wrap_nth);
-		}, self .impressions ('target-range')))
+		]), loaded_range ]) .thru (tap, known_as ('target range'))
+	var target_items = mechanism (function () {
+		return arrayify (target_range ()) .map (wrap_nth);
+	}, [target_range])
 		
 		
-	self .impressions ('loaded-items')
+	loaded_items
 		.thru (dropRepeats) 
 		.thru (map, function () {
-			return 	self .impressions ('target-items')
+			return 	target_items
 						.thru (dropRepeatsWith, json_equal) 	
 		})
 		.thru (switchLatest)

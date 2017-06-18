@@ -1,6 +1,6 @@
 <selected-location>
-    <input type="text" placeholder="請選擇球場" value={ my ('location') } disabled readonly
-    ><a disabled={ ! my ('location') } ref="done"
+    <input type="text" placeholder="請選擇球場" value={ location () } disabled readonly
+    ><a disabled={ ! location () } ref="done"
         ><icon class="fa-check"
     /></a>    
 </selected-location>
@@ -50,30 +50,25 @@
 </style>
 
 <script>
-    self
-        .remembers ('location')   
-        .impressions ('location')
-            .thru (map, noop) .thru (tap, self .render)
+    var location = stream () .thru (tap, known_as ('location'))   
+    location
+         .thru (map, noop) .thru (tap, self .render)
     
-    self
-        .establish ('done', ref)
-        .impressions ('done')
-            .thru (tap, [function (ref) {
-                ref .addEventListener ('click', function () {
-                    if (my ('location')) {
-                        self .mention (args .location__to, my ('location'));
-                    } 
-                });
-            }])
+    ref ('done')
+        .thru (tap, [function (ref) {
+            ref .addEventListener ('click', function () {
+                if (location ()) {
+                    args .location__to (location ());
+                } 
+            });
+        }])
     
-    self
-        .establish ('map', ref)
-        .impressions ('map')
-            .thru (tap, [function (ref) {
-            }])
+    ref ('map')
+        .thru (tap, [function (ref) {
+        }])
             
     wait (500)
         .then (function () {
-            self .mention ('location', 'pitch here');
+            location ('pitch here');
         })
 </script>

@@ -19,7 +19,7 @@
 				<number-of-players>
 					<label>人數</label>
 					<item>
-						<component-select-control multiple select__to=":number-of-players">
+						<component-select-control multiple select__to={ number_of_players }>
 							<a>5v5</a>
 							<a>7v7</a>
 							<a>9v9</a>
@@ -31,7 +31,7 @@
 				<material-of-field>
 					<label>場地</label>
 					<item>
-						<component-select-control multiple select__to=":material-of-field">
+						<component-select-control multiple select__to={ material_of_field }>
 							<a>硬地</a>
 							<a>人造草</a>
 							<a>仿真草</a>
@@ -51,7 +51,7 @@
 				<days-of-week>
 					<label>日子</label>
 					<item>
-						<component-day-of-week-picker days__to=":days-of-week" />
+						<component-day-of-week-picker days__to={ days_of_week } />
 					</item>
 				</days-of-week>
 				<label>可選多於一天</label>
@@ -63,7 +63,7 @@
 				<info-header>球衣顏色</info-header>
 				<shirt-color>
 					<item>
-						<component-jersey-control jerseys__from=":jerseys" jerseys__to=":jerseys" />
+						<component-jersey-control jerseys__from={ jerseys } jerseys__to={ jerseys } />
 					</item>
 				</shirt-color>
 			</info-holder>
@@ -71,7 +71,7 @@
 		<label>球隊偏好會幫助我們為您篩選適合的球賽</label>
 		<component-spacing height="20px" />
 		<component-action>
-			<a href="#match/catalog" disabled={ ! my ('can-next') } ref="next-button">建立球隊</a>
+			<a href="#match/catalog" disabled={ ! can_next () } ref="next-button">建立球隊</a>
 		</component-action>
 	</team-preferences>
 </component-main-content>
@@ -121,65 +121,59 @@
 
 
 <script>
-	self
-		.remembers (':number-of-players')
-		.remembers (':material-of-field')
-		.remembers (':days-of-week')
-		.remembers (':shirt-color', '顏色')
-		.remembers (':jerseys', [])
+	var number_of_players = stream ()
+	var material_of_field = stream ()
+	var days_of_week = stream ()
+	var shirt_color = stream ('顏色')
+	var jerseys = stream ([])
 		
 		
-	self
-		.establish ('can-next', constant 
-			(mechanism (function () {
-				if (! my (':number-of-players') || ! my (':number-of-players') .length)
-					return false;
-				if (! my (':material-of-field') || ! my (':material-of-field') .length)
-					return false;
-				if (! my (':days-of-week') || ! my (':days-of-week') .length)
-					return false;
-				if (! my (':shirt-color'))
-					return false;
-				if (! my (':jerseys') || ! my (':jerseys') .length)
-					return false;
-					
-				return true;
-			}, [
-				mergeAll
-					([
-						self .impressions (':number-of-players'), 
-						self .impressions (':material-of-field'), 
-						self .impressions (':days-of-week'), 
-						self .impressions (':shirt-color'), 
-						self .impressions (':jerseys')
-					])
-			]))
-		)
-		.impressions ('can-next')
-			.thru (dropRepeats)
-			.thru (map, noop) .thru (tap, self .render)
+	var can_next = mechanism (function () {
+		if (! number_of_players () || ! number_of_players () .length)
+			return false;
+		if (! material_of_field () || ! material_of_field () .length)
+			return false;
+		if (! days_of_week () || ! days_of_week () .length)
+			return false;
+		if (! shirt_color ())
+			return false;
+		if (! jerseys () || ! jerseys () .length)
+			return false;
+			
+		return true;
+	}, [
+		mergeAll ([
+			number_of_players, 
+			material_of_field, 
+			days_of_week, 
+			shirt_color, 
+			jerseys
+		])
+	]);
+	
+	can_next
+		.thru (dropRepeats)
+		.thru (map, noop) .thru (tap, self .render)
 		
-	self
-		.establish ('next-button', ref)
-		.impressions ('next-button') .thru (tap, function (ref) {
-			ref .addEventListener ('click', function (e) {
-				e .preventDefault ();
-				inquire (self .affiliated ('::team-open'), {
-			        long_name: parse (args [0]),
-			        average_age: parse (args [1]),
-			        has_played_league: false,
-			        home_jersey_color: 'XXX',
-			        preferred_day_of_week_list:	my (':days-of-week') .map (to_uppercase),
-			        preferred_match_type_list: my (':number-of-players'),
-			        preferred_pitch_type_list: my (':material-of-field'),
-			        preferred_location_list: [
-						{ country: 'HKG', district_group: '新界西' },
-						{ country: 'HKG', district_group: '香港島', district: '灣仔區' },
-						{ country: 'HKG', district_group: '香港島', district: '中西區' }
-					]})
-					.then (function () {
-						window .location .hash = ref .hash
-					})
-			})
+	ref ('next-button') .thru (tap, function (ref) {
+		ref .addEventListener ('click', function (e) {
+			e .preventDefault ();
+			inquire (api () .team_open, {
+		        long_name: parse (args [0]),
+		        average_age: parse (args [1]),
+		        has_played_league: false,
+		        home_jersey_color: 'XXX',
+		        preferred_day_of_week_list:	days_of_week () .map (to_uppercase),
+		        preferred_match_type_list: number_of_players (),
+		        preferred_pitch_type_list: material_of_field (),
+		        preferred_location_list: [
+					{ country: 'HKG', district_group: '新界西' },
+					{ country: 'HKG', district_group: '香港島', district: '灣仔區' },
+					{ country: 'HKG', district_group: '香港島', district: '中西區' }
+				]})
+				.then (function () {
+					window .location .hash = ref .hash
+				})
 		})
+	})
 </script>
