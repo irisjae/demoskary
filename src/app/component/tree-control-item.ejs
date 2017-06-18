@@ -14,7 +14,7 @@
 	</branch-status>
 	<component-wavify />
 </item>
-<branch if={ branch-open () }>
+<branch if={ branch_open () }>
 	<component-tree-control items__from={ status } items__to={ modifications } />
 </branch>	
 
@@ -139,7 +139,7 @@
 							return true;
 						}
 					});
-	var tree = args .item__from .thru (dropRepeatsWith, json_equal);
+	var tree = args .item__from /*.thru (tap, known_as ('tree')) */.thru (dropRepeatsWith, json_equal);
 		tree .thru (map, noop) .thru (tap, self .render)
     		
     		
@@ -150,7 +150,7 @@
         return tree () .status;
     }, [tree])
         
-    var empty = dependent (function () {
+    var empty = mechanism (function () {
         return zeroed (status ());
     }, [status])
     var half = mechanism (function () {
@@ -205,18 +205,19 @@
 						return tree;
 					}
 				};
-	var toggle = stream ()
+				
+	var toggle = stream () .thru (tap, known_as ('toggle'))
 		.thru (tap, function () {
-			var name = name ();
-			var status = status ();
+			var _name = name ();
+			var _status = status ();
 			args .substitute__to ({
-				item: name,
-				sub: zeroed (status) ? fill (status) : zero (status)
+				item: _name,
+				sub: zeroed (_status) ? fill (_status) : zero (_status)
 			})
 		});
 			
 			
-	var modifications =	stream ()
+	var modifications =	stream () .thru (tap, known_as ('modify'))
 		.thru (tap, function (sub) {
 			args .substitute__to ({
 				item: name (),

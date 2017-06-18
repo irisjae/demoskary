@@ -1,5 +1,5 @@
 <component-dynamic-load-all items__from={ items }>
-	<component-tree-control-item item__from={ _item .item } substitute__to={ substitute } />
+	<component-tree-control-item item__from={ _item .item__from } substitute__to={ substitute } />
 </component-dynamic-load-all>
 
 
@@ -13,11 +13,11 @@
 									status: tree () [name]
 								};
 					});
-		}, [tree])
+		}, [tree])// .thru (tap, known_as ('items'))
 		
-	var substitute = 	stream ()
-							.thru (tap, function () {
-								if (! json_equal (tree () [substitute () .item], substitute () .sub))
-									args .items__to (with_ (substitute () .item, substitute () .sub) (tree ()))
+	var substitute = 	stream ()// .thru (tap, known_as ('sub'))
+							.thru (tap, function (_sub) {
+								if (! json_equal (tree () [_sub .item], _sub .sub))
+									args .items__to (with_ (_sub .item, _sub .sub) (tree ()))
 							})
 </script>

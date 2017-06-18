@@ -494,17 +494,15 @@ riot.tag2('component-dynamic-load-item', '{ enter yield }<yield></yield>{ exit y
 			var nth = stream (+ args .nth);
 			var item = stream (args .item);
 
-			self .nth__from = nth;
-			self .item__from = item;
+			self .nth__from = nth .thru (tap, known_as ('nth'));
+			self .item__from = item .thru (tap, known_as ('item'));
 
-			self .one ('updated', function () {
-				self .on ('updated', function () {
-					if (! args .garbage) {
-						nth (+ args .nth);
-						item (args .item);
-					}
-				})
-			});
+			self .on ('updated', function () {
+				if (! args .garbage) {
+					nth (+ args .nth);
+					item (args .item);
+				}
+			})
 
 	if (! self .update_strategy || self .update_strategy === "push") self .shouldUpdate = R .T;
 	if (typeof self .update_strategy === "function") self .shouldUpdate = self .update_strategy;
@@ -1937,7 +1935,7 @@ riot.tag2('component-tree-control-item', '<item ref="{ref prefix}item"> <status>
 									return true;
 								}
 							});
-			var tree = args .item__from .thru (dropRepeatsWith, json_equal);
+			var tree = args .item__from  .thru (dropRepeatsWith, json_equal);
 				tree .thru (map, noop) .thru (tap, self .render)
 
 		    var name = mechanism (function () {
@@ -1947,7 +1945,7 @@ riot.tag2('component-tree-control-item', '<item ref="{ref prefix}item"> <status>
 		        return tree () .status;
 		    }, [tree])
 
-		    var empty = dependent (function () {
+		    var empty = mechanism (function () {
 		        return zeroed (status ());
 		    }, [status])
 		    var half = mechanism (function () {
@@ -1999,17 +1997,18 @@ riot.tag2('component-tree-control-item', '<item ref="{ref prefix}item"> <status>
 								return tree;
 							}
 						};
-			var toggle = stream ()
+
+			var toggle = stream () .thru (tap, known_as ('toggle'))
 				.thru (tap, function () {
-					var name = name ();
-					var status = status ();
+					var _name = name ();
+					var _status = status ();
 					args .substitute__to ({
-						item: name,
-						sub: zeroed (status) ? fill (status) : zero (status)
+						item: _name,
+						sub: zeroed (_status) ? fill (_status) : zero (_status)
 					})
 				});
 
-			var modifications =	stream ()
+			var modifications =	stream () .thru (tap, known_as ('modify'))
 				.thru (tap, function (sub) {
 					args .substitute__to ({
 						item: name (),
@@ -2026,7 +2025,7 @@ riot.tag2('component-tree-control-item', '<item ref="{ref prefix}item"> <status>
 	self .expressions [4] = function (_item) { return  branched ()  };
 	self .expressions [5] = function (_item) { return  ! empty ()  };
 	self .expressions [6] = function (_item) { return  empty ()  };
-	self .expressions [7] = function (_item) { return  branch-open ()  };
+	self .expressions [7] = function (_item) { return  branch_open ()  };
 	self .expressions [8] = function (_item) { return  status  };
 	self .expressions [9] = function (_item) { return  modifications  };
 	if (typeof self .update_strategy === "function") self .shouldUpdate = self .update_strategy;
@@ -2052,15 +2051,15 @@ riot.tag2('component-tree-control', '<component-dynamic-load-all items__from="{e
 				}, [tree])
 
 			var substitute = 	stream ()
-									.thru (tap, function () {
-										if (! json_equal (tree () [substitute () .item], substitute () .sub))
-											args .items__to (with_ (substitute () .item, substitute () .sub) (tree ()))
+									.thru (tap, function (_sub) {
+										if (! json_equal (tree () [_sub .item], _sub .sub))
+											args .items__to (with_ (_sub .item, _sub .sub) (tree ()))
 									})
 
 	self .expressions = {};
 
 	self .expressions [0] = function (_item) { return  items  };
-	self .expressions [1] = function (_item) { return  _item .item  };
+	self .expressions [1] = function (_item) { return  _item .item__from  };
 	self .expressions [2] = function (_item) { return  substitute  };
 	if (typeof self .update_strategy === "function") self .shouldUpdate = self .update_strategy;
 	}) (this, this .opts);
@@ -3069,6 +3068,12 @@ riot.tag2('page-test-list', '<nav> <nav-bar> <nav-title> <component-page-title>�
 					        中西區: false,
 					        東區: false,
 					        南區: false,
+					        灣仔區: false,
+					        test: {
+			    香港:	{
+					        中西區: false,
+					        東區: false,
+					        南區: false,
 					        灣仔區: false
 					    },
 			    九龍: 	{
@@ -3077,6 +3082,52 @@ riot.tag2('page-test-list', '<nav> <nav-bar> <nav-title> <component-page-title>�
 			    			觀塘區: false,
 			    			黃大仙區: false,
 			    			油尖旺區: false
+					    },
+			    新界: 	{
+					        離島區: false,
+					        葵青區: false,
+					        北區: false,
+					        西貢區: false,
+					        沙田區: false,
+					        大埔區: false,
+					        荃灣區: false,
+					        屯門區: false,
+					        元朗區: false
+					    }
+			}
+					    },
+			    九龍: 	{
+			    			深水埗區: false,
+			    			九龍城區: false,
+			    			觀塘區: false,
+			    			黃大仙區: false,
+			    			油尖旺區: false,
+			    			sfed: {
+			    香港:	{
+					        中西區: false,
+					        東區: false,
+					        南區: false,
+					        灣仔區: false
+					    },
+			    九龍: 	{
+			    			深水埗區: false,
+			    			九龍城區: false,
+			    			觀塘區: false,
+			    			黃大仙區: false,
+			    			油尖旺區: false
+					    },
+			    新界: 	{
+					        離島區: false,
+					        葵青區: false,
+					        北區: false,
+					        西貢區: false,
+					        沙田區: false,
+					        大埔區: false,
+					        荃灣區: false,
+					        屯門區: false,
+					        元朗區: false
+					    }
+			}
 					    },
 			    新界: 	{
 					        離島區: false,
