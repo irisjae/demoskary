@@ -789,22 +789,28 @@ var tmpl = (function () {
             }
             else {
               //console.log('path a');
-              var expression = /expression:([^:]+):(\d+)/.exec(str);
-              //var tag_name = expression[1];
-              var n = expression[2];
-              
-              if (! apparent_scope ._loaded) apparent_scope = apparent_scope .parent;
-              //var scope = window .tag_scopes [tag_name];
-              
-              var scope = apparent_scope;
-              
-              if (scope ._yield_level) {
-                scope = climb (scope ._yield_level, scope);
-                while (scope ._yield_levels)
-                  scope = climb (scope ._yield_levels, scope);
-              }
-              //console.log(str, scope);
-              return scope.expressions[n-1]/*/
+              var fn;
+              return  function (_item) {
+                if (! fn) {
+                  var expression = /expression:([^:]+):(\d+)/.exec(str);
+                  //var tag_name = expression[1];
+                  var n = expression[2];
+                  
+                  if (! apparent_scope ._loaded) apparent_scope = apparent_scope .parent;
+                  //var scope = window .tag_scopes [tag_name];
+                  
+                  var scope = apparent_scope;
+                  
+                  if (scope ._yield_level) {
+                    scope = climb (scope ._yield_level, scope);
+                    while (scope ._yield_levels)
+                      scope = climb (scope ._yield_levels, scope);
+                  }
+                  //console.log(str, scope);
+                  fn = scope.expressions[n-1]
+                }
+                return fn (_item)
+              }/*/
               return function(_item){
                 try {return scope.expressions[n-1](_item);} catch (e) {console.error(e)}
               }/**/
