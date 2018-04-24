@@ -89,7 +89,7 @@
 									var _tag_label = tag_label (new_page .name);
 									var root = document .createElement (_tag_label);
 									var curr = 	retaining (new_page) (
-													riot .mount (root, _tag_label, having (new_page .params) ({
+													riot .mount (root, _tag_label, having (R .map (function (x) { return decodeURIComponent (x) }, new_page .params)) ({
 														parent: self,
 														cycle__from: page_cycle (new_page .id)
 													})) [0]);

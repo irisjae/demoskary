@@ -711,8 +711,8 @@ var brackets = (function (UNDEF) {
  * tmpl.loopKeys - Get the keys for an 'each' loop (used by `_each`)
  */
 
-    /*
-    window.called = 0;
+    
+    /*window.called = 0;
     window .eval_ms = 0;
     //*/
 

@@ -94,7 +94,7 @@ riot.tag2('body', '', '', '', function(opts) {
 											var _tag_label = tag_label (new_page .name);
 											var root = document .createElement (_tag_label);
 											var curr = 	retaining (new_page) (
-															riot .mount (root, _tag_label, having (new_page .params) ({
+															riot .mount (root, _tag_label, having (R .map (function (x) { return decodeURIComponent (x) }, new_page .params)) ({
 																parent: self,
 																cycle__from: page_cycle (new_page .id)
 															})) [0]);
@@ -3068,12 +3068,6 @@ riot.tag2('page-test-list', '<nav> <nav-bar> <nav-title> <component-page-title>�
 					        中西區: false,
 					        東區: false,
 					        南區: false,
-					        灣仔區: false,
-					        test: {
-			    香港:	{
-					        中西區: false,
-					        東區: false,
-					        南區: false,
 					        灣仔區: false
 					    },
 			    九龍: 	{
@@ -3082,52 +3076,6 @@ riot.tag2('page-test-list', '<nav> <nav-bar> <nav-title> <component-page-title>�
 			    			觀塘區: false,
 			    			黃大仙區: false,
 			    			油尖旺區: false
-					    },
-			    新界: 	{
-					        離島區: false,
-					        葵青區: false,
-					        北區: false,
-					        西貢區: false,
-					        沙田區: false,
-					        大埔區: false,
-					        荃灣區: false,
-					        屯門區: false,
-					        元朗區: false
-					    }
-			}
-					    },
-			    九龍: 	{
-			    			深水埗區: false,
-			    			九龍城區: false,
-			    			觀塘區: false,
-			    			黃大仙區: false,
-			    			油尖旺區: false,
-			    			sfed: {
-			    香港:	{
-					        中西區: false,
-					        東區: false,
-					        南區: false,
-					        灣仔區: false
-					    },
-			    九龍: 	{
-			    			深水埗區: false,
-			    			九龍城區: false,
-			    			觀塘區: false,
-			    			黃大仙區: false,
-			    			油尖旺區: false
-					    },
-			    新界: 	{
-					        離島區: false,
-					        葵青區: false,
-					        北區: false,
-					        西貢區: false,
-					        沙田區: false,
-					        大埔區: false,
-					        荃灣區: false,
-					        屯門區: false,
-					        元朗區: false
-					    }
-			}
 					    },
 			    新界: 	{
 					        離島區: false,
